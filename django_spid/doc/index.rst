@@ -3,13 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Django SPID plugin's documentation!
+Benvenuto nella documentazione del plugin Django SPID!
 ==============================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   introduction
+   installation
    overview
    protocol
 
