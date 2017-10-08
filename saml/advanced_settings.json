@@ -1,17 +1,20 @@
 {
     "security": {
         "nameIdEncrypted": false,
-        "authnRequestsSigned": false,
+        "authnRequestsSigned": true,
         "logoutRequestSigned": false,
         "logoutResponseSigned": false,
         "signMetadata": false,
-        "wantMessagesSigned": false,
-        "wantAssertionsSigned": false,
+        "wantMessagesSigned": true,
+        "wantAssertionsSigned": true,
         "wantNameId" : true,
         "wantNameIdEncrypted": false,
         "wantAssertionsEncrypted": false,
         "signatureAlgorithm": "http://www.w3.org/2000/09/xmldsig#rsa-sha1",
-        "digestAlgorithm": "http://www.w3.org/2000/09/xmldsig#sha1"
+        "digestAlgorithm": "http://www.w3.org/2000/09/xmldsig#sha1",
+        "requestedAuthnContext": [
+            "https://spid.testenv.identityserver/SpidL2"
+        ]
     },
     "contactPerson": {
         "technical": {

@@ -1,4 +1,12 @@
 .idea/
 .venv/
 venv/
+.DS_Store
+Esempio_di_request.txt
+generated_metadata.xml
+localhost_metadata.xml
+request_saml.xml
+response_saml.xml
+saml/.DS_Store
+saml_generated_response.xml
 __pycache__/
