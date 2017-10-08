@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Benvenuto nella documentazione del plugin Django SPID!
-==============================================
+======================================================
 
 .. toctree::
    :maxdepth: 2
