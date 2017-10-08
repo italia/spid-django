@@ -1,0 +1,360 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Appendice: SAML &mdash; Django SPID plugin 0.1 documentazione</title>
+               
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />   
+    <link rel="index" title="Indice" href="genindex.html" />
+    <link rel="search" title="Cerca" href="search.html" />
+    <link rel="top" title="Django SPID plugin 0.1 documentazione" href="index.html" />
+    <link rel="prev" title="Django SPID Plugin" href="overview.html" />  
+    <script src="_static/js/modernizr.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Titillium+Web:200,300,400,600,700,900" rel="stylesheet">
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+<div id="slimheader">
+    <!-- Pushy Menu -->
+<nav class="pushy pushy-left">
+    <div class="pushy-content">
+        <div class="pushy-close-button">
+        <a class="pushy-link" href="#">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAKT2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVNnVFPpFj333vRCS4iAlEtvUhUIIFJCi4AUkSYqIQkQSoghodkVUcERRUUEG8igiAOOjoCMFVEsDIoK2AfkIaKOg6OIisr74Xuja9a89+bN/rXXPues852zzwfACAyWSDNRNYAMqUIeEeCDx8TG4eQuQIEKJHAAEAizZCFz/SMBAPh+PDwrIsAHvgABeNMLCADATZvAMByH/w/qQplcAYCEAcB0kThLCIAUAEB6jkKmAEBGAYCdmCZTAKAEAGDLY2LjAFAtAGAnf+bTAICd+Jl7AQBblCEVAaCRACATZYhEAGg7AKzPVopFAFgwABRmS8Q5ANgtADBJV2ZIALC3AMDOEAuyAAgMADBRiIUpAAR7AGDIIyN4AISZABRG8lc88SuuEOcqAAB4mbI8uSQ5RYFbCC1xB1dXLh4ozkkXKxQ2YQJhmkAuwnmZGTKBNA/g88wAAKCRFRHgg/P9eM4Ors7ONo62Dl8t6r8G/yJiYuP+5c+rcEAAAOF0ftH+LC+zGoA7BoBt/qIl7gRoXgugdfeLZrIPQLUAoOnaV/Nw+H48PEWhkLnZ2eXk5NhKxEJbYcpXff5nwl/AV/1s+X48/Pf14L7iJIEyXYFHBPjgwsz0TKUcz5IJhGLc5o9H/LcL//wd0yLESWK5WCoU41EScY5EmozzMqUiiUKSKcUl0v9k4t8s+wM+3zUAsGo+AXuRLahdYwP2SycQWHTA4vcAAPK7b8HUKAgDgGiD4c93/+8//UegJQCAZkmScQAAXkQkLlTKsz/HCAAARKCBKrBBG/TBGCzABhzBBdzBC/xgNoRCJMTCQhBCCmSAHHJgKayCQiiGzbAdKmAv1EAdNMBRaIaTcA4uwlW4Dj1wD/phCJ7BKLyBCQRByAgTYSHaiAFiilgjjggXmYX4IcFIBBKLJCDJiBRRIkuRNUgxUopUIFVIHfI9cgI5h1xGupE7yAAygvyGvEcxlIGyUT3UDLVDuag3GoRGogvQZHQxmo8WoJvQcrQaPYw2oefQq2gP2o8+Q8cwwOgYBzPEbDAuxsNCsTgsCZNjy7EirAyrxhqwVqwDu4n1Y8+xdwQSgUXACTYEd0IgYR5BSFhMWE7YSKggHCQ0EdoJNwkDhFHCJyKTqEu0JroR+cQYYjIxh1hILCPWEo8TLxB7iEPENyQSiUMyJ7mQAkmxpFTSEtJG0m5SI+ksqZs0SBojk8naZGuyBzmULCAryIXkneTD5DPkG+Qh8lsKnWJAcaT4U+IoUspqShnlEOU05QZlmDJBVaOaUt2ooVQRNY9aQq2htlKvUYeoEzR1mjnNgxZJS6WtopXTGmgXaPdpr+h0uhHdlR5Ol9BX0svpR+iX6AP0dwwNhhWDx4hnKBmbGAcYZxl3GK+YTKYZ04sZx1QwNzHrmOeZD5lvVVgqtip8FZHKCpVKlSaVGyovVKmqpqreqgtV81XLVI+pXlN9rkZVM1PjqQnUlqtVqp1Q61MbU2epO6iHqmeob1Q/pH5Z/YkGWcNMw09DpFGgsV/jvMYgC2MZs3gsIWsNq4Z1gTXEJrHN2Xx2KruY/R27iz2qqaE5QzNKM1ezUvOUZj8H45hx+Jx0TgnnKKeX836K3hTvKeIpG6Y0TLkxZVxrqpaXllirSKtRq0frvTau7aedpr1Fu1n7gQ5Bx0onXCdHZ4/OBZ3nU9lT3acKpxZNPTr1ri6qa6UbobtEd79up+6Ynr5egJ5Mb6feeb3n+hx9L/1U/W36p/VHDFgGswwkBtsMzhg8xTVxbzwdL8fb8VFDXcNAQ6VhlWGX4YSRudE8o9VGjUYPjGnGXOMk423GbcajJgYmISZLTepN7ppSTbmmKaY7TDtMx83MzaLN1pk1mz0x1zLnm+eb15vft2BaeFostqi2uGVJsuRaplnutrxuhVo5WaVYVVpds0atna0l1rutu6cRp7lOk06rntZnw7Dxtsm2qbcZsOXYBtuutm22fWFnYhdnt8Wuw+6TvZN9un2N/T0HDYfZDqsdWh1+c7RyFDpWOt6azpzuP33F9JbpL2dYzxDP2DPjthPLKcRpnVOb00dnF2e5c4PziIuJS4LLLpc+Lpsbxt3IveRKdPVxXeF60vWdm7Obwu2o26/uNu5p7ofcn8w0nymeWTNz0MPIQ+BR5dE/C5+VMGvfrH5PQ0+BZ7XnIy9jL5FXrdewt6V3qvdh7xc+9j5yn+M+4zw33jLeWV/MN8C3yLfLT8Nvnl+F30N/I/9k/3r/0QCngCUBZwOJgUGBWwL7+Hp8Ib+OPzrbZfay2e1BjKC5QRVBj4KtguXBrSFoyOyQrSH355jOkc5pDoVQfujW0Adh5mGLw34MJ4WHhVeGP45wiFga0TGXNXfR3ENz30T6RJZE3ptnMU85ry1KNSo+qi5qPNo3ujS6P8YuZlnM1VidWElsSxw5LiquNm5svt/87fOH4p3iC+N7F5gvyF1weaHOwvSFpxapLhIsOpZATIhOOJTwQRAqqBaMJfITdyWOCnnCHcJnIi/RNtGI2ENcKh5O8kgqTXqS7JG8NXkkxTOlLOW5hCepkLxMDUzdmzqeFpp2IG0yPTq9MYOSkZBxQqohTZO2Z+pn5mZ2y6xlhbL+xW6Lty8elQfJa7OQrAVZLQq2QqboVFoo1yoHsmdlV2a/zYnKOZarnivN7cyzytuQN5zvn//tEsIS4ZK2pYZLVy0dWOa9rGo5sjxxedsK4xUFK4ZWBqw8uIq2Km3VT6vtV5eufr0mek1rgV7ByoLBtQFr6wtVCuWFfevc1+1dT1gvWd+1YfqGnRs+FYmKrhTbF5cVf9go3HjlG4dvyr+Z3JS0qavEuWTPZtJm6ebeLZ5bDpaql+aXDm4N2dq0Dd9WtO319kXbL5fNKNu7g7ZDuaO/PLi8ZafJzs07P1SkVPRU+lQ27tLdtWHX+G7R7ht7vPY07NXbW7z3/T7JvttVAVVN1WbVZftJ+7P3P66Jqun4lvttXa1ObXHtxwPSA/0HIw6217nU1R3SPVRSj9Yr60cOxx++/p3vdy0NNg1VjZzG4iNwRHnk6fcJ3/ceDTradox7rOEH0x92HWcdL2pCmvKaRptTmvtbYlu6T8w+0dbq3nr8R9sfD5w0PFl5SvNUyWna6YLTk2fyz4ydlZ19fi753GDborZ752PO32oPb++6EHTh0kX/i+c7vDvOXPK4dPKy2+UTV7hXmq86X23qdOo8/pPTT8e7nLuarrlca7nuer21e2b36RueN87d9L158Rb/1tWeOT3dvfN6b/fF9/XfFt1+cif9zsu72Xcn7q28T7xf9EDtQdlD3YfVP1v+3Njv3H9qwHeg89HcR/cGhYPP/pH1jw9DBY+Zj8uGDYbrnjg+OTniP3L96fynQ89kzyaeF/6i/suuFxYvfvjV69fO0ZjRoZfyl5O/bXyl/erA6xmv28bCxh6+yXgzMV70VvvtwXfcdx3vo98PT+R8IH8o/2j5sfVT0Kf7kxmTk/8EA5jz/GMzLdsAAAAgY0hSTQAAeiUAAICDAAD5/wAAgOkAAHUwAADqYAAAOpgAABdvkl/FRgAAApxJREFUeNrsm81OFEEUhc8AcaWPwN4XcOU/4l+MP0HUwMCImlFjRI1Go5Ggbn0DH8BEE124ksfwLVwYEkBRQIbjpoxjW0Xs7rq3KjO3ks6QSaZyvm+qZ7oOPQ2S6OcxgD4fJsAEmAATYAJMgAkwASag5Gi4oy8FjAFYBLAEYCYDhj0APgL4AGB36VeTLHt85p+xRbJdYY5Yx16SK115PpWdo8oKYOFUeAWgneCd3wdgAcCurueGNU6BWQCdxBL2u2W/s/D8S41TACQvkdzk30PrdDhA8iv/HS+qzFcnSAoJB0l+88A/rzpn3UCaEg4F4J/VmTdGMA0Jh0mueuDn684dK6CkhJEA/FyM7DGXqISEIyS/e+Cfxsod+zyNKWE0AP8kZmaJT+oYEo4G4B/Hziv1dVVHwjGSPzzwjySySl6wVJFwPAD/UCqn9FVbGQknSK554B9IZtTYsf2PhJMB+PvS+bS2rdtJOBWAv6eRTXPvHpKw7oG/q5VLu8DwSSiOO5qZUrQ420mY1c6TohVeLRQq3U3TWq/X4qcBvAewI9A0q9drmgLOAHjngU9ar2kJOBuAvw2gmVSCwgfNOZIbnq+/Wzl0jNLwYwH4m7kUrZLw50n+9ADdyKlolYIfD8Bfz61tloC/EIBvM8O2OTb8xQD8tVwrd43NztWcK/dY8BOeoB2SV3L/v0MM+MkA/OXMK/coApoB+FambXNUAVMOtgg/nVnRKiKg5YHfdCsip6JVREAzAD+ZQb02Iy1gqHBPzm/4iUyapWWSA2XmGaq5he4AmALwJkGz9NY9vgYw6P7eKtzDJLIdbpFcIvnFXfMj8THusiy6VVHq9Y2KvxlqlDbdY3eK9swvrexeYRNgAkyACTABJsAEmIB+Hb8GANn8aQYOuaWiAAAAAElFTkSuQmCC">
+        </a>
+        </div><!--/pushy-close-button-->
+        <ul>
+            <li class="pushy-link ">
+                <span class="pushy_subtitle">IL PROGRAMMA</span>
+                <a href="https://pianotriennale-ict.italia.it">Piano Triennale</a>
+            </li>
+            <li class="pushy-link delimiter">
+                <span class="pushy_subtitle">LE COMMUNITY</span>
+                <a href="https://developers.italia.it/">Developers</a>
+            </li>
+            <li class="pushy-link delimiter">
+                <a href="https://designers.italia.it/">Designers</a>
+            </li>
+            </li>
+            <li class="pushy-link delimiter">
+                <span class="pushy_subtitle">GLI STRUMENTI</span>
+                <a href="https://forum.italia.it/">Forum</a>
+            </li>
+            <li class="pushy-link delimiter current">
+                <a href="https://docs.developers.italia.it/">Docs</a>
+            </li>
+            <li class="pushy-link delimiter">
+                <a href="https://github.com/italia/">Github</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Site Overlay -->
+<div class="site-overlay"></div>
+
+<!-- Your Content -->
+<div id="container">
+    <!-- Menu Button -->
+
+</div>
+    <div class="sh__wrapper">
+    <div class="sh__institutional">
+        <a class="pushy-menu-btn menu-btn" href="#"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTkuMnB4IiBoZWlnaHQ9IjE2cHgiIHZpZXdCb3g9IjAgMCAxMiAxMCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4KICAgIDxkZWZzPjwvZGVmcz4KICAgIDxnIGlkPSIxMDI0dXAiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxnIGlkPSItLWhvbWUtLS1wYXJhbGxheC0tLW1vYmlsZSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTI0LjAwMDAwMCwgLTIwLjAwMDAwMCkiIGZpbGw9IiNGRkZGRkYiPgogICAgICAgICAgICA8ZyBpZD0iLW5ldHdvcmstc2xpbS1oZWFkZXIiPgogICAgICAgICAgICAgICAgPHBhdGggZD0iTTI0LDI0IEwzNiwyNCBMMzYsMjYgTDI0LDI2IEwyNCwyNCBaIE0yNCwyMCBMMzIsMjAgTDMyLDIyIEwyNCwyMiBMMjQsMjAgWiBNMjQsMjggTDMyLDI4IEwzMiwzMCBMMjQsMzAgTDI0LDI4IFoiIGlkPSJpY29uLXNtYWxsLWJ1cmdlciI+PC9wYXRoPgogICAgICAgICAgICA8L2c+CiAgICAgICAgPC9nPgogICAgPC9nPgo8L3N2Zz4="></a>
+
+        <a href="http://www.agid.gov.it/" title="Agid">AgID</a>
+        <span class="sh__plus">&nbsp;+&nbsp;</span>
+        <a href="https://teamdigitale.governo.it/" title="Team Digitale">Team Digitale</a>
+    </div><!--/sh__institutional-->
+    <div class="sh__tabs">
+    <ul class="sh__tabsul">
+      <li class="delimiter"><a  href="https://pianotriennale-ict.italia.it">Piano Triennale</a></li>
+      <li class=""><a href="https://developers.italia.it/">Developers</a></li>
+      <li class="delimiter"><a  href="https://designers.italia.it">Designers</a></li>
+      <li class=""><a href="https://forum.italia.it/">Forum</a></li>
+      <li class="current"><a href="https://docs.developers.italia.it/">Docs</a></li>
+      <li class=""><a href="https://github.com/pdpfsug/django-ex">Github</a></li>
+    </ul>
+    </div><!--/.sh__tabs-->
+		<div class="burger" data-toggle="wy-nav-top">
+		  <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAzMiAzMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzIgMzI7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsOiNGRkZGRkY7fQ0KPC9zdHlsZT4NCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik02LjEsOC45bDE3LDE3YzAuOCwwLjgsMi4xLDAuOCwyLjgsMGMwLjgtMC44LDAuOC0yLjEsMC0yLjhsLTE3LTE3Yy0wLjgtMC44LTIuMS0wLjgtMi44LDBTNS4zLDguMiw2LjEsOC45eiINCgkvPg0KPHBhdGggY2xhc3M9InN0MCIgZD0iTTIzLjEsNi4xbC0xNywxN2MtMC44LDAuOC0wLjgsMi4xLDAsMi44YzAuOCwwLjgsMi4xLDAuOCwyLjgsMGwxNy0xN2MwLjgtMC44LDAuOC0yLjEsMC0yLjgNCglDMjUuMSw1LjMsMjMuOCw1LjMsMjMuMSw2LjF6Ii8+DQo8L3N2Zz4=">
+		</div>
+    </div><!--/.wrapper-->
+</div><!--/#slimheader-->
+
+
+     
+    <div class="wy-grid-for-nav">
+
+        
+        <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+            <div class="wy-side-scroll">
+                <div class="wy-side-nav-search">
+                    
+
+                    <div class="branding clearfix">
+                        <div class="branding--logo">
+                            <a href="https://docs.developers.italia.it">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
+                              <g fill="none" fill-rule="evenodd">
+                                <path d="M0 0h160v160H0z"/>
+                                <path fill="#fff" d="M58.28 131.956V49.918h21.5v82.184h-21.5v-.146zm84.435-63.353h-19.65v33.72c0 3.358.143 5.547.285 7.007.143 1.314.712 2.482 1.71 3.504.996 1.02 2.562 1.46 4.698 1.46l12.245-.293.997 17.52c-7.12 1.606-12.673 2.48-16.375 2.48-9.682 0-16.232-2.19-19.65-6.713-3.56-4.38-5.267-12.554-5.267-24.524V27h21.5v22.772h19.65v18.83h-.143zM25.957 74.88c-3.702 0-6.834-1.314-9.255-3.94C14.282 68.31 13 65.1 13 61.303c0-3.795 1.28-7.007 3.56-9.634 2.42-2.63 5.553-3.798 9.255-3.798 3.702 0 6.835 1.314 9.255 3.942 2.42 2.627 3.56 5.84 3.56 9.78 0 3.942-1.14 7.007-3.56 9.635-2.278 2.335-5.268 3.65-9.113 3.65z"/>
+                              </g>
+                            </svg>
+                          </a>
+                        </div>
+                        <div class="branding--content">
+                            <h2 class="branding--title">
+                                <span class="branding--title--branch">/ <a href="https://docs.developers.italia.it">docs</a></span>
+                            </h2>
+                        </div>
+                    </div>
+
+                    
+                    
+                    <h1 class="project-title"><a href="index.html" > Django SPID plugin </a>
+                       
+                      
+                      <br/><small>versione: </small><span class="version">0.1</span>
+                    </h1>
+                       
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Cerca nel documento" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div> 
+                </div>
+
+                <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                     
+                    
+                      
+                    
+                    
+                      <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Django SPID Plugin</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Appendice: SAML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#il-protocollo-saml-in-breve">Il protocollo SAML in breve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#l-entityid">L’entityID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#l-assertionconsumerservice">L’AssertionConsumerService</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#i-metadati">I metadati</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#altro">Altro</a></li>
+</ul>
+</li>
+</ul>
+
+                    
+                    
+                </div>
+            </div>
+        </nav>
+
+        <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+            
+            <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+				    
+                <div class="logo">
+                  <a href="https://docs.developers.italia.it">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 160 160">
+                    <g fill="none" fill-rule="evenodd">
+                      <path d="M0 0h160v160H0z"/>
+                      <path fill="#fff" d="M58.28 131.956V49.918h21.5v82.184h-21.5v-.146zm84.435-63.353h-19.65v33.72c0 3.358.143 5.547.285 7.007.143 1.314.712 2.482 1.71 3.504.996 1.02 2.562 1.46 4.698 1.46l12.245-.293.997 17.52c-7.12 1.606-12.673 2.48-16.375 2.48-9.682 0-16.232-2.19-19.65-6.713-3.56-4.38-5.267-12.554-5.267-24.524V27h21.5v22.772h19.65v18.83h-.143zM25.957 74.88c-3.702 0-6.834-1.314-9.255-3.94C14.282 68.31 13 65.1 13 61.303c0-3.795 1.28-7.007 3.56-9.634 2.42-2.63 5.553-3.798 9.255-3.798 3.702 0 6.835 1.314 9.255 3.942 2.42 2.627 3.56 5.84 3.56 9.78 0 3.942-1.14 7.007-3.56 9.635-2.278 2.335-5.268 3.65-9.113 3.65z"/>
+                    </g>
+                  </svg>
+                  </a>
+                </div>
+                <div class="title">
+                  <a href="index.html">Django SPID plugin</a>
+                </div>
+                <div class="burger" data-toggle="wy-nav-top">
+                  <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAzMiAzMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzIgMzI7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsOiNGRkZGRkY7fQ0KPC9zdHlsZT4NCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik00LDhoMjRjMS4xLDAsMi0wLjksMi0ycy0wLjktMi0yLTJINEMyLjksNCwyLDQuOSwyLDZTMi45LDgsNCw4eiIvPg0KPHBhdGggY2xhc3M9InN0MCIgZD0iTTI4LDE0SDRjLTEuMSwwLTIsMC45LTIsMnMwLjksMiwyLDJoMjRjMS4xLDAsMi0wLjksMi0yUzI5LjEsMTQsMjgsMTR6Ii8+DQo8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjgsMjRINGMtMS4xLDAtMiwwLjktMiwyczAuOSwyLDIsMmgyNGMxLjEsMCwyLTAuOSwyLTJTMjkuMSwyNCwyOCwyNHoiLz4NCjwvc3ZnPg==">
+                </div>
+            
+            </nav>
+            <div class="nav-overlay" data-toggle="wy-nav-top"></div>
+
+
+            
+            <div class="wy-nav-content">
+                <div class="rst-content">
+                    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Indice</a> &raquo;</li>
+        
+      <li>Appendice: SAML</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/protocol.rst.txt" rel="nofollow"> Vedi sorgente pagina</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+                    <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+                        <div itemprop="articleBody">
+                            
+  <div class="section" id="appendice-saml">
+<h1>Appendice: SAML<a class="headerlink" href="#appendice-saml" title="Link a questa intestazione">¶</a></h1>
+<div class="section" id="il-protocollo-saml-in-breve">
+<h2>Il protocollo SAML in breve<a class="headerlink" href="#il-protocollo-saml-in-breve" title="Link a questa intestazione">¶</a></h2>
+<p>SAML è il mezzo (o più specificatamente il framework/protocollo)
+attraverso cui SPID realizza la parte di autenticazione.</p>
+<p>Le entità (<strong>entity</strong>) coinvolte nel protocollo SAML sono fondamentalmente 2:</p>
+<ol class="arabic simple">
+<li>il <strong>Service Provider</strong> (<cite>SP</cite>)che è il servizio web di cui l’utente vuole usufruire</li>
+<li>l” <strong>Identity Provider</strong> (<cite>IdP</cite>) che è il server di autenticazione SSO e verifica le credenziali dell’utente</li>
+</ol>
+<p>Esempi di IdP sono Poste Italiane, Aruba, etc., quindi probabilmente non lo si dovrà reimplementare.</p>
+<div class="figure" id="id1">
+<img alt="_images/relazione-saml.png" src="_images/relazione-saml.png" />
+<p class="caption"><span class="caption-text">La relazione tra i 3 soggetti del protocollo SAML</span></p>
+</div>
+<p>Più in dettaglio le fasi del processo di autenticazione sono mostrate come da schema seguente</p>
+<div class="figure" id="id2">
+<img alt="_images/fasi-saml.png" src="_images/fasi-saml.png" />
+<p class="caption"><span class="caption-text">Le fasi del processo di autenticazione SAML</span></p>
+</div>
+</div>
+<div class="section" id="l-entityid">
+<h2>L’entityID<a class="headerlink" href="#l-entityid" title="Link a questa intestazione">¶</a></h2>
+<p>L’unico campo richiesto obbligatoriamente nella configurazione di un <strong>Service Provider</strong> è l’entity ID.
+L’entity Id di un Service Provider deve essere univoco all’interno dell’Identity Provider cui si registra,
+per questo di solito si usa il FQDN.</p>
+</div>
+<div class="section" id="l-assertionconsumerservice">
+<h2>L’AssertionConsumerService<a class="headerlink" href="#l-assertionconsumerservice" title="Link a questa intestazione">¶</a></h2>
+<p>Almeno un elemento di questo tipo deve essere definito nei metadati di un <strong>Service Provider</strong>.</p>
+<p><cite>&lt;AssertionConsumerService&gt;</cite> [One or More]
+One or more elements that describe indexed endpoints that support the profiles of the
+Authentication Request protocol defined in [SAMLProf]. All service providers support at least one
+such endpoint, by definition.</p>
+<p>The &lt;md:AssertionConsumerService&gt; element is used to configure handlers that are responsible for consuming SAML assertions; that is, they process an assertion according to a profile, extract its contents, create a new user session, and typically produce a cookie to represent the session.</p>
+</div>
+<div class="section" id="i-metadati">
+<h2>I metadati<a class="headerlink" href="#i-metadati" title="Link a questa intestazione">¶</a></h2>
+<p>Ogni <strong>entità</strong> del protocollo deve esporre dei metadati e questi sono differenti sia per tipologia che per contenuto.
+Infatti ogni entità può assumere uno dei ruoli:</p>
+<ul class="simple">
+<li>SSO Identity Provider</li>
+<li>SSO Service Provider</li>
+<li>Authentication Authority</li>
+<li>Attribute Authority</li>
+<li>Policy Decision Point</li>
+<li>Affiliation</li>
+</ul>
+<p>e a seconda di quelli assunti specifica degli elementi XML differenti ad esempio:</p>
+<ul class="simple">
+<li>SPSSODescriptor: per le funzioni di Service Provider</li>
+<li>IDPSSODescriptor: per le funzioni di Identity Provider</li>
+</ul>
+<p>Nell’SP si devono configurare i metadati dall’IdP e l’IdP deve avere i metadati dell’SP</p>
+</div>
+<div class="section" id="altro">
+<h2>Altro<a class="headerlink" href="#altro" title="Link a questa intestazione">¶</a></h2>
+<p>Ulteriori informazioni posso essere trovate:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://wiki.oasis-open.org/security/FrontPage">https://wiki.oasis-open.org/security/FrontPage</a></li>
+<li><a class="reference external" href="https://docs.spring.io/spring-security-saml/docs/current/reference/html/configuration-metadata.html">https://docs.spring.io/spring-security-saml/docs/current/reference/html/configuration-metadata.html</a></li>
+</ul>
+</div>
+</div>
+
+
+                        </div>
+                        <div class="articleComments">
+                            
+                        </div>
+                    </div>
+                    <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="overview.html" class="btn" title="Django SPID Plugin" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Precedente</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        2017, PDP Free Software User Group &lt;info@pdp.linux.it&gt;.
+
+    </p>
+  </div>
+  Generato con <a href="http://sphinx-doc.org/">Sphinx</a> usando il tema ufficiale <a href="https://github.com/italia/sphinx_italia_theme">Italia</a> basato sul <a href="https://github.com/snide/sphinx_rtd_theme">tema</a> fornito da <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+    
+     
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT: './',
+            VERSION: '0.1',
+            COLLAPSE_INDEX: true,
+            FILE_SUFFIX: '.html',
+            HAS_SOURCE: true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>   
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+      
+    <script type="text/javascript">
+        jQuery(function() {
+            SphinxRtdTheme.StickyNav.enable();
+        });
+    </script>
+     
+
+</body>
+
+</html>
