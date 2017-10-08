@@ -10,6 +10,7 @@ Benvenuto nella documentazione del plugin Django SPID!
    :maxdepth: 2
    :caption: Contents:
 
+   disclaimer
    introduction
    installation
    overview
