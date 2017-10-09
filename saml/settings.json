@@ -2,7 +2,7 @@
     "strict": true,
     "debug": true,
     "sp": {
-        "entityId": "django-python3-saml-test",
+        "entityId": "https://spid.openpolis.it:8000",
         "assertionConsumerService": {
             "url": "http://spid.openpolis.it:8000/?acs",
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
