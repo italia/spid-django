@@ -12,16 +12,89 @@ https://github.com/italia/spid-docs and
 https://github.com/umbros/spid-docs/blob/master/pages/documentazione-e-utilita.md
 
 
-The identity provider can be installed on the development environment
-following instructions at:
+# Installation
+
+## General overview
+
+* Clone the repository, create a **virtualenv** and install the requirements.
+  ``` bash
+  pip install -r requirements.txt
+  ````
+* Generate X.509 certificates and store them under ``saml/certs/``
+* Register your SP with the IdP.
+
+* Change the ``saml/settings.json`` and ``saml/advanced_settings.json``
+  configuration files using your metadata.
+
+* Start the app server
+
+
+## Local development details
+
+A **test identity provider** can be installed on your development environment
+(your laptop?), following instructions at:
 https://github.com/umbros/spid-docs/blob/master/pages/spid-ambiente-di-test.md
 
+Here follows more detailed steps with some suggestions:
 
-# Install
+* immagine a domain for your Service Provider (i.e. spid.yourdomain.it)
 
-``` bash
-pip install -r requirements.txt
-````
+* generate self-signed certificates for your SP (you can do that here:
+  https://developers.onelogin.com/saml/online-tools/x509-certs/obtain-self-signed-certs)
+
+* put the content of the generated certificates under ``saml/certs/``
+  (name them: sp.crt, sp.key and sp.csr; CSR is not useed here, I think)
+
+* modify your /etc/hosts file, to redirect both
+  ``spid-testenv-identityserver`` and ``spid.yourdomain.it`` to your ``localhost``
+  ```
+  echo "127.0.0.1 spid-testenv-identityserver" | sudo tee -a /etc/hosts
+  ```
+
+* start the dockerized service with
+  ```
+  docker-compose up
+  ```
+
+* visit https://spid-testenv-identityserver:8080, go to section
+  **Service Provider**/**Creazione Metadata**
+
+* fill in the form:
+    * **Entity ID**: http://spid.yourdomain.it
+    * **Certificate**: put the content of the sp.crt, with no
+      headers in the text area
+    * **Single Logout Service/Binding**: keep HTTP-POST
+    * **Single Logout Service/Location**: http://spid.yourdomain.it/?slo
+    * **Assertion consumer Service/Binding**: HTTP-POST is ok
+    * **Assertion consumer Service/Location**:
+      http://spid.yourdomain.it/?acs
+    * **Attribute  Consuming Service**:
+        * **Name and Description**: I don't get this, probably not
+          needed, else `test/test` should be ok
+        * choose all fields you want returned from the IdP to your
+          app, you'll see them in the page returned after the
+          user was logged in
+    * **Organization**: this section can be left empty.
+
+* pressing **Scarica** will not work as non-HTTPS urls will not validate,
+  so, copy *the XML code* in the text area and save it to a
+  ``metadata-yourdomain.xml`` file; that will be your SP's metadata
+
+* press the **Salva** button, that will **register** the SP with the data
+  you just inserted into the IdP.
+
+* press the **Utenti** button and create a new user,
+  only entering those fields that you want to see later;
+  a note: in this interface new users cannot be modified, only deleted
+  and re-created; that's ok, not everything can be perfect
+
+# Useful debugging tools
+
+- browser extensions to track SAML requests and response
+  (they exist both for Chrome and Firefox)
+- the "tools" tab within the ``carbon`` admin interface of the IdP
+  (9443, admin/admin), that allows the verification of the requests.
+
 
 # Execution
 
@@ -30,14 +103,14 @@ starts the SSO workflow.
 
 Pressing the login button, a request is packed and sent to the IdP.
 
-# Note
-The request seems not to contain the <ds:Signature> tag, which is
-[required in the documentation](https://spid-regole-tecniche.readthedocs.io/en/latest/regole-tecniche-idp.html#id4)
+The IdP responds by redirecting you to its own login page.
 
-A modification to python3-saml library is thus required,
-in order to put the signature within the request.
+You insert your credential (one of the user you just created)
 
-# Tools useful for debugging
-- browser extensions to track SAML requests and response (they exist both for Chrome and Firefox)
-- the "tools" tab within the `carbon` admin interface of the IdP, that allows the verification of the requests.
+The IdP redirects you to your SP, and a page with the attributes of the
+signed in user is shown.
+
+# TODO
+- logout
+- session management (when does it expire?, where is it stored?)
 
