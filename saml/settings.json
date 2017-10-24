@@ -24,8 +24,8 @@
                         "isRequired": true
                     },
                     {
-                        "name": "fiscalNumber",
-                        "isRequired": false
+                        "name": "email",
+                        "isRequired": true
                     }
                 ]
         },

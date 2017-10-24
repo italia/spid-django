@@ -2,6 +2,12 @@
 
 {% block content %}
 
+{% if request.user.is_authenticated %}
+<div class="alert alert-success" role="alert">Logged on Django</div>
+{% else %}
+<div class="alert alert-danger" role="alert">Not logged on Django</div>
+{% endif %}
+
 {% if paint_logout %}
   {% if attributes %}
     <p>You have the following attributes:</p>

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth import get_user_model, login, logout
 from django.urls import reverse
 from django.http import (HttpResponse, HttpResponseRedirect,
                          HttpResponseServerError)
@@ -9,6 +10,23 @@ from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
+User = get_user_model()
+
+
+def process_user(request, attributes):
+    try:
+        email = attributes['email'][0]
+        first_name = attributes['name'][0]
+        last_name = attributes['familyName'][0]
+
+        user, __ = User.objects.get_or_create(
+            email=email, username=email,
+            first_name=first_name, last_name=last_name
+        )
+        login(request, user)
+        return user
+    except ValueError:
+        return
 
 def init_saml_auth(req):
     auth = OneLogin_Saml2_Auth(req, custom_base_path=settings.SAML_FOLDER)
@@ -58,7 +76,10 @@ def index(request):
         errors = auth.get_errors()
         not_auth_warn = not auth.is_authenticated()
         if not errors:
-            request.session['samlUserdata'] = auth.get_attributes()
+            user_attributes = auth.get_attributes()
+            process_user(request, user_attributes)
+            user_attributes = auth.get_attributes()
+            request.session['samlUserdata'] = user_attributes
             request.session['samlNameId'] = auth.get_nameid()
             request.session['samlSessionIndex'] = auth.get_session_index()
             if 'RelayState' in req['post_data'] and OneLogin_Saml2_Utils.get_self_url(req) != req['post_data']['RelayState']:
@@ -72,6 +93,7 @@ def index(request):
                 return HttpResponseRedirect(url)
             else:
                 success_slo = True
+                logout(request)
 
     if 'samlUserdata' in request.session:
         paint_logout = True
@@ -79,6 +101,7 @@ def index(request):
             attributes = request.session['samlUserdata'].items()
 
     context = RequestContext(request, {'errors': errors,
+                                       'request': request,
                                        'not_auth_warn': not_auth_warn,
                                        'success_slo': success_slo,
                                        'attributes': attributes,
@@ -97,7 +120,7 @@ def attrs(request):
             attributes = request.session['samlUserdata'].items()
 
     return render_to_response('attrs.html',
-                              context=RequestContext(request, {'paint_logout': paint_logout,
+                              context=RequestContext(request, { 'request': request, 'paint_logout': paint_logout,
                                                                'attributes': attributes}).flatten())
 
 
