@@ -2,18 +2,18 @@
     "strict": true,
     "debug": true,
     "sp": {
-        "entityId": "https://spid.openpolis.it:8000",
+        "entityId": "https://spid.marco.it:8000",
         "assertionConsumerService": {
-            "url": "http://spid.openpolis.it:8000/?acs",
+            "url": "http://spid.marco.it:8000/?acs",
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
         },
         "singleLogoutService": {
-            "url": "http://spid.openpolis.it:8000/?slo",
-            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+            "url": "http://spid.marco.it:8000/?sls",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
         },
         "attributeConsumingService": {
-                "serviceName": "spid.openpolis.it:8000",
-                "serviceDescription": "Fondazione Openpolis (https://www.openpolis.it)",
+                "serviceName": "spid.marco.it:8000",
+                "serviceDescription": "something",
                 "requestedAttributes": [
                     {
                         "name": "name",

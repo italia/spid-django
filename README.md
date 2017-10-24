@@ -64,7 +64,7 @@ Here follows more detailed steps with some suggestions:
     * **Certificate**: put the content of the sp.crt, with no
       headers in the text area
     * **Single Logout Service/Binding**: keep HTTP-POST
-    * **Single Logout Service/Location**: http://spid.yourdomain.it/?slo
+    * **Single Logout Service/Location**: http://spid.yourdomain.it/?sls
     * **Assertion consumer Service/Binding**: HTTP-POST is ok
     * **Assertion consumer Service/Location**:
       http://spid.yourdomain.it/?acs
@@ -111,6 +111,6 @@ The IdP redirects you to your SP, and a page with the attributes of the
 signed in user is shown.
 
 # TODO
-- logout
+
 - session management (when does it expire?, where is it stored?)
 
