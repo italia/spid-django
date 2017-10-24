@@ -116,4 +116,4 @@ signed in user is shown.
 
 - handle a list of idp(s)
 
-- handle a django user
+- better handling django user
