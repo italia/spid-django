@@ -114,3 +114,6 @@ signed in user is shown.
 
 - session management (when does it expire?, where is it stored?)
 
+- handle a list of idp(s)
+
+- handle a django user
