@@ -1,54 +1,38 @@
+# -*- coding: utf-8 -*-
 from django.conf import settings
-from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from django.http import (HttpResponse, HttpResponseRedirect,
-                         HttpResponseServerError)
+from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseServerError)
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.views.decorators.http import require_POST, require_http_methods
 
-from onelogin.saml2.auth import OneLogin_Saml2_Auth
+from .saml import SpidSaml2Auth
+from .utils import init_saml_auth, process_user, prepare_django_request
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
-User = get_user_model()
+
+@require_POST
+def login(request):
+    """
+        Handle login action
+    """
+    req = prepare_django_request(request)
+    auth = init_saml_auth(req)
+    args = []
+    if 'idp' in req['post_data']:
+        if 'next' in req['get_data']:
+            args.append(req['get_data'].get('next'))
+        return HttpResponseRedirect(auth.login(*args))
+    return HttpResponseServerError()
 
 
-def process_user(request, attributes):
-    try:
-        email = attributes['email'][0]
-        first_name = attributes['name'][0]
-        last_name = attributes['familyName'][0]
-
-        user, __ = User.objects.get_or_create(
-            email=email, username=email,
-            first_name=first_name, last_name=last_name
-        )
-        login(request, user)
-        return user
-    except ValueError:
-        return
-
-def init_saml_auth(req):
-    auth = OneLogin_Saml2_Auth(req, custom_base_path=settings.SAML_FOLDER)
-    return auth
-
-
-def prepare_django_request(request):
-    # If server is behind proxys or balancers use the HTTP_X_FORWARDED fields
-    result = {
-        'https': 'on' if request.is_secure() else 'off',
-        'http_host': request.META['HTTP_HOST'],
-        'script_name': request.META['PATH_INFO'],
-        'server_port': request.META['SERVER_PORT'],
-        'get_data': request.GET.copy(),
-        # Uncomment if using ADFS as IdP, https://github.com/onelogin/python-saml/pull/144
-        # 'lowercase_urlencoding': True,
-        'post_data': request.POST.copy()
-    }
-    return result
-
-
-def index(request):
+def logout(request):
+    """
+        Handle logout action
+    """
     req = prepare_django_request(request)
     auth = init_saml_auth(req)
     errors = []
@@ -56,34 +40,19 @@ def index(request):
     success_slo = False
     attributes = False
     paint_logout = False
-
-    if 'sso' in req['get_data']:
-        return HttpResponseRedirect(auth.login())
-    elif 'sso2' in req['get_data']:
-        return_to = OneLogin_Saml2_Utils.get_self_url(req) + reverse('attrs')
-        return HttpResponseRedirect(auth.login(return_to))
-    elif 'slo' in req['get_data']:
+    if 'slo' in req['get_data']:
         name_id = None
         session_index = None
         if 'samlNameId' in request.session:
             name_id = request.session['samlNameId']
         if 'samlSessionIndex' in request.session:
             session_index = request.session['samlSessionIndex']
-
-        return HttpResponseRedirect(auth.logout(name_id=name_id, session_index=session_index))
-    elif 'acs' in req['get_data']:
-        auth.process_response()
-        errors = auth.get_errors()
-        not_auth_warn = not auth.is_authenticated()
-        if not errors:
-            user_attributes = auth.get_attributes()
-            process_user(request, user_attributes)
-            user_attributes = auth.get_attributes()
-            request.session['samlUserdata'] = user_attributes
-            request.session['samlNameId'] = auth.get_nameid()
-            request.session['samlSessionIndex'] = auth.get_session_index()
-            if 'RelayState' in req['post_data'] and OneLogin_Saml2_Utils.get_self_url(req) != req['post_data']['RelayState']:
-                return HttpResponseRedirect(auth.redirect_to(req['post_data']['RelayState']))
+        return HttpResponseRedirect(
+            auth.logout(
+                name_id=name_id,
+                session_index=session_index,
+            )
+        )
     elif 'sls' in req['get_data']:
         dscb = lambda: request.session.flush()
         url = auth.process_slo(delete_session_cb=dscb)
@@ -94,11 +63,40 @@ def index(request):
             else:
                 success_slo = True
                 logout(request)
+    context = RequestContext(request, {'errors': errors,
+                                       'request': request,
+                                       'not_auth_warn': not_auth_warn,
+                                       'success_slo': success_slo,
+                                       'attributes': attributes,
+                                       'paint_logout': paint_logout}).flatten()
+    return render_to_response('index.html',
+                              context=context)
 
-    if 'samlUserdata' in request.session:
-        paint_logout = True
-        if len(request.session['samlUserdata']) > 0:
-            attributes = request.session['samlUserdata'].items()
+
+def attributes_consumer(request):
+    """
+        Consume attributes from IDP
+    """
+    req = prepare_django_request(request)
+    auth = init_saml_auth(req)
+    errors = []
+    not_auth_warn = False
+    success_slo = False
+    attributes = False
+    paint_logout = False
+
+    auth.process_response()
+    errors = auth.get_errors()
+    not_auth_warn = not auth.is_authenticated()
+    if not errors:
+        user_attributes = auth.get_attributes()
+        process_user(request, user_attributes)
+        user_attributes = auth.get_attributes()
+        request.session['samlUserdata'] = user_attributes
+        request.session['samlNameId'] = auth.get_nameid()
+        request.session['samlSessionIndex'] = auth.get_session_index()
+        if 'RelayState' in req['post_data'] and OneLogin_Saml2_Utils.get_self_url(req) != req['post_data']['RelayState']:
+            return HttpResponseRedirect(auth.redirect_to(req['post_data']['RelayState']))
 
     context = RequestContext(request, {'errors': errors,
                                        'request': request,
@@ -120,15 +118,23 @@ def attrs(request):
             attributes = request.session['samlUserdata'].items()
 
     return render_to_response('attrs.html',
-                              context=RequestContext(request, { 'request': request, 'paint_logout': paint_logout,
-                                                               'attributes': attributes}).flatten())
+                              context=RequestContext(
+                                    request,
+                                    {
+                                        'request': request,
+                                        'paint_logout': paint_logout,
+                                        'attributes': attributes
+                                    }
+                             ).flatten()
+    )
 
 
 def metadata(request):
-    # req = prepare_django_request(request)
-    # auth = init_saml_auth(req)
-    # saml_settings = auth.get_settings()
-    saml_settings = OneLogin_Saml2_Settings(settings=None, custom_base_path=settings.SAML_FOLDER, sp_validation_only=True)
+    saml_settings = OneLogin_Saml2_Settings(
+        settings=None,
+        custom_base_path=settings.SAML_FOLDER,
+        sp_validation_only=True
+    )
     metadata = saml_settings.get_sp_metadata()
     errors = saml_settings.validate_metadata(metadata)
 

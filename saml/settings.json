@@ -4,11 +4,11 @@
     "sp": {
         "entityId": "https://spid.marco.it:8000",
         "assertionConsumerService": {
-            "url": "http://spid.marco.it:8000/?acs",
+            "url": "http://spid.marco.it:8000/attributes-consumer",
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
         },
         "singleLogoutService": {
-            "url": "http://spid.marco.it:8000/?sls",
+            "url": "http://spid.marco.it:8000/logout?sls",
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
         },
         "attributeConsumingService": {
