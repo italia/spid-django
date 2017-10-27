@@ -2,18 +2,18 @@
     "strict": true,
     "debug": true,
     "sp": {
-        "entityId": "https://spid.marco.it:8000",
+        "entityId": "https://spid.hackaton.it:8000",
         "assertionConsumerService": {
-            "url": "http://spid.marco.it:8000/attributes-consumer",
+            "url": "http://spid.hackaton.it:8000/spid/attributes-consumer/",
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
         },
         "singleLogoutService": {
-            "url": "http://spid.marco.it:8000/logout?sls",
+            "url": "http://spid.hackaton.it:8000/spid/sls-logout/",
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
         },
         "attributeConsumingService": {
-                "serviceName": "spid.marco.it:8000",
-                "serviceDescription": "something",
+                "serviceName": "spid.hackaton.it:8000",
+                "serviceDescription": "description",
                 "requestedAttributes": [
                     {
                         "name": "name",
