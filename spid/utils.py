@@ -38,6 +38,10 @@ def process_user(request, attributes):
         return
 
 
+def get_idp_config_by_id():
+    # TODO
+    pass
+
 def init_saml_auth(req):
     auth = SpidSaml2Auth(req, custom_base_path=settings.SAML_FOLDER)
     return auth
