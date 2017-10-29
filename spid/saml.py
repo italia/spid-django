@@ -57,15 +57,15 @@ class SpidSaml2Auth(OneLogin_Saml2_Auth):
         self.__errors = []
         self.__error_reason = None
 
-        post_data = 'post_data' in self.__request_data and self.__request_data['post_data']
-        get_data = 'get_data' in self.__request_data and self.__request_data['get_data']
+        post_data = 'post_data' in self._OneLogin_Saml2_Auth__request_data and self._OneLogin_Saml2_Auth__request_data['post_data']
+        get_data = 'get_data' in self._OneLogin_Saml2_Auth__request_data and self._OneLogin_Saml2_Auth__request_data['get_data']
         method = 'redirect'
         if post_data:
             get_data = post_data
             method = 'post'
         elif get_data and 'SAMLResponse' in get_data:
             logout_response = SpidSaml2LogoutResponse(self.__settings, get_data['SAMLResponse'], method)
-            self.__last_response = logout_response.get_xml()
+            self._OneLogin_Saml2_Auth__last_response = logout_response.get_xml()
             if not self.validate_response_signature(get_data):
                 self.__errors.append('invalid_logout_response_signature')
                 self.__errors.append('Signature validation failed. Logout Response rejected')
@@ -75,13 +75,13 @@ class SpidSaml2Auth(OneLogin_Saml2_Auth):
             elif logout_response.get_status() != OneLogin_Saml2_Constants.STATUS_SUCCESS:
                 self.__errors.append('logout_not_success')
             else:
-                self.__last_message_id = logout_response.id
+                self._OneLogin_Saml2_Auth__last_message_id = logout_response.id
                 if not keep_local_session:
                     OneLogin_Saml2_Utils.delete_local_session(delete_session_cb)
 
         elif get_data and 'SAMLRequest' in get_data:
             logout_request = OneLogin_Saml2_Logout_Request(self.__settings, get_data['SAMLRequest'])
-            self.__last_request = logout_request.get_xml()
+            self._OneLogin_Saml2_Auth__last_request = logout_request.get_xml()
             if not self.validate_request_signature(get_data):
                 self.__errors.append("invalid_logout_request_signature")
                 self.__errors.append('Signature validation failed. Logout Request rejected')
@@ -93,17 +93,17 @@ class SpidSaml2Auth(OneLogin_Saml2_Auth):
                     OneLogin_Saml2_Utils.delete_local_session(delete_session_cb)
 
                 in_response_to = logout_request.id
-                self.__last_message_id = logout_request.id
+                self._OneLogin_Saml2_Auth__last_message_id = logout_request.id
                 response_builder = OneLogin_Saml2_Logout_Response(self.__settings, method)
                 response_builder.build(in_response_to)
-                self.__last_response = response_builder.get_xml()
+                self._OneLogin_Saml2_Auth__last_response = response_builder.get_xml()
                 logout_response = response_builder.get_response()
 
                 parameters = {'SAMLResponse': logout_response}
-                if 'RelayState' in self.__request_data['get_data']:
+                if 'RelayState' in self._OneLogin_Saml2_Auth__request_data['get_data']:
                     parameters['RelayState'] = self.__request_data['get_data']['RelayState']
 
-                security = self.__settings.get_security_data()
+                security = self._OneLogin_Saml2_Auth__settings.get_security_data()
                 if security['logoutResponseSigned']:
                     self.add_response_signature(parameters, security['signatureAlgorithm'])
 

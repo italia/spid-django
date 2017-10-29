@@ -8,7 +8,6 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.http import require_POST, require_http_methods
 
-from .saml import SpidSaml2Auth
 from .utils import init_saml_auth, process_user, prepare_django_request
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils

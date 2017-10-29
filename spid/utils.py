@@ -34,11 +34,10 @@ def process_user(request, attributes):
         user.is_active = True
         login(request, user)
         return user
-    except ValueError:
+    except (KeyError, ValueError):
         return
 
-from onelogin.saml2.auth import OneLogin_Saml2_Auth
 
 def init_saml_auth(req):
-    auth = OneLogin_Saml2_Auth(req, custom_base_path=settings.SAML_FOLDER)
+    auth = SpidSaml2Auth(req, custom_base_path=settings.SAML_FOLDER)
     return auth
