@@ -5,10 +5,10 @@ setup(
     packages=find_packages(exclude='example'),
     include_package_data=True,
     zip_safe=False,
-    version='0.0.1',
+    version='0.0.2',
     description='Spid authentication app for django',
-    author='',
-    author_email='',
+    author='Marco Federighi',
+    author_email='federighi.marco@gmail.com',
     url='https://github.com/spid-django-hack17/spid-django',
     keywords=['django', 'authentication', 'spid', 'italia'],
     classifiers=[

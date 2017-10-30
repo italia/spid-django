@@ -17,3 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   django demo added as main app to this minimal django project
 
 
+## [0.0.2] - 2017-10-30
+
+### Added
+- standalone app

@@ -110,10 +110,8 @@ You insert your credential (one of the user you just created)
 The IdP redirects you to your SP, and a page with the attributes of the
 signed in user is shown.
 
-# TODO
+# TODOs
 
-- session management (when does it expire?, where is it stored?)
+- improve session management
 
-- handle a list of idp(s)
-
-- better handling django user
+- improve user data storage
