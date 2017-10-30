@@ -53,8 +53,5 @@ Per eseguire la demo con il server di development di Django:
   python manage.py migrate
   python manage.py runserver
 
-Accedere poi con un browser all'indirizzo `https://127.0.0.1:8000 <https://127.0.0.1:8000>`_
+Accedere poi con un browser all'indirizzo `https://<sp_domain>:8000 <https://<sp_domain>:8000>`_
 per verificare il funzionamento della demo.
-
-Per accedere all'`admin della demo <https://127.0.0.1:8000/admin/>`_ usare *demospid* sia per il nome
-utente che per la password.
