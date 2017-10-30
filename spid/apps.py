@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import pkg_resources
 from xml.etree import ElementTree as et
 from django.conf import settings
 from django.apps import AppConfig
@@ -7,7 +8,8 @@ from .app_settings import SPID_IDENTITY_PROVIDERS, app_settings
 
 
 def get_idp_config(id, name=None):
-    idp_metadata = et.parse("spid/spid-idp-metadata/spid-idp-%s.xml" % id).getroot()
+    xml_path = pkg_resources.resource_filename('spid', 'spid-idp-metadata/spid-idp-%s.xml' % id)
+    idp_metadata = et.parse(xml_path).getroot()
     sso_path = './/{%s}SingleSignOnService[@Binding="%s"]' % \
                (app_settings.SAML_METADATA_NAMESPACE, app_settings.BINDING_REDIRECT_URN)
     slo_path = './/{%s}SingleLogoutService[@Binding="%s"]' % \
