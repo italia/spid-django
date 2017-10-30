@@ -1,6 +1,6 @@
 -r base.txt
 
 # python3-saml needs to be manipulated in order to be compliand with SPID Identity Providers
--e git+https://github.com/spid-django-hack17/integration_python3_saml_app_dev.git@8de6a8db68b0e3d017d62e34829e1be8855d1c4e#egg=integration
+https://github.com/spid-django-hack17/spid-django/archive/integration_python3_saml_app_dev.zip
 
 
