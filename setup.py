@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-spid',
-    packages=find_packages(exclude='examples'),
+    packages=find_packages(exclude='example'),
     include_package_data=True,
     zip_safe=False,
     version='0.0.1',
