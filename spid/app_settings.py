@@ -64,11 +64,19 @@ class AppSettings(object):
         return open(public_cert_path).read()
 
     @property
+    def SP_PUBLIC_CERT_PATH(self):
+        return self._setting('SP_PUBLIC_CERT', '')
+
+    @property
     def SP_PRIVATE_KEY(self):
         private_key_path = self._setting('SP_PRIVATE_KEY', '')
         if private_key_path == '':
             return None
         return open(private_key_path).read()
+
+    @property
+    def SP_PRIVATE_KEY_PATH(self):
+        return self._setting('SP_PRIVATE_KEY', '')
 
     @property
     def SAML_METADATA_NAMESPACE(self):

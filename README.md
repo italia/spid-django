@@ -37,7 +37,7 @@ https://github.com/umbros/spid-docs/blob/master/pages/spid-ambiente-di-test.md
 
 Here follows more detailed steps with some suggestions:
 
-* immagine a domain for your Service Provider (i.e. spid.yourdomain.it)
+* choose a domain for your Service Provider (i.e. spid.yourdomain.it)
 
 * generate self-signed certificates for your SP (you can do that here:
   https://developers.onelogin.com/saml/online-tools/x509-certs/obtain-self-signed-certs)

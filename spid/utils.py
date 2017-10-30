@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model, login
 from .apps import SpidConfig
 from .saml import SpidSaml2Auth
 
+from onelogin.saml2.settings import OneLogin_Saml2_Settings
+
 User = get_user_model()
 
 ATTRIBUTES_MAP = {
@@ -51,7 +53,7 @@ def init_saml_auth(request, idp):
         'request_data': request
     }
     if idp == 'test':
-        config['custom_base_path'] = settings.SAML_FOLDER
+        config['old_settings'] = OneLogin_Saml2_Settings(custom_base_path=settings.SAML_FOLDER, sp_validation_only=True)
     else:
         config['old_settings'] = SpidConfig.get_saml_settings(idp)
     auth = SpidSaml2Auth(
