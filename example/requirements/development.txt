@@ -1,0 +1,6 @@
+# Local development dependencies go here
+-r base.txt
+
+-e git+https://github.com/spid-django-hack17/integration_python3_saml_app_dev.git#egg=integration
+
+

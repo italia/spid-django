@@ -1,6 +1,0 @@
-# Local development dependencies go here
--r base.txt
-
--e /Users/gu/Workspace/developers.it/spid/python3-saml
-
-
