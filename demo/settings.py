@@ -96,3 +96,9 @@ TEMPLATES = [
     },
 ]
 
+SPID_SP_DOMAIN = "https://spid.hackaton.it:8000"
+SPID_SERVICE_NAME = "spid.hackaton.it:8000"
+SPID_SERVICE_DESCRIPTION = "description"
+SPID_REQUESTED_ATTRIBUTES = ['name', 'familyName', 'fiscalNumber']
+SPID_SP_PUBLIC_CERT = os.path.join(BASE_DIR, 'saml/certs/sp.crt')
+SPID_SP_PRIVATE_KEY = os.path.join(BASE_DIR, 'saml/certs/sp.key')

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load spid_tags %}
 
 {% block content %}
 
@@ -30,10 +31,11 @@
 {% if request.user.is_authenticated %}
   <a href="{% url "spid:slo-logout" %}" class="btn btn-danger">Logout</a>
 {% else %}
-<form action="{% url 'spid:login' %}?next={{request.path}}" method="POST">
-  <input name="idp" type="text" value="1" readonly />
-  <button type="submit">Login</button>
-</form>
+  <form action="{% url 'spid:login' %}?next={{request.path}}" method="POST">
+    <button type="submit">Login</button>
+  </form>
+{% spid_button 'small' %} {% spid_button 'medium' %}
+{% spid_button 'large' %} {% spid_button 'xlarge' %}
 {% endif %}
 
 {% endblock %}

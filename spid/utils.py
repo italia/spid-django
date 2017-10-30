@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.contrib.auth import get_user_model, login
+from .apps import SpidConfig
 from .saml import SpidSaml2Auth
 
 User = get_user_model()
+
+ATTRIBUTES_MAP = {
+    'familyName': 'last_name',
+    'name': 'first_name'
+}
 
 
 def prepare_django_request(request):
@@ -22,14 +28,15 @@ def prepare_django_request(request):
 
 
 def process_user(request, attributes):
+    from .app_settings import app_settings
+    attrs = {}
     try:
-        email = attributes['email'][0]
-        first_name = attributes['name'][0]
-        last_name = attributes['familyName'][0]
-
+        for attr in attributes:
+            if attr in app_settings.REQUESTED_ATTRIBUTES:
+                key = ATTRIBUTES_MAP.get(attr, attr)
+                attrs[key] = attributes[attr][0]
         user, __ = User.objects.get_or_create(
-            email=email, username=email,
-            first_name=first_name, last_name=last_name
+            **attrs
         )
         user.is_active = True
         login(request, user)
@@ -38,10 +45,16 @@ def process_user(request, attributes):
         return
 
 
-def get_idp_config_by_id():
-    # TODO
-    pass
-
-def init_saml_auth(req):
-    auth = SpidSaml2Auth(req, custom_base_path=settings.SAML_FOLDER)
+def init_saml_auth(request, idp):
+    from .app_settings import app_settings
+    config = {
+        'request_data': request
+    }
+    if idp == 'test':
+        config['custom_base_path'] = settings.SAML_FOLDER
+    else:
+        config['old_settings'] = SpidConfig.get_saml_settings(idp)
+    auth = SpidSaml2Auth(
+        **config
+    )
     return auth

@@ -1,0 +1,40 @@
+{% load static %}
+
+{% if method == 'post' %}
+<form name="spid_idp_access" action="#" method="post">
+    {% for key, value in post_data.items %}
+    <input type="hidden" name="{{ key }}" value="{{ value }}" />
+    {% endfor %}
+{% endif %}
+    <a href="#" class="italia-it-button italia-it-button-size-{{ spid_button_size_short }} button-spid"
+       spid-idp-button="#spid-idp-button-{{ spid_button_size }}-{{ method }}" aria-haspopup="true" aria-expanded="false">
+        <span class="italia-it-button-icon"><img src="{% static 'spid/img/spid-ico-circle-bb.svg' %}"
+                 onerror="this.src='{% static '/spid/img/spid-ico-circle-bb.png' %}'; this.onerror=null;" alt="" /></span>
+        <span class="italia-it-button-text">Entra con SPID</span>
+    </a>
+    <div id="spid-idp-button-{{ spid_button_size }}-{{ method }}" class="spid-idp-button spid-idp-button-tip spid-idp-button-relative">
+        <ul id="spid-idp-list-{{ spid_button_size }}-root-{{ method }}" class="spid-idp-button-menu" aria-labelledby="spid-idp">
+            {% for idp in spid_idp_list %}
+            <li class="spid-idp-button-link" data-idp="{{ idp.id }}">
+                <a href="{% url 'spid:login' %}?idp={{ idp.id }}">
+                    <span class="spid-sr-only">{{ idp.name }}</span>
+                    <img src="{% static 'spid/img/' %}spid-idp-{{ idp.id }}.svg"
+                         onerror="this.src='{% static 'spid/img/' %}spid-idp-{{ idp.id }}.png'; this.onerror=null;"
+                         alt="{{ idp.name }}" />
+                </a>
+            </li>
+            {% endfor %}
+            <li class="spid-idp-support-link" data-spidlink="info">
+                <a href="https://www.spid.gov.it">Maggiori informazioni</a>
+            </li>
+            <li class="spid-idp-support-link" data-spidlink="rich">
+                <a href="https://www.spid.gov.it/richiedi-spid">Non hai SPID?</a>
+            </li>
+            <li class="spid-idp-support-link" data-spidlink="help">
+                <a href="https://www.spid.gov.it/serve-aiuto">Serve aiuto?</a>
+            </li>
+        </ul>
+    </div>
+{% if method == 'post' %}
+</form>
+{% endif %}
