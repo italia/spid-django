@@ -115,3 +115,6 @@ signed in user is shown.
 - improve user data storage
 
 - tests
+
+- improve doc
+
