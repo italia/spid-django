@@ -2,8 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-spid',
-    packages=find_packages(),
-    package_data={'spid': ['templates/*.*', 'static/*.*', 'spid-idp-metatada/*.*']},
+    packages=find_packages(exclude='examples'),
     include_package_data=True,
     zip_safe=False,
     version='0.0.1',
