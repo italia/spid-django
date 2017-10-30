@@ -16,15 +16,13 @@ https://github.com/umbros/spid-docs/blob/master/pages/documentazione-e-utilita.m
 
 ## General overview
 
-* Clone the repository, create a **virtualenv** and install the requirements.
-  ``` bash
-  pip install -r requirements.txt
-  ````
-* Generate X.509 certificates and store them under ``saml/certs/``
+* Install django-spid via pip in your virtualenv and add it to the project INSTALLED_APPS.
+* Add spid urls to your project url patterns
+* Generate X.509 certificates and store them somewhere
 * Register your SP with the IdP.
 
 * Change the ``saml/settings.json`` and ``saml/advanced_settings.json``
-  configuration files using your metadata.
+  configuration files using your metadata (only for test purpose).
 
 * Start the app server
 
@@ -115,3 +113,5 @@ signed in user is shown.
 - improve session management
 
 - improve user data storage
+
+- tests
