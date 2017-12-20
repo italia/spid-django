@@ -1,0 +1,5 @@
+*
+# But not these files...
+!.gitignore
+!README.md
+

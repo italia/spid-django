@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load spid_tags %}
+
+{% block content %}
+
+{% if errors %}
+  <div class="alert alert-danger" role="alert">
+    <strong>Errors:</strong>
+    <ul class="list-unstyled">
+        {% for err in errors %}
+          <li>{{err}}</li>
+        {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+{% if not_auth_warn %}
+  <div class="alert alert-danger" role="alert">Not authenticated</div>
+{% endif %}
+
+{% if success_slo %}
+  <div class="alert alert-success" role="alert">Successfully logged out</div>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+<div class="alert alert-success" role="alert">Logged on Django</div>
+{% else %}
+<div class="alert alert-danger" role="alert">Not logged on Django</div>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+  <a href="{% url "spid:slo-logout" %}" class="btn btn-danger">Logout</a>
+{% else %}
+{% spid_button 'small' %} {% spid_button 'medium' %}
+{% spid_button 'large' %} {% spid_button 'xlarge' %}
+{% endif %}
+
+{% endblock %}

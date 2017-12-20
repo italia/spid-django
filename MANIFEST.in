@@ -1,0 +1,6 @@
+include CHANGELOG
+include MANIFEST.in
+include README.md
+recursive-include spid/templates *
+recursive-include spid/static *
+recursive-include spid/spid-idp-metadata *

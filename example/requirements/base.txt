@@ -1,0 +1,16 @@
+defusedxml==0.5.0
+Django==1.11.6
+isodate==0.5.4
+lxml==4.0.0
+pkgconfig==1.2.2
+pytz==2017.2
+
+# xmlsec==1.3.3 has a nasty bug in load_from_memory call, solved in the repo release below
+-e git+https://github.com/mehcode/python-xmlsec.git@15e6ce62658cc707dbdce94a13b6bfce8352a7ac#egg=xmlsec
+
+# python3-saml needs to be manipulated in order to be compliand with SPID Identity Providers
+# uncomment in 
+# -e git+https://github.com/spid-django-hack17/python3-saml.git#egg=python3-saml
+# python3-saml==1.3.0
+
+
