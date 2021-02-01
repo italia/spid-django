@@ -5,8 +5,8 @@ import sys
 from glob import glob
 from setuptools import setup, find_packages
 
-_src_folder = 'src'
-_pkg_name = 'djangosaml2_spid'
+SRC_FOLDER = 'src'
+PKG_NAME = 'djangosaml2_spid'
 
 
 def get_requirements(fname='requirements.txt'):
@@ -22,15 +22,13 @@ setup(
     author_email='demarcog83@gmail.com',
     license="Apache 2.0",
     url='https://github.com/peppelinux/djangosaml2_spid',
+    packages=[PKG_NAME,],
+    package_dir={PKG_NAME: f'{SRC_FOLDER}/{PKG_NAME}'},
     
-    packages=[f"{_pkg_name}"],
-    package_dir={f"{_pkg_name}": f"{_src_folder}/{_pkg_name}"},
-    
-    package_data={f"{_pkg_name}": [i.replace(f'{_src_folder}/{_pkg_name}/', '') 
-                                   for i in glob(f'{_src_folder}/{_pkg_name}/**', 
-                                                 recursive=True)]
+    package_data={PKG_NAME: [i.replace(f'{SRC_FOLDER}/{PKG_NAME}/', '') 
+                             for i in glob(f'{SRC_FOLDER}/{PKG_NAME}/**', 
+                                           recursive=True)]
     },
-    
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: Apache Software License",
