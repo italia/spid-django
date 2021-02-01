@@ -1,0 +1,9 @@
+django>3.0<4.0
+ipython
+
+# hint before: pip install -U setuptools
+pysaml2 @ git+https://github.com/peppelinux/pysaml2.git@pplnx-v6.5.1#pysaml2
+cffi
+
+# django saml2 SP
+djangosaml2>=1.0.0
