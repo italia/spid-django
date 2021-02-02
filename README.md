@@ -7,8 +7,8 @@ based on [pysaml2](https://github.com/identitypython/pysaml2).
 
 Introduction
 ------------
-This is a django application that enable a SAML2 Service Provider, 
-it enables a Single Sign On authentication through a SPID Identity Provider (SAML).
+This is a django application that provides a SAML2 Service Provider 
+for a Single Sign On authentication through a SPID Identity Provider (SAML).
 
 Technical documentation on SPID and SAML is available at:
 https://github.com/italia/spid-docs and
