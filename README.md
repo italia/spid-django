@@ -1,17 +1,15 @@
-djangosaml2_spid
+Djangosaml2 SPID
 ----------------
 
-Django SAML2 Service Provider compliant to SPID Technical Requirements,
-based on [pysaml2](https://github.com/identitypython/pysaml2).
+A SPID Service Provider based on [pysaml2](https://github.com/identitypython/pysaml2).
 
 
 Introduction
 ------------
-This is a django application that provides a SAML2 Service Provider 
-for a Single Sign On authentication through a SPID Identity Provider (SAML).
+This is a Django application that provides a SAML2 Service Provider 
+for a Single Sign On with SPID, the Italian Digital Identity System.
 
-Technical documentation on SPID and SAML is available at:
-https://github.com/italia/spid-docs
+Technical documentation on SPID and SAML is available at [Docs Italia](https://docs.italia.it/italia/spid/spid-regole-tecniche/it/34.1.1/index.html)
 
 ![big picture](gallery/animated.gif)
 
@@ -19,7 +17,7 @@ https://github.com/italia/spid-docs
 Usage
 -----
 
-This project comes with a demo Spid button template with both *spid-testenv2* and *spid-saml-check*.
+This project comes with a demo Spid button template with both *spid-testenv2* and *spid-saml-check* IDP preconfigured.
 You just have to run the example project and put its metadata in spid-testenv2, this way:
 
 ````
@@ -54,11 +52,12 @@ pip install -r ../requirements.txt
 ````
 
 Run the example project
- - Your example saml2 configuration is in `spid_config/spid_settings.py`. See djangosaml2 or pysaml2 official docs for acknowledgements
+ - Your example saml2 configuration is in `spid_config/spid_settings.py`. See djangosaml2 or pysaml2 official docs for clarifications
  - create demo database `./manage.py migrate`
  - run `./manage.py runserver 0.0.0.0:8000`
  - run spit-testenv2 and spid-saml-check (docker is suggested)
  - open 'http://localhost:8000'
+
 
 Setup
 ------------
@@ -82,6 +81,12 @@ Setup
   `openssl req -nodes -new -x509 -newkey rsa:2048 -days 3650 -keyout certificates/private.key -out certificates/public.cert`
 * Register the SP metadata to the your test Spid IDP
 * Start the django server for tests `./manage.py runserver 0.0.0.0:8000`
+
+
+Warnings
+--------
+
+- The SPID Button template is only for test purpose, please don't use it in production, do your customization instead!
 
 Authors
 ------------
