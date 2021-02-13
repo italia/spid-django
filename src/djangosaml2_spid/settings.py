@@ -8,6 +8,8 @@ from saml2.sigver import get_xmlsec_binary
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR_CERTS = os.environ.get('PWD')
+
 
 BASE = 'http://sp1.testunical.it:8000'
 BASE_URL = '{}/saml2'.format(BASE)
@@ -157,19 +159,19 @@ SAML_CONFIG = {
                   # ],
         #
         "remote": [
-            {"url":"http://localhost:8080/metadata.xml"},
-            # {'url': 'http://0.0.0.0:8088/metadata'},
+            # {"url":"http://localhost:8080/metadata.xml"},
+            {'url': 'http://0.0.0.0:8088/metadata'},
         ]
     },
 
     # Signing
-    'key_file': f'{BASE_DIR}/certificates/private.key',
-    'cert_file': f'{BASE_DIR}/certificates/public.cert',
+    'key_file': f'{BASE_DIR_CERTS}/certificates/private.key',
+    'cert_file': f'{BASE_DIR_CERTS}/certificates/public.cert',
 
     # Encryption
     'encryption_keypairs': [{
-        'key_file': f'{BASE_DIR}/certificates/private.key',
-        'cert_file': f'{BASE_DIR}/certificates/public.cert',
+        'key_file': f'{BASE_DIR_CERTS}/certificates/private.key',
+        'cert_file': f'{BASE_DIR_CERTS}/certificates/public.cert',
     }],
 
     # you can set multilanguage information here
