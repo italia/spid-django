@@ -9,7 +9,7 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.dispatch import receiver
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from django.urls import reverse
@@ -132,7 +132,7 @@ def spid_sp_authn_request(conf, selected_idp, binding,
 
 def spid_login(request,
           config_loader_path=None,
-          wayf_template='djangosaml2/wayf.html',
+          wayf_template='wayf.html',
           authorization_error_template='djangosaml2/auth_error.html'):
     """SAML Authorization Request initiator
 
@@ -140,6 +140,7 @@ def spid_login(request,
     using the pysaml2 library to create the AuthnRequest.
     It uses the SAML 2.0 Http POST protocol binding.
     """
+    
     logger.debug('SPID Login process started')
     next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
     if not next_url:
@@ -179,7 +180,7 @@ def spid_login(request,
     else:
         # otherwise is the first one
         try:
-            selected_idp = list(idps.keys())[0]
+            selected_idp = selected_idp or list(idps.keys())[0]
         except TypeError as e:
             logger.error('Unable to know which IdP to use')
             return HttpResponse(text_type(e))
@@ -261,9 +262,14 @@ def spid_logout(request, config_loader_path=None, **kwargs):
     # oggetto
     slo_req.name_id = subject_id
     
-    session_info = client.users.get_info_from(slo_req.name_id,
-                                              subject_id.name_qualifier,
-                                              False)
+    try:
+        session_info = client.users.get_info_from(slo_req.name_id,
+                                                  subject_id.name_qualifier,
+                                                  False)
+    except KeyError as e:
+        logger.error(f'SPID Logout error: {e}')
+        return HttpResponseRedirect('/')
+    
     session_indexes = [session_info['session_index']]
 
     # aggiungere session index
