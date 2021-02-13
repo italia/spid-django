@@ -63,6 +63,7 @@ Run the example project
 Setup
 ------------
 
+* `pip install djangosaml2_spid`
 * Import SPID SAML2 entity configuration in your project settings file: `from spid_config.spid_settings import *`
 * Add in `settings.INSTALLED_APPS` the following
   ```
