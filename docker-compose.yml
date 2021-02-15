@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+
+  as:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    extra_hosts:
+      - "hostnet:192.168.112.1"
+    volumes:
+      - "./example/:/run/spid-django/example/"
+      - "./djangosaml2_spid/:/run/spid-django/djangosaml2_spid/"
+
+  spid-testenv2:
+    image: italia/spid-testenv2:1.1.0
+    ports:
+      - "8088:8088"
+    extra_hosts:
+      - "hostnet:192.168.112.1"
+    volumes:
+      - "./example/configs/spid-testenv2/config.yaml:/app/conf/config.yaml:ro"
+      - "./example/configs/spid-testenv2/users.json:/app/conf/users.json:ro"
+
+  spid-saml-check:
+    build:
+      context: ./spid-saml-check/
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    extra_hosts:
+      - "hostnet:192.168.112.1"
+    volumes:
+      - "./example/configs/spid-saml-check/idp.json:/spid-saml-check/spid-validator/config/idp.json:ro"
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.112.0/20
+          gateway: 192.168.112.1

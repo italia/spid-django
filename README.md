@@ -6,7 +6,7 @@ A SPID Service Provider based on [pysaml2](https://github.com/identitypython/pys
 
 Introduction
 ------------
-This is a Django application that provides a SAML2 Service Provider 
+This is a Django application that provides a SAML2 Service Provider
 for a Single Sign On with SPID, the Italian Digital Identity System.
 
 Technical documentation on SPID and SAML is available at [Docs Italia](https://docs.italia.it/italia/spid/spid-regole-tecniche/it/34.1.1/index.html)
@@ -33,14 +33,14 @@ Dependencies
 - xmlsec
 - python3-dev
 - python3-pip
-- libssl-dev 
+- libssl-dev
 - libsasl2-dev
 
 
 Demo app
 ------------
 
-Demo application uses **spid-saml-check** and **spid-testenv2** as 
+Demo application uses **spid-saml-check** and **spid-testenv2** as
 SPID IDP, see `example/`.
 
 Prepare environment
@@ -59,6 +59,17 @@ Run the example project
  - open 'http://localhost:8000'
 
 
+Demo app (with Docker)
+------------
+
+To use Docker compose environment, add to /etc/hosts this line:
+````
+127.0.0.1	hostnet
+````
+
+then use docker-compose up (the process takes some time) and when the services are up go to http://hostnet:8000/spid/login
+
+
 Setup
 ------------
 
@@ -75,7 +86,7 @@ djangosaml2_spid uses a pySAML2 fork.
   ```
   _spid_config_ is your configuration, with statics and templates. See `example` project.
 * Add in `settings.MIDDLEWARE`: `'djangosaml2.middleware.SamlSessionMiddleware'` for [SameSite Cookie](https://github.com/knaperek/djangosaml2#samesite-cookie)
-* Add in `settings.AUTHENTICATION_BACKENDS`: 
+* Add in `settings.AUTHENTICATION_BACKENDS`:
   ```
     'django.contrib.auth.backends.ModelBackend',
     'djangosaml2.backends.Saml2Backend',

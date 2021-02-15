@@ -1,0 +1,6 @@
+[submodule "spid-saml-check"]
+	path = spid-saml-check
+	url = ./spid-saml-check
+[submodule "djangosaml2_spid"]
+	path = djangosaml2_spid
+	url = ./djangosaml2_spid
