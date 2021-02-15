@@ -6,6 +6,7 @@ import string
 
 from django.conf import settings
 from django.contrib import auth
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.dispatch import receiver
@@ -24,7 +25,9 @@ from djangosaml2.utils import (
     get_idp_sso_supported_bindings, get_location,
     validate_referral_url
 )
-from djangosaml2.views import finish_logout, _get_subject_id
+from djangosaml2.views import (finish_logout, 
+                               _get_subject_id,
+                               SPConfigMixin, View)
 from saml2 import BINDING_HTTP_REDIRECT, BINDING_HTTP_POST
 from saml2.authn_context import requested_authn_context
 from saml2.metadata import entity_descriptor, sign_entity_descriptor
@@ -473,3 +476,19 @@ def metadata_spid(request, config_loader_path=None, valid_for=None):
     xmldoc = spid_sp_metadata(conf)
     return HttpResponse(content=str(xmldoc).encode('utf-8'),
                         content_type="text/xml; charset=utf8")
+
+
+class EchoAttributesView(LoginRequiredMixin, SPConfigMixin, View):
+    """Example view that echo the SAML attributes of an user
+    """
+
+    def get(self, request, *args, **kwargs):
+        state, client = self.get_state_client(request)
+
+        subject_id = _get_subject_id(request.saml_session)
+        try:
+            identity = client.users.get_identity(subject_id, check_not_on_or_after=False)
+        except AttributeError:
+            return HttpResponse("No active SAML identity found. Are you sure you have logged in via SAML?")
+
+        return render(request, 'spid_echo_attributes.html', {'attributes': identity[0]})
