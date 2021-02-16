@@ -9,7 +9,7 @@ services:
     ports:
       - "8000:8000"
     extra_hosts:
-      - "hostnet:192.168.112.1"
+      - "${DOCKER_COMPOSE_DEFAULT_NETWORK_GATEWAY_FQDN}:${DOCKER_COMPOSE_DEFAULT_NETWORK_GATEWAY}"
     volumes:
       - "./example/:/run/spid-django/example/"
       - "./src/:/run/spid-django/src/"
@@ -19,7 +19,7 @@ services:
     ports:
       - "8088:8088"
     extra_hosts:
-      - "hostnet:192.168.112.1"
+      - "${DOCKER_COMPOSE_DEFAULT_NETWORK_GATEWAY_FQDN}:${DOCKER_COMPOSE_DEFAULT_NETWORK_GATEWAY}"
     volumes:
       - "./example/configs/spid-testenv2/config.yaml:/app/conf/config.yaml:ro"
       - "./example/configs/spid-testenv2/users.json:/app/conf/users.json:ro"
@@ -31,7 +31,7 @@ services:
     ports:
       - "8080:8080"
     extra_hosts:
-      - "hostnet:192.168.112.1"
+      - "${DOCKER_COMPOSE_DEFAULT_NETWORK_GATEWAY_FQDN}:${DOCKER_COMPOSE_DEFAULT_NETWORK_GATEWAY}"
     volumes:
       - "./example/configs/spid-saml-check/idp.json:/spid-saml-check/spid-validator/config/idp.json:ro"
 
@@ -41,5 +41,5 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 192.168.112.0/20
-          gateway: 192.168.112.1
+        - subnet: ${DOCKER_COMPOSE_DEFAULT_NETWORK_SUBNET}
+          gateway: ${DOCKER_COMPOSE_DEFAULT_NETWORK_GATEWAY}

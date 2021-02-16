@@ -13,7 +13,5 @@ COPY ./requirements.txt ./requirements.txt
 
 RUN pip install -r requirements.txt
 
-ENV SPID_DJANGO_DOCKERIZED_EXAMPLE="True"
-
 WORKDIR /run/spid-django/example/
 CMD ./run.sh

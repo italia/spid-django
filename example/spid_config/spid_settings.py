@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR_CERTS = os.environ.get('PWD')
 
 
-BASE = 'http://localhost:8000'
+BASE = os.environ.get('SPID_BASE_SCHEMA_HOST_PORT', 'http://localhost:8000')
 BASE_URL = '{}/spid'.format(BASE)
 
 LOGIN_URL = '/spid/login/'
@@ -25,8 +25,11 @@ SPID_SIG_ALG = saml2.xmldsig.SIG_RSA_SHA256
 SPID_NAMEID_FORMAT = NAMEID_FORMAT_TRANSIENT
 SPID_AUTH_CONTEXT = 'https://www.spid.gov.it/SpidL1'
 
-SPID_SAML_CHECK_METADATA_URL = 'http://localhost:8080/metadata.xml'
-SPID_TESTENV2_METADATA_URL = 'http://0.0.0.0:8088/metadata'
+SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', 'False') == 'True'
+SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
+
+SPID_TESTENV2_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_TESTENV2_REMOTE_METADATA_ACTIVE', 'False') == 'True'
+SPID_TESTENV2_METADATA_URL = os.environ.get('SPID_TESTENV2_METADATA_URL', 'http://0.0.0.0:8088/metadata')
 
 # Avviso 29v3
 SPID_PREFIXES = dict(
@@ -150,10 +153,7 @@ SAML_CONFIG = {
     # many metadata, many idp...
     'metadata': {
         'local': [f'{BASE_DIR}/spid_config/metadata'],
-        "remote": [
-            # {'url': SPID_SAML_CHECK_METADATA_URL},
-            # {'url': SPID_TESTENV2_METADATA_URL},
-        ]
+        "remote": []
     },
 
     # Signing
@@ -174,6 +174,16 @@ SAML_CONFIG = {
       },
 
 }
+
+if SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE:
+    SAML_CONFIG['metadata']['remote'].append(
+        {'url': SPID_SAML_CHECK_METADATA_URL}
+    )
+
+if SPID_TESTENV2_REMOTE_METADATA_ACTIVE:
+    SAML_CONFIG['metadata']['remote'].append(
+        {'url': SPID_TESTENV2_METADATA_URL}
+    )
 
 # OR NAME_ID or MAIN_ATTRIBUTE (not together!)
 SAML_USE_NAME_ID_AS_USERNAME = False

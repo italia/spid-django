@@ -69,7 +69,10 @@ To use Docker compose environment, add to /etc/hosts this line:
 127.0.0.1	hostnet
 ````
 
-then use docker-compose up (the process takes some time) and when the services are up go to http://hostnet:8000/spid/login
+then use `docker-compose --env-file docker-compose.env up` (the process takes some time) and when the services are up go to http://hostnet:8000/spid/login
+
+**warning**: if you want to change ports of any of the docker-compose services (as, spid-testenv2, spid-saml-check) and/or the FQDN of the docker-compose default network gateway (defaults to `hostnet`) you need to change all the files
+under `./example/configs/` to match the new configurations, changing only `./docker-compose.env` will not suffice.
 
 
 Setup
