@@ -1,11 +1,12 @@
 from django.urls import include, path
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import reverse
 from django.views.generic.base import RedirectView
 
 
-from djangosaml2.views import *
+from djangosaml2 import views
 from djangosaml2_spid.views import (metadata_spid,
                                     spid_login,
                                     spid_logout,
@@ -20,7 +21,7 @@ urlpatterns = [
     path(f'{SAML2_URL_PREFIX}/login/', spid_login, name='spid_login'),
     path(f'{SAML2_URL_PREFIX}/metadata/', metadata_spid, name='spid_metadata'),
     path(f'{SAML2_URL_PREFIX}/logout/', spid_logout, name='spid_logout'),
-
+    
     path(f'{SAML2_URL_PREFIX}/acs/', views.AssertionConsumerServiceView.as_view(), name='saml2_acs'),
     path(f'{SAML2_URL_PREFIX}/ls/', views.LogoutView.as_view(), name='saml2_ls'),
     path(f'{SAML2_URL_PREFIX}/ls/post/', views.LogoutView.as_view(), name='saml2_ls_post'),

@@ -11,9 +11,9 @@ PKG_NAME = 'djangosaml2_spid'
 with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
 
-def get_requirements(fname='requirements.txt'):
-    fopen = open(fname, 'r')
-    return fopen.read().splitlines()
+
+with open(os.path.join(os.path.dirname(__file__), 'requirements.txt')) as requirements:
+    REQUIREMENTS = requirements.read()
 
 
 setup(
@@ -28,9 +28,9 @@ setup(
     url='https://github.com/peppelinux/djangosaml2_spid',
     packages=[PKG_NAME,],
     package_dir={PKG_NAME: f'{SRC_FOLDER}/{PKG_NAME}'},
-
-    package_data={PKG_NAME: [i.replace(f'{SRC_FOLDER}/{PKG_NAME}/', '')
-                             for i in glob(f'{SRC_FOLDER}/{PKG_NAME}/**',
+    
+    package_data={PKG_NAME: [i.replace(f'{SRC_FOLDER}/{PKG_NAME}/', '') 
+                             for i in glob(f'{SRC_FOLDER}/{PKG_NAME}/**', 
                                            recursive=True)]
     },
     classifiers=[
@@ -40,6 +40,6 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Topic :: Software Development :: Libraries :: Python Modules"],
-    install_requires=get_requirements(),
+    install_requires=REQUIREMENTS,
     zip_safe=False,
-    )
+)
