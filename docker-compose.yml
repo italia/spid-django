@@ -12,7 +12,7 @@ services:
       - "hostnet:192.168.112.1"
     volumes:
       - "./example/:/run/spid-django/example/"
-      - "./djangosaml2_spid/:/run/spid-django/djangosaml2_spid/"
+      - "./src/:/run/spid-django/src/"
 
   spid-testenv2:
     image: italia/spid-testenv2:1.1.0

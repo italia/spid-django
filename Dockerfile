@@ -8,11 +8,10 @@ RUN pip install -U setuptools pip
 WORKDIR /run/spid-django/
 
 COPY ./example/ ./example/
-COPY ./djangosaml2_spid/ ./djangosaml2_spid/
+COPY ./src/ ./src/
 COPY ./requirements.txt ./requirements.txt
 
 RUN pip install -r requirements.txt
-RUN pip install "djangosaml2_spid @ file://`pwd`/djangosaml2_spid/"
 
 ENV SPID_DJANGO_DOCKERIZED_EXAMPLE="True"
 

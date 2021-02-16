@@ -25,6 +25,9 @@ SPID_SIG_ALG = saml2.xmldsig.SIG_RSA_SHA256
 SPID_NAMEID_FORMAT = NAMEID_FORMAT_TRANSIENT
 SPID_AUTH_CONTEXT = 'https://www.spid.gov.it/SpidL1'
 
+SPID_SAML_CHECK_METADATA_URL = 'http://localhost:8080/metadata.xml'
+SPID_TESTENV2_METADATA_URL = 'http://0.0.0.0:8088/metadata'
+
 # Avviso 29v3
 SPID_PREFIXES = dict(
     spid = "https://spid.gov.it/saml-extensions",
@@ -78,7 +81,7 @@ SAML_CONFIG = {
         'sp': {
             'name': f'{BASE_URL}/metadata',
             'name_qualifier': BASE,
-            
+
             # SPID needs NAMEID_FORMAT_TRANSIENT
             'name_id_format': [SPID_NAMEID_FORMAT],
 
@@ -153,9 +156,9 @@ SAML_CONFIG = {
                   # other here...
                   # ],
         #
-        "remote": [
-            {"url": "http://localhost:8080/metadata.xml"},
-            {'url': 'http://0.0.0.0:8088/metadata'},
+        'remote': [
+            {'url': SPID_SAML_CHECK_METADATA_URL},
+            {'url': SPID_TESTENV2_METADATA_URL},
         ]
     },
 
