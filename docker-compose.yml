@@ -6,6 +6,8 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
+    env_file:
+      - ./docker-compose.env
     ports:
       - "8000:8000"
     extra_hosts:
