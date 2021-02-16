@@ -146,16 +146,10 @@ SAML_CONFIG = {
 
     # many metadata, many idp...
     'metadata': {
-        # 'local': [os.path.join(os.path.join(os.path.join(BASE_DIR, 'djangosaml2_spid'),
-                  # 'saml2_config'), 'idp_metadata.xml'),
-                  # os.path.join(os.path.join(os.path.join(BASE_DIR, 'saml2_sp'),
-                  # 'saml2_config'), 'idp_metadata.xml'),
-                  # other here...
-                  # ],
-        #
+        'local': [f'{BASE_DIR}/spid_config/metadata'],
         "remote": [
-            {"url": "http://localhost:8080/metadata.xml"},
-            {'url': 'http://0.0.0.0:8088/metadata'},
+            # {"url": "http://localhost:8080/metadata.xml"},
+            # {'url': 'http://localhost:8088/metadata'},
         ]
     },
 
@@ -196,4 +190,50 @@ SAML_ATTRIBUTE_MAPPING = {
     'fiscalNumber': ('codice_fiscale',),
     'placeOfBirth': ('place_of_birth',),
     'dateOfBirth': ('birth_date',),
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'formatters': {
+        'default': {
+            # exact format is not important, this is the minimum information
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        },
+        'detailed': {
+            'format': '[%(asctime)s] %(message)s [(%(levelname)s)] %(args)s %(name)s %(filename)s.%(funcName)s:%(lineno)s]'
+        },
+        'json': {
+            'format': '{"timestamp": "%(asctime)s", "msg": %(message)s, "level": "%(levelname)s",  "name": "%(name)s", "path": "%(filename)s.%(funcName)s:%(lineno)s", "@source":"django-audit"}'
+        },
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'console': {
+            'formatter': 'detailed',
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'djangosaml2_spid.tests': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    }
 }

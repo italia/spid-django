@@ -8,7 +8,8 @@ from django.views.generic.base import RedirectView
 from djangosaml2.views import *
 from djangosaml2_spid.views import (metadata_spid,
                                     spid_login,
-                                    spid_logout)
+                                    spid_logout,
+                                    index)
 
 from . import views
 
@@ -26,8 +27,8 @@ urlpatterns = [
     path(f'{SAML2_URL_PREFIX}/echo_attributes', EchoAttributesView.as_view(), name='saml2_echo_attributes'),
     path('logout/', LogoutView.as_view(), {'next_page': settings.LOGOUT_REDIRECT_URL}, name='logout'),
 
-    path('', RedirectView.as_view(url='/spid/login/', permanent=False), name='index')
-
+    # path('', RedirectView.as_view(url='', permanent=False), name='index')
+    path('', index, name='index')
 
     # path('spid/logout/', spid_logout,
          # {'next_page': settings.LOGOUT_REDIRECT_URL}, name='spid_logout'),
