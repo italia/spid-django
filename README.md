@@ -73,11 +73,8 @@ then use docker-compose up (the process takes some time) and when the services a
 Setup
 ------------
 
-djangosaml2_spid uses a pySAML2 fork.
-
-* `pip install git+https://github.com/peppelinux/pysaml2.git@pplnx-v6.5.1`
-* `pip install git+https://github.com/italia/spid-django`
-* Import SAML2 entity configuration in your project settings file: `from spid_config.spid_settings import *`
+* `pip install djangosaml2_spid`
+* Import SPID SAML2 entity configuration in your project settings file: `from spid_config.spid_settings import *`
 * Add in `settings.INSTALLED_APPS` the following
   ```
     'djangosaml2',
