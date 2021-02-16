@@ -76,6 +76,7 @@ djangosaml2_spid uses a pySAML2 fork.
     'spid_config'
   ```
   _spid_config_ is your configuration, with statics and templates. See `example` project.
+* Add you custom User model, see example project: `AUTH_USER_MODEL = 'custom_accounts.User'`
 * Add in `settings.MIDDLEWARE`: `'djangosaml2.middleware.SamlSessionMiddleware'` for [SameSite Cookie](https://github.com/knaperek/djangosaml2#samesite-cookie)
 * Add in `settings.AUTHENTICATION_BACKENDS`: 
   ```
