@@ -75,3 +75,20 @@ class SpidTest(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTrue('LOGGED' in res.content.decode())
         logger.debug(res.content.decode())
+        
+        url = reverse('djangosaml2_spid:spid_login')
+        res = req.get(f'{url}')
+    
+    def test_logout(self):
+        url = reverse('djangosaml2_spid:spid_logout')
+        req = Client()
+        user = get_user_model().objects.first()
+        req.force_login(user)
+        res = req.get(f'{url}')
+
+    def test_logout(self):
+        url = reverse('djangosaml2_spid:spid_echo_attributes')
+        req = Client()
+        user = get_user_model().objects.first()
+        req.force_login(user)
+        res = req.get(f'{url}')

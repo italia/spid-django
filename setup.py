@@ -11,14 +11,14 @@ PKG_NAME = 'djangosaml2_spid'
 with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
 
-def get_requirements(fname='requirements.txt'):
-    fopen = open(fname, 'r')
-    return fopen.read().splitlines()
+
+with open(os.path.join(os.path.dirname(__file__), 'requirements.txt')) as requirements:
+    REQUIREMENTS = requirements.read()
 
 
 setup(
     name="djangosaml2_spid",
-    version='0.4.1',
+    version='0.4.3',
     description="Djangosaml2 SPID Service Provider",
     long_description=README,
     long_description_content_type='text/markdown',
@@ -40,6 +40,6 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Topic :: Software Development :: Libraries :: Python Modules"],
-    install_requires=get_requirements(),
+    install_requires=REQUIREMENTS,
     zip_safe=False,
-    )
+)
