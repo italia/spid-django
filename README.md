@@ -89,6 +89,36 @@ djangosaml2_spid uses a pySAML2 fork.
 * Start the django server for tests `./manage.py runserver 0.0.0.0:8000`
 
 
+Attribute Mapping
+-----------------
+Is necessary to maps SPID attributes to Django ones.
+An example that links fiscalNumber wiht username have been configured in the example project.
+This is another example that achieve the same behaviour without changing the default User model.
+
+````
+SAML_USE_NAME_ID_AS_USERNAME = False
+SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
+SAML_CREATE_UNKNOWN_USER = True
+SAML_DJANGO_USER_MAIN_ATTRIBUTE_LOOKUP = '__iexact'
+
+SAML_ATTRIBUTE_MAPPING = {
+'fiscalNumber': ('username', ),
+}
+````
+
+
+Tests
+-----
+
+````
+pip install requirements-dev.txt
+cd example/
+coverage erase
+coverage run ./manage.py test djangosaml2_spid.tests
+coverage report -m
+````
+
+
 Warnings
 --------
 
