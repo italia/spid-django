@@ -173,8 +173,9 @@ SAML_CONFIG = {
 }
 
 # OR NAME_ID or MAIN_ATTRIBUTE (not together!)
-# SAML_USE_NAME_ID_AS_USERNAME = True
-SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'fiscalNumber'
+SAML_USE_NAME_ID_AS_USERNAME = False
+#
+SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
 SAML_DJANGO_USER_MAIN_ATTRIBUTE_LOOKUP = '__iexact'
 
 SAML_CREATE_UNKNOWN_USER = True
@@ -183,11 +184,14 @@ SAML_CREATE_UNKNOWN_USER = True
 SAML_LOGOUT_REQUEST_PREFERRED_BINDING = saml2.BINDING_HTTP_POST
 
 SAML_ATTRIBUTE_MAPPING = {
-    ## 'uid': ('username', ),
+    # 'username': ('fiscalNumber',),
+    # 'email': ('email', ),
+    # 'first_name': ('name'),
+    
+    'fiscalNumber': ('username', ),
     'email': ('email', ),
     'name': ('first_name', ),
     'familyName': ('last_name', ),
-    'fiscalNumber': ('codice_fiscale',),
     'placeOfBirth': ('place_of_birth',),
     'dateOfBirth': ('birth_date',),
 }
