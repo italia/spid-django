@@ -1,3 +1,5 @@
+> This Repository has been moved to [spid-django](https://github.com/italia/spid-django)
+
 Djangosaml2 SPID
 ----------------
 
@@ -62,8 +64,11 @@ Run the example project
 Setup
 ------------
 
-* `pip install djangosaml2_spid`
-* Import SPID SAML2 entity configuration in your project settings file: `from spid_config.spid_settings import *`
+djangosaml2_spid uses a pySAML2 fork.
+
+* `pip install git+https://github.com/peppelinux/pysaml2.git@pplnx-v6.5.1`
+* `pip install git+https://github.com/italia/spid-django`
+* Import SAML2 entity configuration in your project settings file: `from spid_config.spid_settings import *`
 * Add in `settings.INSTALLED_APPS` the following
   ```
     'djangosaml2',
@@ -71,6 +76,7 @@ Setup
     'spid_config'
   ```
   _spid_config_ is your configuration, with statics and templates. See `example` project.
+* Add you custom User model, see example project: `AUTH_USER_MODEL = 'custom_accounts.User'`
 * Add in `settings.MIDDLEWARE`: `'djangosaml2.middleware.SamlSessionMiddleware'` for [SameSite Cookie](https://github.com/knaperek/djangosaml2#samesite-cookie)
 * Add in `settings.AUTHENTICATION_BACKENDS`: 
   ```

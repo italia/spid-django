@@ -146,16 +146,10 @@ SAML_CONFIG = {
 
     # many metadata, many idp...
     'metadata': {
-        # 'local': [os.path.join(os.path.join(os.path.join(BASE_DIR, 'djangosaml2_spid'),
-                  # 'saml2_config'), 'idp_metadata.xml'),
-                  # os.path.join(os.path.join(os.path.join(BASE_DIR, 'saml2_sp'),
-                  # 'saml2_config'), 'idp_metadata.xml'),
-                  # other here...
-                  # ],
-        #
+        'local': [f'{BASE_DIR}/spid_config/metadata'],
         "remote": [
-            {"url": "http://localhost:8080/metadata.xml"},
-            {'url': 'http://0.0.0.0:8088/metadata'},
+            # {"url": "http://localhost:8080/metadata.xml"},
+            # {'url': 'http://localhost:8088/metadata'},
         ]
     },
 
@@ -179,8 +173,9 @@ SAML_CONFIG = {
 }
 
 # OR NAME_ID or MAIN_ATTRIBUTE (not together!)
-SAML_USE_NAME_ID_AS_USERNAME = True
-# SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'email'
+SAML_USE_NAME_ID_AS_USERNAME = False
+#
+SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
 SAML_DJANGO_USER_MAIN_ATTRIBUTE_LOOKUP = '__iexact'
 
 SAML_CREATE_UNKNOWN_USER = True
@@ -189,11 +184,60 @@ SAML_CREATE_UNKNOWN_USER = True
 SAML_LOGOUT_REQUEST_PREFERRED_BINDING = saml2.BINDING_HTTP_POST
 
 SAML_ATTRIBUTE_MAPPING = {
-    ## 'uid': ('username', ),
+    # 'username': ('fiscalNumber',),
+    # 'email': ('email', ),
+    # 'first_name': ('name'),
+    
+    'fiscalNumber': ('username', ),
     'email': ('email', ),
     'name': ('first_name', ),
     'familyName': ('last_name', ),
-    'fiscalNumber': ('codice_fiscale',),
     'placeOfBirth': ('place_of_birth',),
     'dateOfBirth': ('birth_date',),
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'formatters': {
+        'default': {
+            # exact format is not important, this is the minimum information
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        },
+        'detailed': {
+            'format': '[%(asctime)s] %(message)s [(%(levelname)s)] %(args)s %(name)s %(filename)s.%(funcName)s:%(lineno)s]'
+        },
+        'json': {
+            'format': '{"timestamp": "%(asctime)s", "msg": %(message)s, "level": "%(levelname)s",  "name": "%(name)s", "path": "%(filename)s.%(funcName)s:%(lineno)s", "@source":"django-audit"}'
+        },
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'console': {
+            'formatter': 'detailed',
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'djangosaml2_spid.tests': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    }
 }

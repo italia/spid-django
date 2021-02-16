@@ -6,10 +6,14 @@ import string
 
 from django.conf import settings
 from django.contrib import auth
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.dispatch import receiver
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import (HttpResponse, 
+                         HttpResponseRedirect, 
+                         HttpResponseBadRequest,
+                         HttpResponseNotFound)
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from django.urls import reverse
@@ -24,9 +28,12 @@ from djangosaml2.utils import (
     get_idp_sso_supported_bindings, get_location,
     validate_referral_url
 )
-from djangosaml2.views import finish_logout, _get_subject_id
+from djangosaml2.views import (finish_logout, 
+                               _get_subject_id,
+                               SPConfigMixin, View)
 from saml2 import BINDING_HTTP_REDIRECT, BINDING_HTTP_POST
 from saml2.authn_context import requested_authn_context
+from saml2.mdstore import UnknownSystemEntity
 from saml2.metadata import entity_descriptor, sign_entity_descriptor
 from saml2.sigver import security_context
 
@@ -150,14 +157,14 @@ def spid_login(request,
     # Ensure the user-originating redirection url is safe.
     if not validate_referral_url(request, next_url):
         next_url = settings.LOGIN_REDIRECT_URL
-
-    if callable(request.user.is_authenticated):
+    
+    if request.user.is_authenticated:
         redirect_authenticated_user = getattr(settings,
                                               'SAML_IGNORE_AUTHENTICATED_USERS_ON_LOGIN',
                                               True)
         if redirect_authenticated_user:
             return HttpResponseRedirect(next_url)
-        else:
+        else: # pragma: no cover
             logger.debug('User is already logged in')
             return render(request, authorization_error_template, {
                     'came_from': next_url})
@@ -179,12 +186,16 @@ def spid_login(request,
         )
     else:
         # otherwise is the first one
+        _msg = 'Unable to know which IdP to use'
         try:
             selected_idp = selected_idp or list(idps.keys())[0]
-        except TypeError as e:
-            logger.error('Unable to know which IdP to use')
-            return HttpResponse(text_type(e))
-
+        except TypeError as e: # pragma: no cover
+            logger.error(f'{_msg}: {e}')
+            return HttpResponseError(_msg)
+        except IndexError as e: # pragma: no cover
+            logger.error(f'{_msg}: {e}')
+            return HttpResponseNotFound(_msg)
+        
     binding = BINDING_HTTP_POST
     logger.debug(f'Trying binding {binding} for IDP {selected_idp}')
 
@@ -195,15 +206,20 @@ def spid_login(request,
                                      selected_idp, BINDING_HTTP_POST, BINDING_HTTP_REDIRECT)
     
     # SPID things here
-    login_response = spid_sp_authn_request(conf, 
-                                           selected_idp, 
-                                           binding, 
-                                           settings.SPID_NAMEID_FORMAT,
-                                           settings.SPID_AUTH_CONTEXT,
-                                           settings.SPID_SIG_ALG,
-                                           settings.SPID_DIG_ALG,
-                                           next_url
-    )
+    try:
+        login_response = spid_sp_authn_request(conf, 
+                                               selected_idp, 
+                                               binding, 
+                                               settings.SPID_NAMEID_FORMAT,
+                                               settings.SPID_AUTH_CONTEXT,
+                                               settings.SPID_SIG_ALG,
+                                               settings.SPID_DIG_ALG,
+                                               next_url
+        )
+    except UnknownSystemEntity as e: # pragma: no cover
+        _msg = f'Unknown IDP Entity ID: {selected_idp}'
+        logger.error(f'{_msg}: {e}')
+        return HttpResponseNotFound(_msg)
     
     session_id = login_response['session_id']
     http_response = login_response['http_response']
@@ -473,3 +489,19 @@ def metadata_spid(request, config_loader_path=None, valid_for=None):
     xmldoc = spid_sp_metadata(conf)
     return HttpResponse(content=str(xmldoc).encode('utf-8'),
                         content_type="text/xml; charset=utf8")
+
+
+class EchoAttributesView(LoginRequiredMixin, SPConfigMixin, View):
+    """Example view that echo the SAML attributes of an user
+    """
+
+    def get(self, request, *args, **kwargs):
+        state, client = self.get_state_client(request)
+
+        subject_id = _get_subject_id(request.saml_session)
+        try:
+            identity = client.users.get_identity(subject_id, check_not_on_or_after=False)
+        except AttributeError:
+            return HttpResponse("No active SAML identity found. Are you sure you have logged in via SAML?")
+
+        return render(request, 'spid_echo_attributes.html', {'attributes': identity[0]})
