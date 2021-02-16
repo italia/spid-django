@@ -18,7 +18,7 @@ def get_requirements(fname='requirements.txt'):
 
 setup(
     name="djangosaml2_spid",
-    version='0.4.1',
+    version='0.6.0',
     description="Djangosaml2 SPID Service Provider",
     long_description=README,
     long_description_content_type='text/markdown',
@@ -28,9 +28,9 @@ setup(
     url='https://github.com/peppelinux/djangosaml2_spid',
     packages=[PKG_NAME,],
     package_dir={PKG_NAME: f'{SRC_FOLDER}/{PKG_NAME}'},
-    
-    package_data={PKG_NAME: [i.replace(f'{SRC_FOLDER}/{PKG_NAME}/', '') 
-                             for i in glob(f'{SRC_FOLDER}/{PKG_NAME}/**', 
+
+    package_data={PKG_NAME: [i.replace(f'{SRC_FOLDER}/{PKG_NAME}/', '')
+                             for i in glob(f'{SRC_FOLDER}/{PKG_NAME}/**',
                                            recursive=True)]
     },
     classifiers=[

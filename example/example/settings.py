@@ -34,6 +34,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'custom_accounts',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -67,6 +69,7 @@ if 'djangosaml2' in INSTALLED_APPS or \
         'djangosaml2.backends.Saml2Backend',
     )
 
+AUTH_USER_MODEL = 'custom_accounts.User'
 ROOT_URLCONF = 'example.urls'
 
 TEMPLATES = [
@@ -136,3 +139,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+

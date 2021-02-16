@@ -151,15 +151,9 @@ SAML_CONFIG = {
 
     # many metadata, many idp...
     'metadata': {
-        # 'local': [os.path.join(os.path.join(os.path.join(BASE_DIR, 'djangosaml2_spid'),
-                  # 'saml2_config'), 'idp_metadata.xml'),
-                  # os.path.join(os.path.join(os.path.join(BASE_DIR, 'saml2_sp'),
-                  # 'saml2_config'), 'idp_metadata.xml'),
-                  # other here...
-                  # ],
-        #
+        # #
         "remote": [
-            # {"url":"http://localhost:8080/metadata.xml"},
+            {"url":"http://localhost:8080/metadata.xml"},
             {'url': 'http://0.0.0.0:8088/metadata'},
         ]
     },

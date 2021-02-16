@@ -1,3 +1,5 @@
+> This Repository has been moved to [spid-django](https://github.com/italia/spid-django)
+
 Djangosaml2 SPID
 ----------------
 
@@ -82,6 +84,7 @@ Setup
     'spid_config'
   ```
   _spid_config_ is your configuration, with statics and templates. See `example` project.
+* Add you custom User model, see example project: `AUTH_USER_MODEL = 'custom_accounts.User'`
 * Add in `settings.MIDDLEWARE`: `'djangosaml2.middleware.SamlSessionMiddleware'` for [SameSite Cookie](https://github.com/knaperek/djangosaml2#samesite-cookie)
 * Add in `settings.AUTHENTICATION_BACKENDS`:
   ```
