@@ -1,7 +1,4 @@
-> This Repository has been moved to [spid-django](https://github.com/italia/spid-django)
-
-
-Djangosaml2 SPID
+SPID Django (former [djangosaml2_spid](https://github.com/peppelinux/djangosaml2_spid))
 ----------------
 
 A SPID Service Provider based on [pysaml2](https://github.com/identitypython/pysaml2).

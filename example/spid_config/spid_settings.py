@@ -1,10 +1,7 @@
+from saml2.saml import NAMEID_FORMAT_TRANSIENT
+from saml2.sigver import get_xmlsec_binary
 import os
 import saml2
-from saml2.md import SamlBase
-from saml2.saml import (NAMEID_FORMAT_PERSISTENT,
-                        NAMEID_FORMAT_TRANSIENT,
-                        NAMEID_FORMAT_UNSPECIFIED)
-from saml2.sigver import get_xmlsec_binary
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -33,50 +30,40 @@ SPID_TESTENV2_METADATA_URL = os.environ.get('SPID_TESTENV2_METADATA_URL', 'http:
 
 # Avviso 29v3
 SPID_PREFIXES = dict(
-    spid = "https://spid.gov.it/saml-extensions",
-    fpa = "https://spid.gov.it/invoicing-extensions"
+    spid='https://spid.gov.it/saml-extensions',
+    fpa='https://spid.gov.it/invoicing-extensions'
 )
 
-# other or billing, not together at the same time!
 SPID_CONTACTS = [
-    # {
-    # 'contact_type': 'other',
-    # 'telephone_number': '+39 8475634785',
-    # 'email_address': 'tech-info@example.org',
-    # 'VATNumber': 'IT12345678901',
-    # 'FiscalCode': 'XYZABCAAMGGJ000W',
-    # 'Private': ''
-    # },
-    # {
-    # 'contact_type': 'other',
-    # 'telephone_number': '+39 84756344785',
-    # 'email_address': 'info@example.org',
-    # 'VATNumber': 'IT12345678901',
-    # 'FiscalCode': 'XYasdasdadasdGGJ000W',
-    # 'Private': ''
-    # },
     {
-    'contact_type': 'billing',
-    'telephone_number': '+39 84756344785',
-    'email_address': 'info@example.org',
-    'company': 'example s.p.a.',
-    # 'CodiceFiscale': 'NGLMRA80A01D086T',
-    'IdCodice': '983745349857',
-    'IdPaese': 'IT',
-    'Denominazione': 'Destinatario Fatturazione',
-    'Indirizzo': 'via tante cose',
-    'NumeroCivico': '12',
-    'CAP': '87100',
-    'Comune': 'Cosenza',
-    'Provincia': 'CS',
-    'Nazione': 'IT',
+        'contact_type': 'other',
+        'telephone_number': '+39 8475634785',
+        'email_address': 'tech-info@example.org',
+        'VATNumber': 'IT12345678901',
+        'FiscalCode': 'XYZABCAAMGGJ000W',
+        'Private': ''
+    },
+    {
+        'contact_type': 'billing',
+        'telephone_number': '+39 84756344785',
+        'email_address': 'info@example.org',
+        'company': 'example s.p.a.',
+        # 'CodiceFiscale': 'NGLMRA80A01D086T',
+        'IdCodice': '983745349857',
+        'IdPaese': 'IT',
+        'Denominazione': 'Destinatario Fatturazione',
+        'Indirizzo': 'via tante cose',
+        'NumeroCivico': '12',
+        'CAP': '87100',
+        'Comune': 'Cosenza',
+        'Provincia': 'CS',
+        'Nazione': 'IT',
     },
 ]
 
 SAML_CONFIG = {
-    'debug' : True,
-    'xmlsec_binary': get_xmlsec_binary(['/opt/local/bin',
-                                        '/usr/bin/xmlsec1']),
+    'debug': True,
+    'xmlsec_binary': get_xmlsec_binary(['/opt/local/bin', '/usr/bin/xmlsec1']),
     'entityid': f'{BASE_URL}/metadata',
     'attribute_map_dir': f'{BASE_DIR}/spid_config/attribute-maps/',
 
@@ -90,49 +77,53 @@ SAML_CONFIG = {
 
             'endpoints': {
                 'assertion_consumer_service': [
-                    ('%s/acs/' % BASE_URL, SPID_DEFAULT_BINDING),
+                    (f'{BASE_URL}/acs/', SPID_DEFAULT_BINDING),
                     ],
-                "single_logout_service": [
-                    ("%s/ls/post/" % BASE_URL, saml2.BINDING_HTTP_POST),
-                    # ("%s/ls/" % BASE_URL, saml2.BINDING_HTTP_REDIRECT),
+                'single_logout_service': [
+                    (f'{BASE_URL}/ls/post/', SPID_DEFAULT_BINDING),
+                    # (f'{BASE_URL}/ls/', saml2.BINDING_HTTP_REDIRECT),
                 ],
-                }, # end endpoints
+            },
 
-            # Mandates that the identity provider MUST authenticate the
-            # presenter directly rather than rely on a previous security context.
-            "force_authn": False, # SPID
+            # Mandates that the IdP MUST authenticate the presenter directly
+            # rather than rely on a previous security context.
+            'force_authn': False,  # SPID
             'name_id_format_allow_create': False,
 
             # attributes that this project need to identify a user
-            'required_attributes': ['spidCode',
-                                    'name',
-                                    'familyName',
-                                    'fiscalNumber',
-                                    'email'],
+            'required_attributes': [
+                'spidCode',
+                'name',
+                'familyName',
+                'fiscalNumber',
+                'email'
+            ],
 
             'requested_attribute_name_format': saml2.saml.NAME_FORMAT_BASIC,
             'name_format': saml2.saml.NAME_FORMAT_BASIC,
-            #
 
             # attributes that may be useful to have but not required
-            'optional_attributes': ['gender',
-                                    'companyName',
-                                    'registeredOffice',
-                                    'ivaCode',
-                                    'idCard',
-                                    'digitalAddress',
-                                    'placeOfBirth',
-                                    'countyOfBirth',
-                                    'dateOfBirth',
-                                    'address',
-                                    'mobilePhone',
-                                    'expirationDate'],
+            'optional_attributes': [
+                'gender',
+                'companyName',
+                'registeredOffice',
+                'ivaCode',
+                'idCard',
+                'digitalAddress',
+                'placeOfBirth',
+                'countyOfBirth',
+                'dateOfBirth',
+                'address',
+                'mobilePhone',
+                'expirationDate'
+            ],
 
             'signing_algorithm':  saml2.xmldsig.SIG_RSA_SHA256,
             'digest_algorithm':  saml2.xmldsig.DIGEST_SHA256,
 
             'authn_requests_signed': True,
             'logout_requests_signed': True,
+
             # Indicates that Authentication Responses to this SP must
             # be signed. If set to True, the SP will not consume
             # any SAML Responses that are not signed.
@@ -146,14 +137,13 @@ SAML_CONFIG = {
             # Permits to have attributes not configured in attribute-mappings
             # otherwise...without OID will be rejected
             'allow_unknown_attributes': True,
-        }, # end sp
-
+        },
     },
 
     # many metadata, many idp...
     'metadata': {
         'local': [f'{BASE_DIR}/spid_config/metadata'],
-        "remote": []
+        'remote': []
     },
 
     # Signing
@@ -168,11 +158,10 @@ SAML_CONFIG = {
 
     # you can set multilanguage information here
     'organization': {
-      'name': [('Example', 'it'), ('Example', 'en')],
-      'display_name': [('Example', 'it'), ('Example', 'en')],
-      'url': [('http://www.example.it', 'it'), ('http://www.example.it', 'en')],
-      },
-
+        'name': [('Example', 'it'), ('Example', 'en')],
+        'display_name': [('Example', 'it'), ('Example', 'en')],
+        'url': [('http://www.example.it', 'it'), ('http://www.example.it', 'en')],
+    },
 }
 
 if SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE:
@@ -187,7 +176,7 @@ if SPID_TESTENV2_REMOTE_METADATA_ACTIVE:
 
 # OR NAME_ID or MAIN_ATTRIBUTE (not together!)
 SAML_USE_NAME_ID_AS_USERNAME = False
-#
+
 SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
 SAML_DJANGO_USER_MAIN_ATTRIBUTE_LOOKUP = '__iexact'
 
