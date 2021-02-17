@@ -1,0 +1,3 @@
+[submodule "spid-saml-check"]
+	path = spid-saml-check
+	url = ./spid-saml-check
