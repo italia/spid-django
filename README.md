@@ -1,5 +1,6 @@
 > This Repository has been moved to [spid-django](https://github.com/italia/spid-django)
 
+
 Djangosaml2 SPID
 ----------------
 
@@ -8,7 +9,7 @@ A SPID Service Provider based on [pysaml2](https://github.com/identitypython/pys
 
 Introduction
 ------------
-This is a Django application that provides a SAML2 Service Provider 
+This is a Django application that provides a SAML2 Service Provider
 for a Single Sign On with SPID, the Italian Digital Identity System.
 
 Technical documentation on SPID and SAML is available at [Docs Italia](https://docs.italia.it/italia/spid/spid-regole-tecniche/it/34.1.1/index.html)
@@ -35,14 +36,14 @@ Dependencies
 - xmlsec
 - python3-dev
 - python3-pip
-- libssl-dev 
+- libssl-dev
 - libsasl2-dev
 
 
 Demo app
 ------------
 
-Demo application uses **spid-saml-check** and **spid-testenv2** as 
+Demo application uses **spid-saml-check** and **spid-testenv2** as
 SPID IDP, see `example/`.
 
 Prepare environment
@@ -59,6 +60,20 @@ Run the example project
  - run `./manage.py runserver 0.0.0.0:8000`
  - run spit-testenv2 and spid-saml-check (docker is suggested)
  - open 'http://localhost:8000'
+
+
+Demo app (with Docker)
+------------
+
+To use Docker compose environment, add to /etc/hosts this line:
+````
+127.0.0.1	hostnet
+````
+
+then use `docker-compose --env-file docker-compose.env up` (the process takes some time) and when the services are up go to http://hostnet:8000/spid/login
+
+**warning**: if you want to change ports of any of the docker-compose services (as, spid-testenv2, spid-saml-check) and/or the FQDN of the docker-compose default network gateway (defaults to `hostnet`) you need to change all the files
+under `./example/configs/` to match the new configurations, changing only `./docker-compose.env` will not suffice.
 
 
 Setup
@@ -78,7 +93,7 @@ djangosaml2_spid uses a pySAML2 fork.
   _spid_config_ is your configuration, with statics and templates. See `example` project.
 * Add you custom User model, see example project: `AUTH_USER_MODEL = 'custom_accounts.User'`
 * Add in `settings.MIDDLEWARE`: `'djangosaml2.middleware.SamlSessionMiddleware'` for [SameSite Cookie](https://github.com/knaperek/djangosaml2#samesite-cookie)
-* Add in `settings.AUTHENTICATION_BACKENDS`: 
+* Add in `settings.AUTHENTICATION_BACKENDS`:
   ```
     'django.contrib.auth.backends.ModelBackend',
     'djangosaml2.backends.Saml2Backend',
