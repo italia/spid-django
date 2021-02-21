@@ -1,8 +1,9 @@
-> This Repository has been moved to [spid-django](https://github.com/italia/spid-django)
-
-
 Djangosaml2 SPID
 ----------------
+![CI build](https://github.com/italia/spid-django/workflows/spid-django/badge.svg)
+![Python version](https://img.shields.io/badge/license-Apache%202-blue.svg)
+![License](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue.svg)
+
 
 A SPID Service Provider based on [pysaml2](https://github.com/identitypython/pysaml2).
 
