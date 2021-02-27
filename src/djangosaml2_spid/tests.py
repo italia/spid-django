@@ -56,7 +56,7 @@ class SpidTest(TestCase):
     def test_authnreq(self):
         url = reverse('djangosaml2_spid:spid_login')
         req = Client()
-        res = req.get(f'{url}?idp=http://localhost:8088')
+        res = req.get(f'{url}?idp=http://localhost:54321')
         self.assertEqual(res.status_code, 200)
         
         htmlform = res.content.decode()
