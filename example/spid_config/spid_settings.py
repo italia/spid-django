@@ -47,30 +47,31 @@ SPID_CONTACTS = [
     # 'FiscalCode': 'XYZABCAAMGGJ000W',
     # 'Private': ''
     # },
-    # {
-    # 'contact_type': 'other',
-    # 'telephone_number': '+39 84756344785',
-    # 'email_address': 'info@example.org',
-    # 'VATNumber': 'IT12345678901',
-    # 'FiscalCode': 'XYasdasdadasdGGJ000W',
-    # 'Private': ''
-    # },
     {
-    'contact_type': 'billing',
+    'contact_type': 'other',
     'telephone_number': '+39 84756344785',
     'email_address': 'info@example.org',
-    'company': 'example s.p.a.',
-    # 'CodiceFiscale': 'NGLMRA80A01D086T',
-    'IdCodice': '983745349857',
-    'IdPaese': 'IT',
-    'Denominazione': 'Destinatario Fatturazione',
-    'Indirizzo': 'via tante cose',
-    'NumeroCivico': '12',
-    'CAP': '87100',
-    'Comune': 'Cosenza',
-    'Provincia': 'CS',
-    'Nazione': 'IT',
+    'VATNumber': 'IT12345678901',
+    'FiscalCode': 'XYasdasdadasdGGJ000W',
+    'Private': ''
     },
+    # {
+    # 'contact_type': 'billing',
+    # 'telephone_number': '+39 84756344785',
+    # 'email_address': 'info@example.org',
+    # 'company': 'example s.p.a.',
+    # 'CodiceFiscale': 'NGLMRA80A01D086T',
+    # 'IdCodice': '983745349857',
+    # 'IdPaese': 'IT',
+    # 'Denominazione': 'Destinatario Fatturazione',
+    # 'Indirizzo': 'via tante cose',
+    # 'NumeroCivico': '12',
+    # 'CAP': '87100',
+    # 'Comune': 'Cosenza',
+    # 'Provincia': 'CS',
+    # 'Nazione': 'IT',
+    # 'Private': ''
+    # },
 ]
 
 SAML_CONFIG = {
@@ -90,7 +91,7 @@ SAML_CONFIG = {
 
             'endpoints': {
                 'assertion_consumer_service': [
-                    ('%s/acs/' % BASE_URL, SPID_DEFAULT_BINDING),
+                    ('%s/acs/' % BASE_URL, saml2.BINDING_HTTP_POST),
                     ],
                 "single_logout_service": [
                     ("%s/ls/post/" % BASE_URL, saml2.BINDING_HTTP_POST),
