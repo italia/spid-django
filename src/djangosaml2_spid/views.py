@@ -36,6 +36,7 @@ from saml2.authn_context import requested_authn_context
 from saml2.mdstore import UnknownSystemEntity
 from saml2.metadata import entity_descriptor, sign_entity_descriptor
 from saml2.sigver import security_context
+from saml2.s_utils import UnsupportedBinding
 
 from .utils import repr_saml
 
