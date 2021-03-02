@@ -36,6 +36,7 @@ from saml2.authn_context import requested_authn_context
 from saml2.mdstore import UnknownSystemEntity
 from saml2.metadata import entity_descriptor, sign_entity_descriptor
 from saml2.sigver import security_context
+from saml2.s_utils import UnsupportedBinding
 
 from .utils import repr_saml
 
@@ -195,16 +196,14 @@ def spid_login(request,
         except IndexError as e: # pragma: no cover
             logger.error(f'{_msg}: {e}')
             return HttpResponseNotFound(_msg)
-        
-    binding = BINDING_HTTP_POST
+    
+    binding = settings.SPID_DEFAULT_BINDING
     logger.debug(f'Trying binding {binding} for IDP {selected_idp}')
-
     # ensure our selected binding is supported by the IDP
     supported_bindings = get_idp_sso_supported_bindings(selected_idp, config=conf)
-    if binding != BINDING_HTTP_POST:
-            raise UnsupportedBinding('IDP %s does not support %s or %s',
-                                     selected_idp, BINDING_HTTP_POST, BINDING_HTTP_REDIRECT)
-    
+    if binding not in supported_bindings:
+        raise UnsupportedBinding('IDP %s does not support %s or %s',
+                                 selected_idp, BINDING_HTTP_POST, BINDING_HTTP_REDIRECT)
     # SPID things here
     try:
         login_response = spid_sp_authn_request(conf, 
@@ -228,9 +227,14 @@ def spid_login(request,
     logger.debug(f'Saving session-id {session_id} in the OutstandingQueries cache')
     oq_cache = OutstandingQueriesCache(request.saml_session)
     oq_cache.set(session_id, next_url)
-    return HttpResponse(http_response['data'])
-
-
+    
+    if binding == saml2.BINDING_HTTP_POST:
+        return HttpResponse(http_response['data'])
+    elif binding == saml2.BINDING_HTTP_REDIRECT:
+        headers = dict(login_response['http_response']['headers'])
+        return HttpResponseRedirect(headers['Location'])
+        
+    
 @login_required
 def spid_logout(request, config_loader_path=None, **kwargs):
     """SAML Logout Request initiator
