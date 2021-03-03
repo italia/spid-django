@@ -389,7 +389,6 @@ def spid_sp_metadata(conf):
     saml2.md.SamlBase.register_prefix(settings.SPID_PREFIXES)
     
     contact_map = settings.SPID_CONTACTS
-    cnt = 0
     metadata.contact_person = []
     for contact in contact_map:
         spid_contact = saml2.md.ContactPerson()
@@ -476,7 +475,6 @@ def spid_sp_metadata(conf):
 
         spid_contact.extensions = spid_extensions
         metadata.contact_person.append(spid_contact)
-        cnt += 1
     #
     # fine avviso 29v3
     ###################
@@ -508,8 +506,15 @@ class EchoAttributesView(LoginRequiredMixin, SPConfigMixin, View):
 
         subject_id = _get_subject_id(request.saml_session)
         try:
-            identity = client.users.get_identity(subject_id, check_not_on_or_after=False)
+            identity = client.users.get_identity(subject_id, 
+                                                 check_not_on_or_after=False)
         except AttributeError:
-            return HttpResponse("No active SAML identity found. Are you sure you have logged in via SAML?")
+            return HttpResponse(
+                "No active SAML identity found. "
+                "Are you sure you have logged in via SAML?"
+            )
 
-        return render(request, 'spid_echo_attributes.html', {'attributes': identity[0]})
+        return render(request, 
+                      'spid_echo_attributes.html', 
+                      {'attributes': identity[0]}
+        )
