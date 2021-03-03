@@ -202,8 +202,12 @@ def spid_login(request,
     # ensure our selected binding is supported by the IDP
     supported_bindings = get_idp_sso_supported_bindings(selected_idp, config=conf)
     if binding not in supported_bindings:
-        raise UnsupportedBinding('IDP %s does not support %s or %s',
-                                 selected_idp, BINDING_HTTP_POST, BINDING_HTTP_REDIRECT)
+        raise UnsupportedBinding(
+            f"You requested: {binding} but the selected "
+            f"IDP [{selected_idp}] doesn't support "
+            f"{BINDING_HTTP_POST} or {BINDING_HTTP_REDIRECT}"
+        )
+
     # SPID things here
     try:
         login_response = spid_sp_authn_request(conf, 

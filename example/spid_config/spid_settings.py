@@ -45,7 +45,7 @@ SPID_CONTACTS = [
     # 'email_address': 'tech-info@example.org',
     # 'VATNumber': 'IT12345678901',
     # 'FiscalCode': 'XYZABCAAMGGJ000W',
-    # 'Private': ''
+    # 'Public': ''
     # },
     {
     'contact_type': 'other',
@@ -53,7 +53,7 @@ SPID_CONTACTS = [
     'email_address': 'info@example.org',
     'VATNumber': 'IT12345678901',
     'FiscalCode': 'XYasdasdadasdGGJ000W',
-    'Private': ''
+    'Public': ''
     },
     # {
     # 'contact_type': 'billing',
@@ -70,7 +70,6 @@ SPID_CONTACTS = [
     # 'Comune': 'Cosenza',
     # 'Provincia': 'CS',
     # 'Nazione': 'IT',
-    # 'Private': ''
     # },
 ]
 
