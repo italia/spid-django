@@ -202,8 +202,15 @@ def spid_login(request,
     # ensure our selected binding is supported by the IDP
     supported_bindings = get_idp_sso_supported_bindings(selected_idp, config=conf)
     if binding not in supported_bindings:
-        raise UnsupportedBinding('IDP %s does not support %s or %s',
-                                 selected_idp, BINDING_HTTP_POST, BINDING_HTTP_REDIRECT)
+        _msg = (
+                f"Requested: {binding} but the selected "
+                f"IDP [{selected_idp}] doesn't support "
+                f"{BINDING_HTTP_POST} or {BINDING_HTTP_REDIRECT}. "
+                f"Check if IdP Metadata is correctly loaded and updated."
+        )
+        logger.error(_msg)
+        raise UnsupportedBinding(_msg)
+
     # SPID things here
     try:
         login_response = spid_sp_authn_request(conf, 
@@ -385,7 +392,6 @@ def spid_sp_metadata(conf):
     saml2.md.SamlBase.register_prefix(settings.SPID_PREFIXES)
     
     contact_map = settings.SPID_CONTACTS
-    cnt = 0
     metadata.contact_person = []
     for contact in contact_map:
         spid_contact = saml2.md.ContactPerson()
@@ -472,7 +478,6 @@ def spid_sp_metadata(conf):
 
         spid_contact.extensions = spid_extensions
         metadata.contact_person.append(spid_contact)
-        cnt += 1
     #
     # fine avviso 29v3
     ###################
@@ -504,8 +509,15 @@ class EchoAttributesView(LoginRequiredMixin, SPConfigMixin, View):
 
         subject_id = _get_subject_id(request.saml_session)
         try:
-            identity = client.users.get_identity(subject_id, check_not_on_or_after=False)
+            identity = client.users.get_identity(subject_id, 
+                                                 check_not_on_or_after=False)
         except AttributeError:
-            return HttpResponse("No active SAML identity found. Are you sure you have logged in via SAML?")
+            return HttpResponse(
+                "No active SAML identity found. "
+                "Are you sure you have logged in via SAML?"
+            )
 
-        return render(request, 'spid_echo_attributes.html', {'attributes': identity[0]})
+        return render(request, 
+                      'spid_echo_attributes.html', 
+                      {'attributes': identity[0]}
+        )

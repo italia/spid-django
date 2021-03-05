@@ -25,10 +25,15 @@ This project comes with a demo Spid button template with both *spid-testenv2* an
 You just have to run the example project and put its metadata in spid-testenv2, this way:
 
 ````
-wget http://localhost:8000/spid/metadata -O conf/djangosaml2_spid.xml
+wget http://localhost:8000/spid/metadata -O conf/sp_metadata.xml
 ````
 
-then define this entry in spid-testenv2/conf.
+then start the example project using `spid-testenv2` or `spid-saml-check` or both, using these environment variables:
+
+````
+SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE=True bash run.sh 
+SPID_TESTENV2_REMOTE_METADATA_ACTIVE=True bash run.sh 
+````
 
 
 Dependencies
@@ -58,8 +63,8 @@ pip install -r ../requirements.txt
 Run the example project
  - Your example saml2 configuration is in `spid_config/spid_settings.py`. See djangosaml2 or pysaml2 official docs for clarifications
  - create demo database `./manage.py migrate`
- - run `./manage.py runserver 0.0.0.0:8000`
- - run spit-testenv2 and spid-saml-check (docker is suggested)
+ - run `./manage.py runserver 0.0.0.0:8000` or `SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE=True SPID_TESTENV2_REMOTE_METADATA_ACTIVE=True bash run.sh`
+ - run spid-testenv2 and spid-saml-check (docker is suggested)
  - open 'http://localhost:8000'
 
 
@@ -99,8 +104,7 @@ djangosaml2_spid uses a pySAML2 fork.
     'django.contrib.auth.backends.ModelBackend',
     'djangosaml2.backends.Saml2Backend',
   ```
-* Generate X.509 certificates and store them to a path, generally in `./certificates`
-  `openssl req -nodes -new -x509 -newkey rsa:2048 -days 3650 -keyout certificates/private.key -out certificates/public.cert`
+* Generate X.509 certificates and store them to a path, generally in `./certificates`, using [spid-compliant-certificates](https://github.com/italia/spid-compliant-certificates)
 * Register the SP metadata to the your test Spid IDP
 * Start the django server for tests `./manage.py runserver 0.0.0.0:8000`
 
@@ -139,6 +143,7 @@ Warnings
 --------
 
 - The SPID Button template is only for test purpose, please don't use it in production, do your customization instead!
+- In a production environment please don't use "remote" as metadata storage, use "local" or "mdq" instead!
 
 Authors
 ------------
