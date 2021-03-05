@@ -143,7 +143,7 @@ Warnings
 --------
 
 - The SPID Button template is only for test purpose, please don't use it in production, do your customization instead!
-- Don't use "remote" metadata storage, but "local" or "mdq" in a production ennvironment! 
+- In a production environment please don't use "remote" as metadata storage, use "local" or "mdq" instead!
 
 Authors
 ------------
