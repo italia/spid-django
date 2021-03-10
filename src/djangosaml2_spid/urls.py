@@ -2,8 +2,7 @@ from django.urls import path
 from djangosaml2_spid import views
 
 
-# SAML2_URL_PREFIX = 'spid/'
-SAML2_URL_PREFIX = ''
+SAML2_URL_PREFIX = 'spid/'
 
 urlpatterns = [
     path(f'{SAML2_URL_PREFIX}', views.index, name='index'),
