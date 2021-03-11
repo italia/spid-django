@@ -136,8 +136,11 @@ SAML_ATTRIBUTE_MAPPING = {
 ````
 
 
-Running tests
--------------
+Running tests (only for developers)
+-----------------------------------
+
+Tests are integrated into the demo project and are intended for use 
+only by developers.
 
 ````
 pip install requirements-dev.txt
