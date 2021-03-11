@@ -32,6 +32,9 @@ import logging
 import saml2
 
 
+SPID_DEFAULT_BINDING = settings.SPID_DEFAULT_BINDING
+
+
 logger = logging.getLogger('djangosaml2')
 
 
@@ -50,15 +53,15 @@ def index(request):
         return HttpResponse(f"LOGGED OUT: <a href={settings.LOGIN_URL}>LOGIN</a>")
 
 
-def spid_sp_authn_request(conf, selected_idp, binding, next_url=''):
+def spid_sp_authn_request(conf, selected_idp, next_url=''):
     client = Saml2Client(conf)
 
-    logger.debug(f'Redirecting user to the IdP via {binding} binding.')
+    logger.debug(f'Redirecting user to the IdP via {SPID_DEFAULT_BINDING} binding.')
 
     # use the html provided by pysaml2 if no template was specified or it didn't exist
     # SPID want the fqdn of the IDP, not the SSO endpoint
     location_fixed = selected_idp
-    location = client.sso_location(selected_idp, binding)
+    location = client.sso_location(selected_idp, SPID_DEFAULT_BINDING)
 
     authn_req = saml2.samlp.AuthnRequest()
     authn_req.destination = location_fixed
@@ -81,16 +84,17 @@ def spid_sp_authn_request(conf, selected_idp, binding, next_url=''):
     name_id_policy.format = settings.SPID_NAMEID_FORMAT
     authn_req.name_id_policy = name_id_policy
 
-    authn_context = requested_authn_context(class_ref=settings.SPID_AUTH_CONTEXT)
+    authn_context = requested_authn_context(
+        class_ref=settings.SPID_AUTH_CONTEXT)
     authn_req.requested_authn_context = authn_context
 
+    # if SPID authentication level is > 1 then forceauthn must be True
     authn_req.force_authn = 'true'
-    # end force authn
 
-    # settings.SPID_DEFAULT_BINDING
-    authn_req.protocol_binding = binding
+    authn_req.protocol_binding = SPID_DEFAULT_BINDING
 
-    assertion_consumer_service_url = client.config._sp_endpoints['assertion_consumer_service'][0][0]
+    assertion_consumer_service_url = client.config._sp_endpoints[
+        'assertion_consumer_service'][0][0]
     authn_req.assertion_consumer_service_url = assertion_consumer_service_url
 
     authn_req_signed = client.sign(
@@ -104,7 +108,7 @@ def spid_sp_authn_request(conf, selected_idp, binding, next_url=''):
 
     relay_state = next_url or reverse('djangosaml2:saml2_echo_attributes')
     http_info = client.apply_binding(
-        binding,
+        SPID_DEFAULT_BINDING,
         authn_req_signed,
         location,
         sign=True,
@@ -167,18 +171,17 @@ def spid_login(request, config_loader_path=None, wayf_template='wayf.html', auth
             selected_idp = selected_idp or list(idps.keys())[0]
         except TypeError as e:  # pragma: no cover
             logger.error(f'{_msg}: {e}')
-            return HttpResponse(_msg)
+            return HttpResponseNotFound(_msg)
         except IndexError as e:  # pragma: no cover
             logger.error(f'{_msg}: {e}')
             return HttpResponseNotFound(_msg)
 
-    binding = settings.SPID_DEFAULT_BINDING
-    logger.debug(f'Trying binding {binding} for IDP {selected_idp}')
     # ensure our selected binding is supported by the IDP
+    logger.debug(f'Trying binding {SPID_DEFAULT_BINDING} for IDP {selected_idp}')
     supported_bindings = get_idp_sso_supported_bindings(selected_idp, config=conf)
-    if binding not in supported_bindings:
+    if SPID_DEFAULT_BINDING not in supported_bindings:
         _msg = (
-            f"Requested: {binding} but the selected "
+            f"Requested: {SPID_DEFAULT_BINDING} but the selected "
             f"IDP [{selected_idp}] doesn't support "
             f"{BINDING_HTTP_POST} or {BINDING_HTTP_REDIRECT}. "
             f"Check if IdP Metadata is correctly loaded and updated."
@@ -188,7 +191,7 @@ def spid_login(request, config_loader_path=None, wayf_template='wayf.html', auth
 
     # SPID things here
     try:
-        login_response = spid_sp_authn_request(conf, selected_idp, binding, next_url)
+        login_response = spid_sp_authn_request(conf, selected_idp, next_url)
     except UnknownSystemEntity as e:  # pragma: no cover
         _msg = f'Unknown IDP Entity ID: {selected_idp}'
         logger.error(f'{_msg}: {e}')
@@ -202,9 +205,9 @@ def spid_login(request, config_loader_path=None, wayf_template='wayf.html', auth
     oq_cache = OutstandingQueriesCache(request.saml_session)
     oq_cache.set(session_id, next_url)
 
-    if binding == saml2.BINDING_HTTP_POST:
+    if SPID_DEFAULT_BINDING == saml2.BINDING_HTTP_POST:
         return HttpResponse(http_response['data'])
-    elif binding == saml2.BINDING_HTTP_REDIRECT:
+    elif SPID_DEFAULT_BINDING == saml2.BINDING_HTTP_REDIRECT:
         headers = dict(login_response['http_response']['headers'])
         return HttpResponseRedirect(headers['Location'])
 
@@ -236,7 +239,6 @@ def spid_logout(request, config_loader_path=None, **kwargs):
 
     slo_req = saml2.samlp.LogoutRequest()
 
-    binding = settings.SPID_DEFAULT_BINDING
     slo_req.destination = subject_id.name_qualifier
     # spid-testenv2 preleva l'attribute consumer service dalla authnRequest (anche se questo sta già nei metadati...)
     slo_req.attribute_consuming_service_index = "0"
@@ -277,7 +279,7 @@ def spid_logout(request, config_loader_path=None, **kwargs):
                 sis.append(saml2.samlp.SessionIndex(text=si))
         slo_req.session_index = sis
 
-    slo_req.protocol_binding = binding
+    slo_req.protocol_binding = SPID_DEFAULT_BINDING
 
     assertion_consumer_service_url = client.config._sp_endpoints['assertion_consumer_service'][0][0]
     slo_req.assertion_consumer_service_url = assertion_consumer_service_url
@@ -294,7 +296,7 @@ def spid_logout(request, config_loader_path=None, **kwargs):
 
     slo_location = client.metadata.single_logout_service(
         subject_id.name_qualifier,
-        binding,
+        SPID_DEFAULT_BINDING,
         "idpsso"
     )[0]['location']
 
@@ -304,7 +306,7 @@ def spid_logout(request, config_loader_path=None, **kwargs):
         return HttpResponse(error_message)
 
     http_info = client.apply_binding(
-        binding,
+        SPID_DEFAULT_BINDING,
         _req_str,
         slo_location,
         sign=True,
@@ -341,10 +343,21 @@ def spid_sp_metadata(conf):
     service_name.lang = 'it'
     service_name.text = conf._sp_name
 
-    ##############
-    # avviso 29 v3
-    #
-    # https://www.agid.gov.it/sites/default/files/repository_files/spid-avviso-n29v3-specifiche_sp_pubblici_e_privati_0.pdf
+    avviso_29_v3(metadata)
+
+    # metadata signature
+    secc = security_context(conf)
+    sign_dig_algs = dict(
+        sign_alg=conf._sp_signing_algorithm,
+        digest_alg=conf._sp_digest_algorithm
+    )
+    eid, xmldoc = sign_entity_descriptor(metadata, None, secc, **sign_dig_algs)
+    return xmldoc
+
+
+def avviso_29_v3(metadata):
+    "https://www.agid.gov.it/sites/default/files/repository_files/spid-avviso-n29v3-specifiche_sp_pubblici_e_privati_0.pdf"
+
     saml2.md.SamlBase.register_prefix(settings.SPID_PREFIXES)
 
     contact_map = settings.SPID_CONTACTS
@@ -436,18 +449,6 @@ def spid_sp_metadata(conf):
 
         spid_contact.extensions = spid_extensions
         metadata.contact_person.append(spid_contact)
-    #
-    # fine avviso 29v3
-    ###################
-
-    # metadata signature
-    secc = security_context(conf)
-    sign_dig_algs = dict(
-        sign_alg=conf._sp_signing_algorithm,
-        digest_alg=conf._sp_digest_algorithm
-    )
-    eid, xmldoc = sign_entity_descriptor(metadata, None, secc, **sign_dig_algs)
-    return xmldoc
 
 
 def metadata_spid(request, config_loader_path=None, valid_for=None):
@@ -467,7 +468,8 @@ class EchoAttributesView(LoginRequiredMixin, djangosaml2_views.SPConfigMixin, dj
 
         subject_id = djangosaml2_views._get_subject_id(request.saml_session)
         try:
-            identity = client.users.get_identity(subject_id, check_not_on_or_after=False)
+            identity = client.users.get_identity(
+                subject_id, check_not_on_or_after=False)
         except AttributeError:
             return HttpResponse(
                 "No active SAML identity found. "
