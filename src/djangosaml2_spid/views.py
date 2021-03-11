@@ -84,8 +84,7 @@ def spid_sp_authn_request(conf, selected_idp, next_url=''):
     name_id_policy.format = settings.SPID_NAMEID_FORMAT
     authn_req.name_id_policy = name_id_policy
 
-    authn_context = requested_authn_context(
-        class_ref=settings.SPID_AUTH_CONTEXT)
+    authn_context = requested_authn_context(class_ref=settings.SPID_AUTH_CONTEXT)
     authn_req.requested_authn_context = authn_context
 
     # if SPID authentication level is > 1 then forceauthn must be True
@@ -93,8 +92,7 @@ def spid_sp_authn_request(conf, selected_idp, next_url=''):
 
     authn_req.protocol_binding = SPID_DEFAULT_BINDING
 
-    assertion_consumer_service_url = client.config._sp_endpoints[
-        'assertion_consumer_service'][0][0]
+    assertion_consumer_service_url = client.config._sp_endpoints['assertion_consumer_service'][0][0]
     authn_req.assertion_consumer_service_url = assertion_consumer_service_url
 
     authn_req_signed = client.sign(
@@ -468,8 +466,7 @@ class EchoAttributesView(LoginRequiredMixin, djangosaml2_views.SPConfigMixin, dj
 
         subject_id = djangosaml2_views._get_subject_id(request.saml_session)
         try:
-            identity = client.users.get_identity(
-                subject_id, check_not_on_or_after=False)
+            identity = client.users.get_identity(subject_id, check_not_on_or_after=False)
         except AttributeError:
             return HttpResponse(
                 "No active SAML identity found. "
