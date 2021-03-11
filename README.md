@@ -1,5 +1,6 @@
 Djangosaml2 SPID
-----------------
+================
+
 ![CI build](https://github.com/italia/spid-django/workflows/spid-django/badge.svg)
 ![Python version](https://img.shields.io/badge/license-Apache%202-blue.svg)
 ![License](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue.svg)
@@ -10,34 +11,23 @@ A SPID Service Provider based on [pysaml2](https://github.com/identitypython/pys
 
 Introduction
 ------------
+
 This is a Django application that provides a SAML2 Service Provider
 for a Single Sign On with SPID, the Italian Digital Identity System.
 
-Technical documentation on SPID and SAML is available at [Docs Italia](https://docs.italia.it/italia/spid/spid-regole-tecniche/it/34.1.1/index.html)
+This project comes with a demo on a Spid button template with both *spid-testenv2* 
+and *spid-saml-check* IDP preconfigured. See running the Demo project paragaph for details.
+
+The technical documentation on SPID and SAML is available at [Docs Italia](https://docs.italia.it/italia/spid/spid-regole-tecniche/it/34.1.1/index.html)
 
 ![big picture](gallery/animated.gif)
 
 
-Usage
------
-
-This project comes with a demo Spid button template with both *spid-testenv2* and *spid-saml-check* IDP preconfigured.
-You just have to run the example project and put its metadata in spid-testenv2, this way:
-
-````
-wget http://localhost:8000/spid/metadata -O conf/sp_metadata.xml
-````
-
-then start the example project using `spid-testenv2` or `spid-saml-check` or both, using these environment variables:
-
-````
-SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE=True bash run.sh 
-SPID_TESTENV2_REMOTE_METADATA_ACTIVE=True bash run.sh 
-````
-
-
 Dependencies
 ------------
+
+These libraries are required on your operating system environment 
+in order to compile external modules of some dependencies:
 
 - xmlsec
 - python3-dev
@@ -46,13 +36,14 @@ Dependencies
 - libsasl2-dev
 
 
-Demo app
-------------
+Running the Demo project
+------------------------
 
-Demo application uses **spid-saml-check** and **spid-testenv2** as
-SPID IDP, see `example/`.
+The demo project is configured within `example/` subdirectory. 
+This project uses **spid-saml-check** and **spid-testenv2** as
+additional IDPs configured in a demo SPID button.
 
-Prepare environment
+Prepare environment:
 ````
 cd example/
 virtualenv -ppython3 env
@@ -60,16 +51,33 @@ source env/bin/activate
 pip install -r ../requirements.txt
 ````
 
-Run the example project
- - Your example saml2 configuration is in `spid_config/spid_settings.py`. See djangosaml2 or pysaml2 official docs for clarifications
- - create demo database `./manage.py migrate`
- - run `./manage.py runserver 0.0.0.0:8000` or `SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE=True SPID_TESTENV2_REMOTE_METADATA_ACTIVE=True bash run.sh`
- - run spid-testenv2 and spid-saml-check (docker is suggested)
- - open 'http://localhost:8000'
+Your example saml2 configuration is in `spid_config/spid_settings.py`. 
+See djangosaml2 or pysaml2 official docs for clarifications.
+
+To run the demo project:
+ - create the database `./manage.py migrate`
+ - run `./manage.py runserver 0.0.0.0:8000`
+   
+or execute the run.sh script with these environment settings:
+
+ ````
+ SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE=True SPID_TESTENV2_REMOTE_METADATA_ACTIVE=True bash run.sh
+ ````
+
+If you choosed to use *spid-testenv2*, fefore starting it, you just have to save the 
+current demo metadata in *spid-testenv2* configuration, this way:
+
+````
+# cd into spid-testenv2/ base dir ...
+wget http://localhost:8000/spid/metadata -O conf/sp_metadata.xml
+````
+
+Finally, start spid-testenv2 and spid-saml-check (docker is suggested) and 
+then open 'http://localhost:8000' in your browser.
 
 
-Demo app (with Docker)
-------------
+Demo project with Docker
+------------------------
 
 To use Docker compose environment, add to /etc/hosts this line:
 ````
@@ -82,13 +90,14 @@ then use `docker-compose --env-file docker-compose.env up` (the process takes so
 under `./example/configs/` to match the new configurations, changing only `./docker-compose.env` will not suffice.
 
 
-Setup
-------------
+Setup for an existing project 
+-----------------------------
 
 djangosaml2_spid uses a pySAML2 fork.
 
 * `pip install git+https://github.com/peppelinux/pysaml2.git@pplnx-v6.5.1`
 * `pip install git+https://github.com/italia/spid-django`
+* Copy the `example/spid_config/` to your project base dir 
 * Import SAML2 entity configuration in your project settings file: `from spid_config.spid_settings import *`
 * Add in `settings.INSTALLED_APPS` the following
   ```
@@ -105,7 +114,7 @@ djangosaml2_spid uses a pySAML2 fork.
     'djangosaml2.backends.Saml2Backend',
   ```
 * Generate X.509 certificates and store them to a path, generally in `./certificates`, using [spid-compliant-certificates](https://github.com/italia/spid-compliant-certificates)
-* Register the SP metadata to the your test Spid IDP
+* Register the SP metadata to your test Spid IDP
 * Start the django server for tests `./manage.py runserver 0.0.0.0:8000`
 
 
@@ -127,8 +136,11 @@ SAML_ATTRIBUTE_MAPPING = {
 ````
 
 
-Tests
------
+Running tests (only for developers)
+-----------------------------------
+
+Tests are integrated into the demo project and are intended for use 
+only by developers.
 
 ````
 pip install requirements-dev.txt
