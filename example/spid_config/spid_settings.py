@@ -5,14 +5,13 @@ import saml2
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE_DIR_CERTS = os.environ.get('PWD')
 
+SPID_BASE_SCHEMA_HOST_PORT = os.environ.get('SPID_BASE_SCHEMA_HOST_PORT', 'http://localhost:8000')
+SPID_URLS_PREFIX = 'spid/'
+SPID_BASE_URL = f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_URLS_PREFIX}'
 
-BASE = os.environ.get('SPID_BASE_SCHEMA_HOST_PORT', 'http://localhost:8000')
-BASE_URL = '{}/spid'.format(BASE)
-
-LOGIN_URL = '/spid/login/'
-LOGOUT_URL = '/spid/logout/'
+LOGIN_URL = '/spid/login'
+LOGOUT_URL = '/spid/logout'
 LOGIN_REDIRECT_URL = '/spid/echo_attributes'
 LOGOUT_REDIRECT_URL = '/'
 
@@ -21,6 +20,14 @@ SPID_DIG_ALG = saml2.xmldsig.DIGEST_SHA256
 SPID_SIG_ALG = saml2.xmldsig.SIG_RSA_SHA256
 SPID_NAMEID_FORMAT = NAMEID_FORMAT_TRANSIENT
 SPID_AUTH_CONTEXT = 'https://www.spid.gov.it/SpidL1'
+
+SPID_CERTS_DIR = os.path.join(os.environ.get('PWD'), 'certificates/')
+SPID_PUBLIC_CERT = os.path.join(SPID_CERTS_DIR, 'public.cert')
+SPID_PRIVATE_KEY = os.path.join(SPID_CERTS_DIR, 'private.key')
+
+# source: https://registry.spid.gov.it/identity-providers
+SPID_IDENTITY_PROVIDERS_URL = 'https://registry.spid.gov.it/assets/data/idp.json'
+SPID_IDENTITY_PROVIDERS_METADATAS_DIR = os.path.join(BASE_DIR, 'spid_config/metadata/')
 
 SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', 'False') == 'True'
 SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
@@ -64,24 +71,23 @@ SPID_CONTACTS = [
 SAML_CONFIG = {
     'debug': True,
     'xmlsec_binary': get_xmlsec_binary(['/opt/local/bin', '/usr/bin/xmlsec1']),
-    'entityid': f'{BASE_URL}/metadata',
+    'entityid': f'{SPID_BASE_URL}metadata',
     'attribute_map_dir': f'{BASE_DIR}/spid_config/attribute-maps/',
 
     'service': {
         'sp': {
-            'name': f'{BASE_URL}/metadata',
-            'name_qualifier': BASE,
+            'name': f'{SPID_BASE_URL}metadata',
+            'name_qualifier': SPID_BASE_SCHEMA_HOST_PORT,
 
-            # SPID needs NAMEID_FORMAT_TRANSIENT
             'name_id_format': [SPID_NAMEID_FORMAT],
 
             'endpoints': {
                 'assertion_consumer_service': [
-                    (f'{BASE_URL}/acs/', SPID_DEFAULT_BINDING),
-                    ],
+                    (f'{SPID_BASE_URL}acs', SPID_DEFAULT_BINDING),
+                ],
                 'single_logout_service': [
-                    (f'{BASE_URL}/ls/post/', SPID_DEFAULT_BINDING),
-                    # (f'{BASE_URL}/ls/', saml2.BINDING_HTTP_REDIRECT),
+                    (f'{SPID_BASE_URL}ls/post', SPID_DEFAULT_BINDING),
+                    # (f'{SPID_BASE_URL}/ls', saml2.BINDING_HTTP_REDIRECT),
                 ],
             },
 
@@ -118,8 +124,8 @@ SAML_CONFIG = {
                 'expirationDate'
             ],
 
-            'signing_algorithm':  saml2.xmldsig.SIG_RSA_SHA256,
-            'digest_algorithm':  saml2.xmldsig.DIGEST_SHA256,
+            'signing_algorithm': SPID_SIG_ALG,
+            'digest_algorithm': SPID_DIG_ALG,
 
             'authn_requests_signed': True,
             'logout_requests_signed': True,
@@ -142,18 +148,20 @@ SAML_CONFIG = {
 
     # many metadata, many idp...
     'metadata': {
-        'local': [f'{BASE_DIR}/spid_config/metadata'],
+        'local': [
+            SPID_IDENTITY_PROVIDERS_METADATAS_DIR
+        ],
         'remote': []
     },
 
     # Signing
-    'key_file': f'{BASE_DIR_CERTS}/certificates/private.key',
-    'cert_file': f'{BASE_DIR_CERTS}/certificates/public.cert',
+    'key_file': SPID_PRIVATE_KEY,
+    'cert_file': SPID_PUBLIC_CERT,
 
     # Encryption
     'encryption_keypairs': [{
-        'key_file': f'{BASE_DIR_CERTS}/certificates/private.key',
-        'cert_file': f'{BASE_DIR_CERTS}/certificates/public.cert',
+        'key_file': SPID_PRIVATE_KEY,
+        'cert_file': SPID_PUBLIC_CERT,
     }],
 
     # you can set multilanguage information here
@@ -186,11 +194,8 @@ SAML_CREATE_UNKNOWN_USER = True
 SAML_LOGOUT_REQUEST_PREFERRED_BINDING = saml2.BINDING_HTTP_POST
 
 SAML_ATTRIBUTE_MAPPING = {
-    # 'username': ('fiscalNumber',),
-    # 'email': ('email', ),
-    # 'first_name': ('name'),
-
-    'fiscalNumber': ('username', ),
+    'spidCode': ('username', ),
+    'fiscalNumber': ('tin', ),
     'email': ('email', ),
     'name': ('first_name', ),
     'familyName': ('last_name', ),
