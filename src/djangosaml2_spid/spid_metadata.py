@@ -44,7 +44,9 @@ def spid_sp_metadata(conf):
 
 
 def avviso_29_v3(metadata):
-    "https://www.agid.gov.it/sites/default/files/repository_files/spid-avviso-n29v3-specifiche_sp_pubblici_e_privati_0.pdf"
+    """
+    https://www.agid.gov.it/sites/default/files/repository_files/spid-avviso-n29v3-specifiche_sp_pubblici_e_privati_0.pdf
+    """
 
     saml2.md.SamlBase.register_prefix(settings.SPID_PREFIXES)
 
@@ -57,13 +59,14 @@ def avviso_29_v3(metadata):
             'email_address': [contact['email_address']],
             'telephone_number': [contact['telephone_number']]
         }
+        spid_extensions = saml2.ExtensionElement(
+            'Extensions',
+            namespace='urn:oasis:names:tc:SAML:2.0:metadata'
+        )
+
         if contact['contact_type'] == 'other':
             spid_contact.loadd(contact_kwargs)
             contact_kwargs['contact_type'] = contact['contact_type']
-            spid_extensions = saml2.ExtensionElement(
-                'Extensions',
-                namespace='urn:oasis:names:tc:SAML:2.0:metadata'
-            )
             for k, v in contact.items():
                 if k in contact_kwargs:
                     continue
@@ -74,13 +77,11 @@ def avviso_29_v3(metadata):
                 )
                 spid_extensions.children.append(ext)
 
+            spid_contact.extensions = spid_extensions
+
         elif contact['contact_type'] == 'billing':
             contact_kwargs['company'] = contact['company']
             spid_contact.loadd(contact_kwargs)
-            spid_extensions = saml2.ExtensionElement(
-                'Extensions',
-                namespace='urn:oasis:names:tc:SAML:2.0:metadata'
-            )
 
             elements = {}
             for k, v in contact.items():
