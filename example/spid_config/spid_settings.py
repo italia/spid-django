@@ -40,7 +40,8 @@ SPID_PREFIXES = dict(
     spid='https://spid.gov.it/saml-extensions',
     fpa='https://spid.gov.it/invoicing-extensions'
 )
-
+# Avviso SPID n. 19 v.4 per enti AGGREGATORI aggiungere chiave vuota PublicServicesFullOperator
+# Il plugin genererà automaticamente anche il tag ContactPerson con l’attributo spid:entityType valorizzato a spid:aggregator
 SPID_CONTACTS = [
     {
         'contact_type': 'other',
@@ -48,7 +49,8 @@ SPID_CONTACTS = [
         'email_address': 'tech-info@example.org',
         'VATNumber': 'IT12345678901',
         'FiscalCode': 'XYZABCAAMGGJ000W',
-        'Private': ''
+        'Private': '',
+        #'PublicServicesFullOperator':''
     },
     {
         'contact_type': 'billing',
@@ -67,11 +69,12 @@ SPID_CONTACTS = [
         'Nazione': 'IT',
     },
 ]
-
+# Avviso SPID n. 19 v.4 per enti AGGREGATORI l’entityID deve contenere il codice attività pub-op-full
 SAML_CONFIG = {
     'debug': True,
     'xmlsec_binary': get_xmlsec_binary(['/opt/local/bin', '/usr/bin/xmlsec1']),
     'entityid': f'{SPID_BASE_URL}metadata',
+    #'entityid': f'{BASE_URL}/pub-op-full/',
     'attribute_map_dir': f'{BASE_DIR}/spid_config/attribute-maps/',
 
     'service': {

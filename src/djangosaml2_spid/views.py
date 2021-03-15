@@ -374,13 +374,15 @@ def avviso_29_v3(metadata):
                 'Extensions',
                 namespace='urn:oasis:names:tc:SAML:2.0:metadata'
             )
-            for k, v in contact.items():
-                if k in contact_kwargs:
-                    continue
+            for k,v in contact.items():
+                if k in contact_kwargs: continue
+                #Avviso SPID n. 19 v.4 per enti AGGREGATORI il tag ContactPerson deve avere l’attributo spid:entityType valorizzato come spid:aggregator
+                if k=="PublicServicesFullOperator":
+                    spid_contact.extension_attributes= {"spid:entityType": "spid:aggregator"}
                 ext = saml2.ExtensionElement(
-                    k,
-                    namespace=settings.SPID_PREFIXES['spid'],
-                    text=v
+                        k, 
+                        namespace=settings.SPID_PREFIXES['spid'],
+                        text=v
                 )
                 spid_extensions.children.append(ext)
 
