@@ -1,10 +1,15 @@
+import logging
+
 import saml2
 from django.conf import settings
 from django.urls import reverse
 from djangosaml2.overrides import Saml2Client
 from saml2.authn_context import requested_authn_context
 
-from src.djangosaml2_spid.views import logger, SPID_DEFAULT_BINDING
+
+SPID_DEFAULT_BINDING = settings.SPID_DEFAULT_BINDING
+
+logger = logging.getLogger('djangosaml2')
 
 
 def spid_sp_authn_request(conf, selected_idp, next_url=''):

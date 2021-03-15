@@ -1,7 +1,3 @@
-from .spid_anomalies import SpidAnomaly
-from .spid_metadata import spid_sp_metadata
-from .spid_request import spid_sp_authn_request
-from .utils import repr_saml
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
@@ -29,9 +25,13 @@ import djangosaml2.views as djangosaml2_views
 import logging
 import saml2
 
+from .spid_anomalies import SpidAnomaly
+from .spid_metadata import spid_sp_metadata
+from .spid_request import spid_sp_authn_request
+from .utils import repr_saml
+
 
 SPID_DEFAULT_BINDING = settings.SPID_DEFAULT_BINDING
-
 
 logger = logging.getLogger('djangosaml2')
 
