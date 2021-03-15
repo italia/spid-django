@@ -1,15 +1,12 @@
-import logging
 import re
+import xml.etree.ElementTree as ElementTree
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test import Client, RequestFactory, TestCase
+from django.http import HttpResponseBadRequest
+from django.test import Client, TestCase
 
 from django.urls import reverse
 from .utils import repr_saml
-
-logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
 
 
 def samlrequest_from_html_form(htmlstr):
@@ -43,50 +40,85 @@ class SpidTest(TestCase):
 
     def test_metadata_endpoint(self):
         url = reverse('djangosaml2_spid:spid_metadata')
-        req = Client()
-        res = req.get(url)
-        
+        client = Client()
+        res = client.get(url)
+
         self.assertEqual(res.status_code, 200)
+
         # TODO: here validation with spid saml tests
         # ...
         #
-        logger.debug(res.content.decode())
+
+        metadata_xml = ElementTree.fromstring(res.content)
+        namespaces = dict(
+            md="urn:oasis:names:tc:SAML:2.0:metadata",
+            spid="https://spid.gov.it/saml-extensions",
+            fpa="https://spid.gov.it/invoicing-extensions",
+        )
+        self.assertEqual(
+            metadata_xml.tag, '{urn:oasis:names:tc:SAML:2.0:metadata}EntityDescriptor')
+        self.assertEqual(
+            metadata_xml.find('.//spid:VATNumber', namespaces).text, 'IT12345678901')
+        self.assertEqual(
+            metadata_xml.find('.//spid:FiscalCode', namespaces).text, 'XYZABCAAMGGJ000W')
 
     def test_authnreq(self):
         url = reverse('djangosaml2_spid:spid_login')
-        req = Client()
-        res = req.get(f'{url}?idp=http://localhost:54321')
+        client = Client()
+        res = client.get(f'{url}?idp=http://localhost:54321')
         self.assertEqual(res.status_code, 200)
         
-        htmlform = res.content.decode()
-        encoded_authn_req = samlrequest_from_html_form(htmlform)
+        html_form = res.content.decode()
+        encoded_authn_req = samlrequest_from_html_form(html_form)
         
         fancy_saml = repr_samlrequest(encoded_authn_req.encode(), b64=1)
-        logger.debug(fancy_saml)
+        self.assertNotIn('ns0', fancy_saml)
+        
+        lines = fancy_saml.split('\n')
+        self.assertEqual(lines[0], '<?xml version="1.0" ?>')
+        self.assertTrue(lines[1].startswith('<samlp:AuthnRequest '))
+        self.assertEqual(lines[-2], '</samlp:AuthnRequest>')
 
     def test_authnreq_already_logged_user(self):
         url = reverse('djangosaml2_spid:index')
-        req = Client()
+        client = Client()
         user = get_user_model().objects.first()
-        req.force_login(user)
-        res = req.get(f'{url}')
+        client.force_login(user)
+        res = client.get(f'{url}')
+
         self.assertEqual(res.status_code, 200)
-        self.assertTrue('LOGGED' in res.content.decode())
-        logger.debug(res.content.decode())
-        
-        url = reverse('djangosaml2_spid:spid_login')
-        res = req.get(f'{url}')
-    
+        self.assertIn(b'LOGGED IN:', res.content)
+        self.assertIn(b'first_name: foo', res.content)
+        self.assertIn(b'last_name: bar', res.content)
+        self.assertIn(b'is_active: True', res.content)
+        self.assertIn(b'is_superuser: False', res.content)
+        self.assertIn(b'is_staff: False', res.content)
+
     def test_logout(self):
-        url = reverse('djangosaml2_spid:spid_logout')
-        req = Client()
+        logout_url = reverse('djangosaml2_spid:spid_logout')
+        client = Client()
         user = get_user_model().objects.first()
-        req.force_login(user)
-        res = req.get(f'{url}')
+        client.force_login(user)
+
+        with self.assertLogs('djangosaml2', level='WARNING') as ctx:
+            res = client.get(logout_url)
+
+        self.assertEqual(res.status_code, 400)
+        self.assertIsInstance(res, HttpResponseBadRequest)
+
+        self.assertEqual(len(ctx.output), 2)
+        self.assertIn('WARNING:djangosaml2:The session does not contain '
+                      'the subject id for user AnonymousUser', ctx.output)
+        self.assertIn('ERROR:djangosaml2:Looks like the user None is not '
+                      'logged in any IdP/AA', ctx.output)
 
     def test_echo_attributes(self):
         url = reverse('djangosaml2_spid:spid_echo_attributes')
-        req = Client()
+        client = Client()
         user = get_user_model().objects.first()
-        req.force_login(user)
-        res = req.get(f'{url}')
+        client.force_login(user)
+        res = client.get(f'{url}')
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.content, b'No active SAML identity found. Are you '
+                                      b'sure you have logged in via SAML?')
