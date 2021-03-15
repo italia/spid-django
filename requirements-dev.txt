@@ -1,3 +1,4 @@
+-r requirements.txt
 autoflake
 autopep8
 coverage
