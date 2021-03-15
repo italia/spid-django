@@ -137,12 +137,12 @@ SAML_ATTRIBUTE_MAPPING = {
 Download identity providers metadata
 -----------------------------------
 
-To update the list of entity providers use the custom django command update_ipds.
+To update the list of entity providers use the custom django command `update_idps`.
 In the example project you can do it as follows:
 
 ````
 cd example/
-python ./manage.py update_ipds
+python ./manage.py update_idps
 ````
 
 Running tests (only for developers)
