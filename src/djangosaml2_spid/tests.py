@@ -3,9 +3,12 @@ import xml.etree.ElementTree as ElementTree
 
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseBadRequest
-from django.test import Client, TestCase
-
+from django.test import Client, TestCase, RequestFactory
 from django.urls import reverse
+
+from djangosaml2.conf import get_config_loader, get_config
+
+from .conf import settings, config_settings_loader
 from .utils import repr_saml
 
 
@@ -20,7 +23,42 @@ def samlrequest_from_html_form(htmlstr):
 
 def repr_samlrequest(authnreqstr, **kwargs):
     return repr_saml(authnreqstr, **kwargs)
-    
+
+
+def dummy_loader():
+    return
+
+
+class SpidConfigTest(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_get_config_loader(self):
+        func = get_config_loader('djangosaml2_spid.tests.dummy_loader')
+        self.assertIs(func, dummy_loader)
+
+        func = get_config_loader('djangosaml2_spid.conf.config_settings_loader')
+        self.assertIs(func, config_settings_loader)
+
+    def test_get_config(self):
+        saml_config = get_config()
+        self.assertEqual(saml_config.entityid, 'http://localhost:8000/spid/metadata')
+
+        request = self.factory.get('')
+        saml_config = get_config(request=request)
+        self.assertEqual(saml_config.entityid, 'http://localhost:8000/spid/metadata')
+
+        request = self.factory.get('/spid/metadata')
+        saml_config = get_config(request=request)
+        self.assertEqual(saml_config.entityid, 'http://testserver/spid/spidmetadata')
+        self.assertEqual(
+            saml_config.organization,
+            {'name': [('Example', 'it'), ('Example', 'en')],
+             'display_name': [('Example', 'it'), ('Example', 'en')],
+             'url': [('http://www.example.it', 'it'), ('http://www.example.it', 'en')]}
+        )
+
 
 class SpidTest(TestCase):
 

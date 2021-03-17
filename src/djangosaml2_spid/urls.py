@@ -1,6 +1,7 @@
 from django.urls import path
-from django.conf import settings
-from djangosaml2_spid import views
+
+from .conf import settings
+from . import views
 
 
 SPID_URLS_PREFIX = settings.SPID_URLS_PREFIX

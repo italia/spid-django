@@ -134,7 +134,7 @@ settings.SAML_ATTRIBUTE_MAPPING = getattr(settings, 'SAML_ATTRIBUTE_MAPPING', {
 
 def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
     conf = SPConfig()
-    if not request.path.startswith(settings.SPID_URLS_PREFIX):
+    if request is None or not request.path.lstrip('/').startswith(settings.SPID_URLS_PREFIX):
         # Not a SPID request: load SAML_CONFIG unchanged
         conf.load(copy.deepcopy(settings.SAML_CONFIG))
         return conf
@@ -230,12 +230,16 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
             'key_file': settings.SPID_PRIVATE_KEY,
             'cert_file': settings.SPID_PUBLIC_CERT,
         }],
+
+        'organization': copy.deepcopy(settings.SAML_CONFIG['organization'])
     }
 
     if settings.SAML_CONFIG.get('debug'):
         saml_config['debug'] = True
 
-    if 'xmlsec_binary' not in settings.SAML_CONFIG:
+    if 'xmlsec_binary' in settings.SAML_CONFIG:
+        saml_config['xmlsec_binary'] = copy.deepcopy(settings.SAML_CONFIG['xmlsec_binary'])
+    else:
         saml_config['xmlsec_binary'] = get_xmlsec_binary(['/opt/local/bin', '/usr/bin/xmlsec1'])
 
     if settings.SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE:

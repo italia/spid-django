@@ -44,7 +44,6 @@ INSTALLED_APPS = [
 
     'djangosaml2',
     'djangosaml2_spid',
-    'spid_config'
 ]
 
 MIDDLEWARE = [

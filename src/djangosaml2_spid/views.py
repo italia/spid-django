@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -25,6 +24,7 @@ import djangosaml2.views as djangosaml2_views
 import logging
 import saml2
 
+from .conf import settings
 from .spid_anomalies import SpidAnomaly
 from .spid_metadata import spid_sp_metadata
 from .spid_request import spid_sp_authn_request
@@ -59,7 +59,6 @@ def spid_login(request, config_loader_path=None, wayf_template='wayf.html',
     using the pysaml2 library to create the AuthnRequest.
     It uses the SAML 2.0 Http POST protocol binding.
     """
-
     logger.debug('SPID Login process started')
 
     next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
