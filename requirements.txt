@@ -6,3 +6,6 @@ cffi
 
 # django saml2 SP
 djangosaml2>=1.0.0
+
+# For command update_idps.py
+requests
