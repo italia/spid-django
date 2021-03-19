@@ -1,5 +1,6 @@
 import os
 import copy
+import logging
 from typing import Optional
 
 import saml2
@@ -13,6 +14,7 @@ from django.apps import apps
 from django.http import HttpRequest
 from django.core.exceptions import ImproperlyConfigured
 
+logger = logging.getLogger('djangosaml2')
 
 djangosaml2_spid_config = apps.get_app_config('djangosaml2_spid')
 
@@ -159,7 +161,7 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
         return conf
 
     # Build a SAML_CONFIG for SPID
-    spid_base_url = request.build_absolute_uri('spid')
+    spid_base_url = request.build_absolute_uri(os.path.join('/', settings.SPID_URLS_PREFIX))
 
     saml_config = {
         'entityid': f'{spid_base_url}metadata',
@@ -168,15 +170,15 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
         'service': {
             'sp': {
                 'name': f'{spid_base_url}metadata',
-                'name_qualifier': request.get_host(),
+                'name_qualifier': request.build_absolute_uri('/'),
                 'name_id_format': [settings.SPID_NAMEID_FORMAT],
 
                 'endpoints': {
                     'assertion_consumer_service': [
-                        (f'{spid_base_url}acs', settings.SPID_DEFAULT_BINDING),
+                        (f'{spid_base_url}acs/', settings.SPID_DEFAULT_BINDING),
                     ],
                     'single_logout_service': [
-                        (f'{spid_base_url}ls/post', settings.SPID_DEFAULT_BINDING),
+                        (f'{spid_base_url}ls/post/', settings.SPID_DEFAULT_BINDING),
                     ],
                 },
 
@@ -271,5 +273,6 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
             {'url': settings.SPID_TESTENV2_METADATA_URL}
         )
 
+    logger.debug('SAML_CONFIG: %r', saml_config)
     conf.load(saml_config)
     return conf

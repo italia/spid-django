@@ -12,7 +12,7 @@ from django.urls import reverse
 
 from djangosaml2.conf import get_config_loader, get_config
 
-from .conf import settings, config_settings_loader
+from .conf import config_settings_loader
 from .utils import repr_saml
 
 
@@ -55,7 +55,7 @@ class TestSpidConfig(TestCase):
 
         request = self.factory.get('/spid/metadata')
         saml_config = get_config(request=request)
-        self.assertEqual(saml_config.entityid, 'http://testserver/spid/spidmetadata')
+        self.assertEqual(saml_config.entityid, 'http://testserver/spid/metadata')
         self.assertEqual(
             saml_config.organization,
             {'name': [('Example', 'it'), ('Example', 'en')],
@@ -71,7 +71,7 @@ class TestStaticFiles(TestCase):
         self.assertTrue(os.path.isfile(abs_path))
 
         # For using staticfiles_storage you have to configure STATIC_ROOT setting
-        with self.assertRaises(ImproperlyConfigured) as exc_context:
+        with self.assertRaises(ImproperlyConfigured):
             staticfiles_storage.exists(abs_path)
 
     def test_idp_logos(self):
