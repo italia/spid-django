@@ -9,8 +9,13 @@ from saml2.sigver import get_xmlsec_binary
 from saml2.xmldsig import DIGEST_SHA256, SIG_RSA_SHA256
 
 from django.conf import settings
+from django.apps import apps
 from django.http import HttpRequest
 from django.core.exceptions import ImproperlyConfigured
+
+
+djangosaml2_spid_config = apps.get_app_config('djangosaml2_spid')
+
 
 #
 # Required settings
@@ -19,7 +24,8 @@ if not hasattr(settings, 'SPID_CONTACTS'):
     raise ImproperlyConfigured('Manca la configurazione SPID_CONTACTS!')
 
 if not hasattr(settings, 'SAML_CONFIG'):
-    raise ImproperlyConfigured('Manca la configurazione base per SAML2!')
+    raise ImproperlyConfigured("Manca la configurazione base per SAML2 "
+                               "con le informazioni sull'organizzazione!")
 elif not isinstance(settings.SAML_CONFIG, dict):
     raise ImproperlyConfigured('Formato improprio per la configurazione SAML2!')
 elif 'organization' not in settings.SAML_CONFIG:
@@ -49,9 +55,18 @@ settings.SPID_AUTH_CONTEXT = getattr(
     settings, 'SPID_AUTH_CONTEXT', 'https://www.spid.gov.it/SpidL1'
 )
 
-SPID_CERTS_DIR = os.path.join(os.environ.get('PWD'), 'certificates/')
-SPID_PUBLIC_CERT = os.path.join(SPID_CERTS_DIR, 'public.cert')
-SPID_PRIVATE_KEY = os.path.join(SPID_CERTS_DIR, 'private.key')
+settings.SPID_CERTS_DIR = getattr(
+    settings, 'SPID_CERTS_DIR',
+    os.path.join(settings.BASE_DIR, 'certificates/')
+)
+settings.SPID_PUBLIC_CERT = getattr(
+    settings, 'SPID_PUBLIC_CERT',
+    os.path.join(settings.SPID_CERTS_DIR, 'public.cert')
+)
+settings.SPID_PRIVATE_KEY = getattr(
+    settings, 'SPID_PRIVATE_KEY',
+    os.path.join(settings.SPID_CERTS_DIR, 'private.key')
+)
 
 # source: https://registry.spid.gov.it/identity-providers
 settings.SPID_IDENTITY_PROVIDERS_URL = getattr(
@@ -59,8 +74,12 @@ settings.SPID_IDENTITY_PROVIDERS_URL = getattr(
     'https://registry.spid.gov.it/assets/data/idp.json'
 )
 
-settings.SPID_IDENTITY_PROVIDERS_METADATA_DIR = os.path.join(
-    settings.BASE_DIR, 'spid_config/metadata/'
+settings.SPID_IDENTITY_PROVIDERS_METADATA_DIR = getattr(
+    settings, 'SPID_IDENTITY_PROVIDERS_METADATA_DIR',
+    getattr(
+        settings, 'SPID_IDENTITY_PROVIDERS_METADATAS_DIR',
+        os.path.join(settings.BASE_DIR, 'metadata/')
+    )
 )
 
 # Validation tools settings
@@ -144,7 +163,7 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
 
     saml_config = {
         'entityid': f'{spid_base_url}metadata',
-        'attribute_map_dir': f'{settings.BASE_DIR}/spid_config/attribute-maps/',
+        'attribute_map_dir': os.path.join(djangosaml2_spid_config.path, 'attribute_maps/'),
 
         'service': {
             'sp': {
