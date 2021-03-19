@@ -1,7 +1,11 @@
+import os
 import re
 import xml.etree.ElementTree as ElementTree
 
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles import finders
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponseBadRequest
 from django.test import Client, TestCase, RequestFactory
 from django.urls import reverse
@@ -29,7 +33,7 @@ def dummy_loader():
     return
 
 
-class SpidConfigTest(TestCase):
+class TestSpidConfig(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
@@ -60,7 +64,39 @@ class SpidConfigTest(TestCase):
         )
 
 
-class SpidTest(TestCase):
+class TestStaticFiles(TestCase):
+
+    def test_spid_logo(self):
+        abs_path = finders.find('spid/logo.jpg')
+        self.assertTrue(os.path.isfile(abs_path))
+
+        # For using staticfiles_storage you have to configure STATIC_ROOT setting
+        with self.assertRaises(ImproperlyConfigured) as exc_context:
+            staticfiles_storage.exists(abs_path)
+
+    def test_idp_logos(self):
+        abs_path = finders.find('spid/spid-idp-intesaid.svg')
+        self.assertTrue(os.path.isfile(abs_path))
+
+        abs_path = finders.find('spid/spid-idp-posteid.svg')
+        self.assertTrue(os.path.isfile(abs_path))
+
+    def test_css_files(self):
+        abs_path = finders.find('spid/spid-sp-access-button.css')
+        self.assertTrue(os.path.isfile(abs_path))
+
+    def test_scripts(self):
+        abs_path = finders.find('spid/brython.js')
+        self.assertTrue(os.path.isfile(abs_path))
+
+        abs_path = finders.find('spid/spid_button.js')
+        self.assertTrue(os.path.isfile(abs_path))
+
+        abs_path = finders.find('spid/spid-sp-access-button.js')
+        self.assertTrue(os.path.isfile(abs_path))
+
+
+class TestSpid(TestCase):
 
     def setUp(self):
         self.create_user()

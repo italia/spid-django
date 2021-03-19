@@ -27,7 +27,7 @@ SPID_PRIVATE_KEY = os.path.join(SPID_CERTS_DIR, 'private.key')
 
 # source: https://registry.spid.gov.it/identity-providers
 SPID_IDENTITY_PROVIDERS_URL = 'https://registry.spid.gov.it/assets/data/idp.json'
-SPID_IDENTITY_PROVIDERS_METADATAS_DIR = os.path.join(BASE_DIR, 'spid_config/metadata/')
+SPID_IDENTITY_PROVIDERS_METADATA_DIR = os.path.join(BASE_DIR, 'spid_config/metadata/')
 
 SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', 'False') == 'True'
 SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
@@ -72,7 +72,9 @@ SAML_CONFIG = {
     'debug': True,
     'xmlsec_binary': get_xmlsec_binary(['/opt/local/bin', '/usr/bin/xmlsec1']),
     'entityid': f'{SPID_BASE_URL}metadata',
-    'attribute_map_dir': f'{BASE_DIR}/spid_config/attribute-maps/',
+
+    # Attribute maps moved to src/djangosaml2_spid/attribute_maps/
+    # 'attribute_map_dir': f'{BASE_DIR}/spid_config/attribute-maps/',
 
     'service': {
         'sp': {
@@ -149,7 +151,7 @@ SAML_CONFIG = {
     # many metadata, many idp...
     'metadata': {
         'local': [
-            SPID_IDENTITY_PROVIDERS_METADATAS_DIR
+            SPID_IDENTITY_PROVIDERS_METADATA_DIR
         ],
         'remote': []
     },

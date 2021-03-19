@@ -1,4 +1,4 @@
-{% load spid %}
+{% load spid static %}
 
 <!DOCTYPE html>
 <html lang="it"><head>
@@ -14,19 +14,19 @@ Accedi Con SPID
         </title>
         <meta name="description" content="Bootstrap Italia">
         <!-- CSS -->
-        <link rel="stylesheet" href="/static/spid/bootstrap-italia.css">
+        <link rel="stylesheet" href="{% static 'spid/bootstrap-italia.css' %}">
         <!-- Extra CSS/Javascript -->
 
 
-<link rel="shortcut icon" href="/static/spid/favicon/favicon-32x32.png">
+<link rel="shortcut icon" href="{% static 'spid/favicon/favicon-32x32.png' %}">
 
-<link type="text/css" rel="stylesheet" href="/static/spid/spid-sp-access-button.css">
+<link type="text/css" rel="stylesheet" href="{% static 'spid/spid-sp-access-button.css' %}">
 
 <!--
 <link type="text/css" rel="stylesheet" href="/static/spid/unical_ds.css">
 -->
 
-<script type="text/javascript" src="/static/spid/brython.js"></script>
+<script type="text/javascript" src="{% static 'spid/brython.js' %}"></script>
 <!-- Usefull only if urllib is needed ...
 <script type="text/javascript" src="/static/js/Brython-3.7.3/brython_stdlib.js"></script>
 -->
@@ -121,7 +121,7 @@ Nome Organizzazione
                                         <a href="/">
 
 <div class="col-10 col-md-12 offset-1 offset-md-0">
-    <img src="/static/spid/logo.jpg" style="width: 10%;">
+    <img src="{% static 'spid/logo.jpg' %}" style="width: 10%;" alt="SPID Logo">
 </div>
 
 
@@ -261,7 +261,7 @@ Nome Organizzazione
 
 
 <a href="#" class="italia-it-button italia-it-button-size-xl button-spid" spid-idp-button="#spid-idp-button-xlarge-post" aria-haspopup="true" aria-expanded="false">
-    <span class="italia-it-button-icon"><img src="/static/spid/spid-ico-circle-bb.svg" onerror="this.src='img/spid-ico-circle-bb.png'; this.onerror=null;" alt=""></span>
+    <span class="italia-it-button-icon"><img src="{% static 'spid/spid-ico-circle-bb.svg' %}" onerror="this.src='img/spid-ico-circle-bb.png'; this.onerror=null;" alt=""></span>
     <span class="italia-it-button-text">SPID</span>
 </a>
 <div id="spid-idp-button-xlarge-post" class="spid-idp-button spid-idp-button-tip spid-idp-button-relative">
@@ -275,24 +275,24 @@ Nome Organizzazione
         </li>
 
         <li class="spid-idp-button-link" id="spiditalia" data-idp="spiditalia" data-entityid="https://spid.register.it">
-            <a href="#"><span class="spid-sr-only">SPIDItalia Register.it</span><img src="/static/spid/spid-idp-spiditalia.svg" onerror="this.src='/static/images/spid-idp-spiditalia.svg'; this.onerror=null;" alt="SPIDItalia Register.it"></a>
+            <a href="#"><span class="spid-sr-only">SPIDItalia Register.it</span><img src="{% static 'spid/spid-idp-spiditalia.svg' %}" onerror="this.src='/static/images/spid-idp-spiditalia.svg'; this.onerror=null;" alt="SPIDItalia Register.it"></a>
         </li>
         <li class="spid-idp-button-link" id="timid" data-idp="timid" data-entityid="https://login.id.tim.it/affwebservices/public/saml2sso">
-            <a href="#"><span class="spid-sr-only">Tim ID</span><img src="/static/spid/spid-idp-timid.svg" onerror="this.src='/static/images/spid-idp-timid.svg'; this.onerror=null;" alt="Tim ID"></a>
+            <a href="#"><span class="spid-sr-only">Tim ID</span><img src="{% static 'spid/spid-idp-timid.svg' %}" onerror="this.src='/static/images/spid-idp-timid.svg'; this.onerror=null;" alt="Tim ID"></a>
         </li><li class="spid-idp-button-link" id="intesaid" data-idp="intesaid" data-entityid="https://spid.intesa.it">
-            <a href="#"><span class="spid-sr-only">Intesa ID</span><img src="/static/spid/spid-idp-intesaid.svg" onerror="this.src='/static/images/spid-idp-intesaid.svg'; this.onerror=null;" alt="Intesa ID"></a>
+            <a href="#"><span class="spid-sr-only">Intesa ID</span><img src="{% static 'spid/spid-idp-intesaid.svg' %}" onerror="this.src='/static/images/spid-idp-intesaid.svg'; this.onerror=null;" alt="Intesa ID"></a>
         </li><li class="spid-idp-button-link" id="posteid" data-idp="posteid" data-entityid="https://posteid.poste.it">
-            <a href="#"><span class="spid-sr-only">Poste ID</span><img src="/static/spid/spid-idp-posteid.svg" onerror="this.src='/static/images/spid-idp-posteid.svg'; this.onerror=null;" alt="Poste ID"></a>
+            <a href="#"><span class="spid-sr-only">Poste ID</span><img src="{% static 'spid/spid-idp-posteid.svg' %}" onerror="this.src='/static/images/spid-idp-posteid.svg'; this.onerror=null;" alt="Poste ID"></a>
         </li><li class="spid-idp-button-link" id="arubaid" data-idp="arubaid" data-entityid="https://loginspid.aruba.it">
-            <a href="#"><span class="spid-sr-only">Aruba ID</span><img src="/static/spid/spid-idp-arubaid.svg" onerror="this.src='/static/images/spid-idp-arubaid.svg'; this.onerror=null;" alt="Aruba ID"></a>
+            <a href="#"><span class="spid-sr-only">Aruba ID</span><img src="{% static 'spid/spid-idp-arubaid.svg' %}" onerror="this.src='/static/images/spid-idp-arubaid.svg'; this.onerror=null;" alt="Aruba ID"></a>
         </li><li class="spid-idp-button-link" id="lepidaid" data-idp="lepidaid" data-entityid="https://id.lepida.it/idp/shibboleth">
-            <a href="#"><span class="spid-sr-only">Lepida ID</span><img src="/static/spid/spid-idp-lepidaid.svg" onerror="this.src='/static/images/spid-idp-lepidaid.svg'; this.onerror=null;" alt="Lepida ID"></a>
+            <a href="#"><span class="spid-sr-only">Lepida ID</span><img src="{% static 'spid/spid-idp-lepidaid.svg' %}" onerror="this.src='/static/images/spid-idp-lepidaid.svg'; this.onerror=null;" alt="Lepida ID"></a>
         </li><li class="spid-idp-button-link" id="infocertid" data-idp="infocertid" data-entityid="https://identity.infocert.it">
-            <a href="#"><span class="spid-sr-only">Infocert ID</span><img src="/static/spid/spid-idp-infocertid.svg" onerror="this.src='/static/images/spid-idp-infocertid.svg'; this.onerror=null;" alt="Infocert ID"></a>
+            <a href="#"><span class="spid-sr-only">Infocert ID</span><img src="{% static 'spid/spid-idp-infocertid.svg' %}" onerror="this.src='/static/images/spid-idp-infocertid.svg'; this.onerror=null;" alt="Infocert ID"></a>
         </li><li class="spid-idp-button-link" id="namirialid" data-idp="namirialid" data-entityid="https://idp.namirialtsp.com/idp">
-            <a href="#"><span class="spid-sr-only">Namirial ID</span><img src="/static/spid/spid-idp-namirialid.svg" onerror="this.src='/static/images/spid-idp-namirialid.svg'; this.onerror=null;" alt="Namirial ID"></a>
+            <a href="#"><span class="spid-sr-only">Namirial ID</span><img src="{% static 'spid/spid-idp-namirialid.svg' %}" onerror="this.src='/static/images/spid-idp-namirialid.svg'; this.onerror=null;" alt="Namirial ID"></a>
         </li><li class="spid-idp-button-link" id="sielteid" data-idp="sielteid" data-entityid="https://identity.sieltecloud.it">
-            <a href="#"><span class="spid-sr-only">Sielte ID</span><img src="/static/spid/spid-idp-sielteid.svg" onerror="this.src='/static/images/spid-idp-sielteid.svg'; this.onerror=null;" alt="Sielte ID"></a>
+            <a href="#"><span class="spid-sr-only">Sielte ID</span><img src="{% static 'spid/spid-idp-sielteid.svg' %}" onerror="this.src='/static/images/spid-idp-sielteid.svg'; this.onerror=null;" alt="Sielte ID"></a>
         </li><li class="spid-idp-support-link">
             <a href="https://www.spid.gov.it/">Maggiori informazioni</a>
         </li><li class="spid-idp-support-link">
@@ -326,7 +326,7 @@ Nome Organizzazione
                                 <div class="it-brand-wrapper">
                                     <a href="#">
 
-<img class="icon" src="/static/spid/logo.jpg">
+<img class="icon" src="{% static 'spid/logo.jpg' %}">
 
 
                                         <div class="it-brand-text">
@@ -478,12 +478,12 @@ lorem ipsum
 
 
 
-        <script>window.__PUBLIC_PATH__ = "//static/spid/fonts"</script>
-        <script src="/static/spid/bootstrap-italia.js"></script>
+        <script>window.__PUBLIC_PATH__ = "{%  static 'spid/fonts' %}"</script>
+        <script src="{% static 'spid/bootstrap-italia.js' %}"></script>
 
 
-<script src="/static/spid/spid-sp-access-button.js"></script>
-<script src="/static/spid/spid_button.js"></script>
+<script src="{% static 'spid/spid-sp-access-button.js' %}"></script>
+<script src="{% static 'spid/spid_button.js' %}"></script>
 
 
 
