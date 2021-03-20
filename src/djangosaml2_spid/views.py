@@ -66,7 +66,7 @@ def spid_sp_authn_request(conf, selected_idp, next_url=''):
     authn_req = saml2.samlp.AuthnRequest()
     authn_req.destination = location_fixed
     # spid-testenv2 preleva l'attribute consumer service dalla authnRequest (anche se questo sta già nei metadati...)
-    authn_req.attribute_consuming_service_index = "0"
+    authn_req.attribute_consuming_service_index = str(settings.SPID_CURRENT_INDEX)
 
     # issuer
     issuer = saml2.saml.Issuer()
@@ -239,7 +239,7 @@ def spid_logout(request, config_loader_path=None, **kwargs):
 
     slo_req.destination = subject_id.name_qualifier
     # spid-testenv2 preleva l'attribute consumer service dalla authnRequest (anche se questo sta già nei metadati...)
-    slo_req.attribute_consuming_service_index = "0"
+    slo_req.attribute_consuming_service_index = str(settings.SPID_CURRENT_INDEX)
 
     issuer = saml2.saml.Issuer()
     issuer.name_qualifier = client.config.entityid

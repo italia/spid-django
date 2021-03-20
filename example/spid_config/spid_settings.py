@@ -32,8 +32,8 @@ SPID_IDENTITY_PROVIDERS_METADATAS_DIR = os.path.join(BASE_DIR, 'spid_config/meta
 SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', 'False') == 'True'
 SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
 
-SPID_TESTENV2_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_TESTENV2_REMOTE_METADATA_ACTIVE', 'False') == 'True'
-SPID_TESTENV2_METADATA_URL = os.environ.get('SPID_TESTENV2_METADATA_URL', 'http://localhost:8088/metadata')
+SPID_TESTENV2_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_TESTENV2_REMOTE_METADATA_ACTIVE', 'True') == 'True'
+SPID_TESTENV2_METADATA_URL = os.environ.get('SPID_TESTENV2_METADATA_URL', 'http://spid-dev-identityserver.neratech.it:8088/metadata')
 
 # Avviso 29v3
 SPID_PREFIXES = dict(
@@ -208,7 +208,7 @@ SAML_ATTRIBUTE_MAPPING = {
     'dateOfBirth': ('birth_date',),
 }
 
-SPID_CURRENT_INDEX: int = int(os.getenv("SPID_CURRENT_INDEX", "0"), 10) # in my case export SPID_CURRENT_INDEX=1
+SPID_CURRENT_INDEX: int = int(os.getenv("SPID_CURRENT_INDEX", "1"), 10) # in my case export SPID_CURRENT_INDEX=1
 
 SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST = (
     {
