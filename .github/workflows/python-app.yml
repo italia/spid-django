@@ -40,12 +40,17 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        #
+        # force pplnx's pysaml2 due to spid-sp-test requirements
+        #
+        pip uninstall -y pysaml2
+        pip install --no-cache --upgrade git+https://github.com/peppelinux/pysaml2.git@pplnx-v6.5.1#pysaml2
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        # flake8 ./src/cms --count --select=E9,F63,F7,F82 --show-source --statistics
+        # flake8 ./src/djangosaml2_spid --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 ./src/cms --count --exit-zero --statistics
+        flake8 ./src/djangosaml2_spid --count --exit-zero --statistics
 
 
     - name: Test with Django tests
@@ -59,8 +64,10 @@ jobs:
     - name: Test SPID QA with spid-sp-test
       working-directory: ./example
       run: |
-        ./manage.py runserver &
-        spid_sp_test --metadata-url http://localhost:8000/spid/metadata/ --authn-url http://localhost:8000/spid/login/?idp=http://localhost:54321 --extra --debug ERROR -tr
+        ./manage.py migrate > /dev/null 2>&1
+        ./manage.py runserver > /dev/null 2>&1 &
+        sleep 5
+        spid_sp_test --metadata-url http://localhost:8000/spid/metadata/ --authn-url http://localhost:8000/spid/login/?idp=http://localhost:54321 --extra --exit-zero --debug ERROR -tr
     #- name: Upload coverage to Codecov
       #uses: codecov/codecov-action@v1
       #with:
