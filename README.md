@@ -1,5 +1,4 @@
-Djangosaml2 SPID
-================
+SPID Django
 
 ![CI build](https://github.com/italia/spid-django/workflows/spid-django/badge.svg)
 ![Python version](https://img.shields.io/badge/license-Apache%202-blue.svg)
@@ -15,7 +14,7 @@ Introduction
 This is a Django application that provides a SAML2 Service Provider
 for a Single Sign On with SPID, the Italian Digital Identity System.
 
-This project comes with a demo on a Spid button template with both *spid-testenv2* 
+This project comes with a demo on a Spid button template with both *spid-testenv2*
 and *spid-saml-check* IDP preconfigured. See running the Demo project paragaph for details.
 
 The technical documentation on SPID and SAML is available at [Docs Italia](https://docs.italia.it/italia/spid/spid-regole-tecniche/it/34.1.1/index.html)
@@ -26,7 +25,7 @@ The technical documentation on SPID and SAML is available at [Docs Italia](https
 Dependencies
 ------------
 
-These libraries are required on your operating system environment 
+These libraries are required on your operating system environment
 in order to compile external modules of some dependencies:
 
 - xmlsec
@@ -39,7 +38,7 @@ in order to compile external modules of some dependencies:
 Running the Demo project
 ------------------------
 
-The demo project is configured within `example/` subdirectory. 
+The demo project is configured within `example/` subdirectory.
 This project uses **spid-saml-check** and **spid-testenv2** as
 additional IDPs configured in a demo SPID button.
 
@@ -51,20 +50,20 @@ source env/bin/activate
 pip install -r ../requirements.txt
 ````
 
-Your example saml2 configuration is in `spid_config/spid_settings.py`. 
+Your example saml2 configuration is in `spid_config/spid_settings.py`.
 See djangosaml2 or pysaml2 official docs for clarifications.
 
 To run the demo project:
  - create the database `./manage.py migrate`
  - run `./manage.py runserver 0.0.0.0:8000`
-   
+
 or execute the run.sh script with these environment settings:
 
  ````
  SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE=True SPID_TESTENV2_REMOTE_METADATA_ACTIVE=True bash run.sh
  ````
 
-If you choosed to use *spid-testenv2*, fefore starting it, you just have to save the 
+If you choosed to use *spid-testenv2*, fefore starting it, you just have to save the
 current demo metadata in *spid-testenv2* configuration, this way:
 
 ````
@@ -72,7 +71,7 @@ current demo metadata in *spid-testenv2* configuration, this way:
 wget http://localhost:8000/spid/metadata -O conf/sp_metadata.xml
 ````
 
-Finally, start spid-testenv2 and spid-saml-check (docker is suggested) and 
+Finally, start spid-testenv2 and spid-saml-check (docker is suggested) and
 then open 'http://localhost:8000' in your browser.
 
 
@@ -90,14 +89,14 @@ then use `docker-compose --env-file docker-compose.env up` (the process takes so
 under `./example/configs/` to match the new configurations, changing only `./docker-compose.env` will not suffice.
 
 
-Setup for an existing project 
+Setup for an existing project
 -----------------------------
 
 djangosaml2_spid uses a pySAML2 fork.
 
 * `pip install git+https://github.com/peppelinux/pysaml2.git@pplnx-v6.5.1`
 * `pip install git+https://github.com/italia/spid-django`
-* Copy the `example/spid_config/` to your project base dir 
+* Copy the `example/spid_config/` to your project base dir
 * Import SAML2 entity configuration in your project settings file: `from spid_config.spid_settings import *`
 * Add in `settings.INSTALLED_APPS` the following
   ```
@@ -135,15 +134,32 @@ SAML_ATTRIBUTE_MAPPING = {
 }
 ````
 
+Download identity providers metadata
+-----------------------------------
+
+To update the list of entity providers use the custom django command `update_idps`.
+In the example project you can do it as follows:
+
+````
+cd example/
+python ./manage.py update_idps
+````
 
 Running tests (only for developers)
 -----------------------------------
 
-Tests are integrated into the demo project and are intended for use 
+Tests are integrated into the demo project and are intended for use
 only by developers.
 
+To test the application:
 ````
-pip install requirements-dev.txt
+pip install -r requirements-dev.txt
+python runtests.py
+````
+
+For running tests using the settings of the Demo project:
+````
+pip install -r requirements-dev.txt
 cd example/
 coverage erase
 coverage run ./manage.py test djangosaml2_spid.tests

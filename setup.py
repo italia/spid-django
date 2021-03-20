@@ -1,23 +1,16 @@
-import re
 import os
-import sys
-
-from glob import glob
 from setuptools import setup, find_packages
 
-SRC_FOLDER = 'src'
-PKG_NAME = 'djangosaml2_spid'
 
 with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
-
 
 with open(os.path.join(os.path.dirname(__file__), 'requirements.txt')) as requirements:
     REQUIREMENTS = requirements.read()
 
 
 setup(
-    name="djangosaml2_spid",
+    name="djangosaml2-spid",
     version='0.6.6',
     description="Djangosaml2 SPID Service Provider",
     long_description=README,
@@ -26,13 +19,9 @@ setup(
     author_email='demarcog83@gmail.com',
     license="Apache 2.0",
     url='https://github.com/peppelinux/djangosaml2_spid',
-    packages=[PKG_NAME,],
-    package_dir={PKG_NAME: f'{SRC_FOLDER}/{PKG_NAME}'},
-    
-    package_data={PKG_NAME: [i.replace(f'{SRC_FOLDER}/{PKG_NAME}/', '') 
-                             for i in glob(f'{SRC_FOLDER}/{PKG_NAME}/**', 
-                                           recursive=True)]
-    },
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
+    include_package_data=True,
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: Apache Software License",
