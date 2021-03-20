@@ -213,7 +213,7 @@ SAML_ATTRIBUTE_MAPPING = {
 }
 
 # new features parameter
-SPID_CURRENT_INDEX: int = int(os.getenv("SPID_CURRENT_INDEX", "1"), 10)  # in my case export SPID_CURRENT_INDEX=1
+SPID_CURRENT_INDEX: int = int(os.getenv("SPID_CURRENT_INDEX", "0"), 10)  # in my case export SPID_CURRENT_INDEX=1
 
 SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST = (
     {
