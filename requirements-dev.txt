@@ -6,4 +6,3 @@ flake8
 isort
 bandit
 spid-sp-test==0.4.4
-
