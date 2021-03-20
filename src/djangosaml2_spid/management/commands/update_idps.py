@@ -6,7 +6,7 @@ import requests
 
 
 SPID_IDENTITY_PROVIDERS_URL = settings.SPID_IDENTITY_PROVIDERS_URL
-SPID_IDENTITY_PROVIDERS_METADATAS_DIR = settings.SPID_IDENTITY_PROVIDERS_METADATAS_DIR
+SPID_IDENTITY_PROVIDERS_METADATA_DIR = settings.SPID_IDENTITY_PROVIDERS_METADATA_DIR
 
 
 class Command(BaseCommand):
@@ -18,23 +18,28 @@ class Command(BaseCommand):
     def write_identity_providers_metadatas(self):
         identity_providers = self.download_identity_providers()
 
-        self.print(f'Starting writing of IdPs metadata XML files into {SPID_IDENTITY_PROVIDERS_METADATAS_DIR}:')
+        self.print(f'Starting writing of IdPs metadata XML files '
+                   f'into {SPID_IDENTITY_PROVIDERS_METADATA_DIR}:')
 
         for identity_provider in identity_providers:
             idp_entity_code = identity_provider['ipa_entity_code']
             idp_entity_name = identity_provider['entity_name']
             idp_metadata = identity_provider['metadata']
-            metadata_file_path = os.path.join(SPID_IDENTITY_PROVIDERS_METADATAS_DIR, f'{idp_entity_code}.xml')
+            metadata_file_path = os.path.join(
+                SPID_IDENTITY_PROVIDERS_METADATA_DIR, f'{idp_entity_code}.xml')
 
-            self.print(f'Writing metadata XML file for IdP {idp_entity_name} into {metadata_file_path}', indentation_level=1)
+            self.print(f'Writing metadata XML file for IdP {idp_entity_name} '
+                       f'into {metadata_file_path}', indentation_level=1)
 
             with open(metadata_file_path, 'w', encoding='utf8') as metadata_file:
                 metadata_file.write(idp_metadata)
 
-        self.print_success(f'Successfully wrote all IdPs metadata XML files into {SPID_IDENTITY_PROVIDERS_METADATAS_DIR}')
+        self.print_success(f'Successfully wrote all IdPs metadata XML files '
+                           f'into {SPID_IDENTITY_PROVIDERS_METADATA_DIR}')
 
     def download_identity_providers(self):
-        self.print(f'Starting download of identity providers (IdPs) official list from {SPID_IDENTITY_PROVIDERS_URL}')
+        self.print(f'Starting download of identity providers (IdPs) '
+                   f'official list from {SPID_IDENTITY_PROVIDERS_URL}')
 
         with requests.get(SPID_IDENTITY_PROVIDERS_URL, verify=True) as response:
             identity_providers = json.loads(response.content)['data']
@@ -45,7 +50,8 @@ class Command(BaseCommand):
             idp_entity_name = identity_provider['entity_name']
             idp_metadata_url = identity_provider['metadata_url']
 
-            self.print(f'Downloading metadata for IdP {idp_entity_name} from {idp_metadata_url}', indentation_level=1)
+            self.print(f'Downloading metadata for IdP {idp_entity_name} '
+                       f'from {idp_metadata_url}', indentation_level=1)
 
             with requests.get(idp_metadata_url, verify=True) as response:
                 identity_provider['metadata'] = response.text

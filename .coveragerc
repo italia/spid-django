@@ -1,0 +1,12 @@
+# .coveragerc to control coverage.py
+[coverage:run]
+branch = True
+source = src/djangosaml2_spid/
+omit =
+    *manage.py 
+    */distutils/*
+    tests/*
+    */apps/*
+    */migrations/*
+    */site-packages/*
+    */tests.py
