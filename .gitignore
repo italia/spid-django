@@ -3,8 +3,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-
-
 # C extensions
 *.so
 
@@ -136,3 +134,6 @@ dmypy.json
 
 # sub-project
 spid-saml-check
+
+# example project downloaded metadata
+example/spid_config/metadata/idp_*.xml

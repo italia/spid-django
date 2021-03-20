@@ -1,3 +1,6 @@
+[submodule "spid-compliant-certificates"]
+	path = spid-compliant-certificates
+	url = https://github.com/italia/spid-compliant-certificates.git
 [submodule "spid-saml-check"]
 	path = spid-saml-check
-	url = ./spid-saml-check
+	url = https://github.com/italia/spid-saml-check.git
