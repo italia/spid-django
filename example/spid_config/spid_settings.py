@@ -5,13 +5,14 @@ from saml2.saml import (NAMEID_FORMAT_PERSISTENT,
                         NAMEID_FORMAT_TRANSIENT,
                         NAMEID_FORMAT_UNSPECIFIED)
 from saml2.sigver import get_xmlsec_binary
+from typing import Tuple
+from collections import OrderedDict
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR_CERTS = os.environ.get('PWD')
 
-
-BASE = os.environ.get('SPID_BASE_SCHEMA_HOST_PORT', 'http://localhost:8000')
+BASE = os.environ.get('SPID_BASE_SCHEMA_HOST_PORT', 'http://127.0.0.1:8000')
 BASE_URL = '{}/spid'.format(BASE)
 
 LOGIN_URL = '/spid/login/'
@@ -28,13 +29,15 @@ SPID_AUTH_CONTEXT = 'https://www.spid.gov.it/SpidL1'
 SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', False)
 SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
 
-SPID_TESTENV2_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_TESTENV2_REMOTE_METADATA_ACTIVE', False)
+SPID_TESTENV2_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_TESTENV2_REMOTE_METADATA_ACTIVE', True)
 SPID_TESTENV2_METADATA_URL = os.environ.get('SPID_TESTENV2_METADATA_URL', 'http://localhost:8088/metadata')
+
+SPID_CURRENT_INDEX: int = int(os.getenv("SPID_CURRENT_INDEX", "0"), 10)
 
 # Avviso 29v3
 SPID_PREFIXES = dict(
-    spid = "https://spid.gov.it/saml-extensions",
-    fpa = "https://spid.gov.it/invoicing-extensions"
+    spid="https://spid.gov.it/saml-extensions",
+    fpa="https://spid.gov.it/invoicing-extensions"
 )
 
 # other or billing, not together at the same time!
@@ -48,12 +51,12 @@ SPID_CONTACTS = [
     # 'Public': ''
     # },
     {
-    'contact_type': 'other',
-    'telephone_number': '+39 84756344785',
-    'email_address': 'info@example.org',
-    'VATNumber': 'IT12345678901',
-    'FiscalCode': 'XYasdasdadasdGGJ000W',
-    'Public': ''
+        'contact_type': 'other',
+        'telephone_number': '+39 84756344785',
+        'email_address': 'info@example.org',
+        'VATNumber': 'IT12345678901',
+        'FiscalCode': 'XYasdasdadasdGGJ000W',
+        'Public': ''
     },
     # {
     # 'contact_type': 'billing',
@@ -74,7 +77,7 @@ SPID_CONTACTS = [
 ]
 
 SAML_CONFIG = {
-    'debug' : True,
+    'debug': True,
     'xmlsec_binary': get_xmlsec_binary(['/opt/local/bin',
                                         '/usr/bin/xmlsec1']),
     'entityid': f'{BASE_URL}/metadata',
@@ -91,16 +94,18 @@ SAML_CONFIG = {
             'endpoints': {
                 'assertion_consumer_service': [
                     ('%s/acs/' % BASE_URL, saml2.BINDING_HTTP_POST),
-                    ],
+                    ('%s/acs/' % BASE_URL, saml2.BINDING_HTTP_POST),
+                ],
                 "single_logout_service": [
+                    ("%s/ls/post/" % BASE_URL, saml2.BINDING_HTTP_POST),
                     ("%s/ls/post/" % BASE_URL, saml2.BINDING_HTTP_POST),
                     # ("%s/ls/" % BASE_URL, saml2.BINDING_HTTP_REDIRECT),
                 ],
-                }, # end endpoints
+            },  # end endpoints
 
             # Mandates that the identity provider MUST authenticate the
             # presenter directly rather than rely on a previous security context.
-            "force_authn": False, # SPID
+            "force_authn": False,  # SPID
             'name_id_format_allow_create': False,
 
             # attributes that this project need to identify a user
@@ -109,6 +114,12 @@ SAML_CONFIG = {
                                     'familyName',
                                     'fiscalNumber',
                                     'email'],
+
+            'required_attributes_et': ['spidCode',
+                                       'name',
+                                       'familyName',
+                                       'fiscalNumber',
+                                       'email'],
 
             'requested_attribute_name_format': saml2.saml.NAME_FORMAT_BASIC,
             'name_format': saml2.saml.NAME_FORMAT_BASIC,
@@ -128,8 +139,8 @@ SAML_CONFIG = {
                                     'mobilePhone',
                                     'expirationDate'],
 
-            'signing_algorithm':  saml2.xmldsig.SIG_RSA_SHA256,
-            'digest_algorithm':  saml2.xmldsig.DIGEST_SHA256,
+            'signing_algorithm': saml2.xmldsig.SIG_RSA_SHA256,
+            'digest_algorithm': saml2.xmldsig.DIGEST_SHA256,
 
             'authn_requests_signed': True,
             'logout_requests_signed': True,
@@ -146,7 +157,7 @@ SAML_CONFIG = {
             # Permits to have attributes not configured in attribute-mappings
             # otherwise...without OID will be rejected
             'allow_unknown_attributes': True,
-        }, # end sp
+        },  # end sp
 
     },
 
@@ -161,17 +172,23 @@ SAML_CONFIG = {
     'cert_file': f'{BASE_DIR_CERTS}/certificates/public.cert',
 
     # Encryption
-    'encryption_keypairs': [{
-        'key_file': f'{BASE_DIR_CERTS}/certificates/private.key',
-        'cert_file': f'{BASE_DIR_CERTS}/certificates/public.cert',
-    }],
+    'encryption_keypairs': [
+        {
+            'key_file': f'{BASE_DIR_CERTS}/certificates/private.key',
+            'cert_file': f'{BASE_DIR_CERTS}/certificates/public.cert',
+        },
+        {
+            'key_file': f'{BASE_DIR_CERTS}/certificates/private.key',
+            'cert_file': f'{BASE_DIR_CERTS}/certificates/public.cert',
+        }
+    ],
 
     # you can set multilanguage information here
     'organization': {
-      'name': [('Example', 'it'), ('Example', 'en')],
-      'display_name': [('Example', 'it'), ('Example', 'en')],
-      'url': [('http://www.example.it', 'it'), ('http://www.example.it', 'en')],
-      },
+        'name': [('Example', 'it'), ('Example', 'en')],
+        'display_name': [('Example', 'it'), ('Example', 'en')],
+        'url': [('http://www.example.it', 'it'), ('http://www.example.it', 'en')],
+    },
 
 }
 
@@ -201,13 +218,38 @@ SAML_ATTRIBUTE_MAPPING = {
     # 'email': ('email', ),
     # 'first_name': ('name'),
 
-    'fiscalNumber': ('username', ),
-    'email': ('email', ),
-    'name': ('first_name', ),
-    'familyName': ('last_name', ),
+    'fiscalNumber': ('username',),
+    'email': ('email',),
+    'name': ('first_name',),
+    'familyName': ('last_name',),
     'placeOfBirth': ('place_of_birth',),
     'dateOfBirth': ('birth_date',),
 }
+
+SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST = (
+    {
+        "serviceNames": (
+            {"lang": "en", "text": "service #1"},
+            {"lang": "it", "text": "servizio #1"},
+        ),
+        "serviceDescriptions": (
+            {"lang": "en", "text": "description of service #1"},
+            {"lang": "it", "text": "descrizione del servizio #1"},
+        ),
+        "attributes": ("spidCode", "fiscalNumber", "email", "name", "familyName", "placeOfBirth", "dateOfBirth",)
+    },
+    {
+        "serviceNames": (
+            {"lang": "en", "text": "service #2"},
+            {"lang": "it", "text": "servizio #2"},
+        ),
+        "serviceDescriptions": (
+            {"lang": "en", "text": "description of service #2"},
+            {"lang": "it", "text": "descrizione del servizio #2"},
+        ),
+        "attributes": ("spidCode", "fiscalNumber", "email", "name", "familyName",)
+    },
+)
 
 LOGGING = {
     'version': 1,
