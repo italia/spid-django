@@ -151,8 +151,15 @@ Running tests (only for developers)
 Tests are integrated into the demo project and are intended for use
 only by developers.
 
+To test the application:
 ````
-pip install requirements-dev.txt
+pip install -r requirements-dev.txt
+python runtests.py
+````
+
+For running tests using the settings of the Demo project:
+````
+pip install -r requirements-dev.txt
 cd example/
 coverage erase
 coverage run ./manage.py test djangosaml2_spid.tests
