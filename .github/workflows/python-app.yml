@@ -47,7 +47,7 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 ./src/cms --count --exit-zero --statistics
 
-   
+
     - name: Test with Django tests
       working-directory: ./example
       run: |
@@ -56,6 +56,11 @@ jobs:
         coverage report -m
         # coverage report --fail-under=99
         coverage xml
+    - name: Test SPID QA with spid-sp-test
+      working-directory: ./example
+      run: |
+        ./manage.py runserver &
+        spid_sp_test --metadata-url http://localhost:8000/spid/metadata/ --authn-url http://localhost:8000/spid/login/?idp=http://localhost:54321 --extra --debug ERROR -tr
     #- name: Upload coverage to Codecov
       #uses: codecov/codecov-action@v1
       #with:
@@ -66,7 +71,7 @@ jobs:
         #name: codecov-umbrella
         #fail_ci_if_error: true
         #path_to_write_report: ./codecov_report.txt
-        # verbose: true    
+        # verbose: true
     #- name: Bandit Security Scan
       #run: |
         #bandit -r -x tests.py,src/cms/api/tests src/cms/*

@@ -5,4 +5,4 @@ black
 flake8
 isort
 bandit
--e .
+spid-sp-test==0.4.2
