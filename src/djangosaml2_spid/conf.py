@@ -37,7 +37,7 @@ elif 'organization' not in settings.SAML_CONFIG:
 #
 # SPID settings with default values
 
-settings.SPID_URLS_PREFIX = getattr(settings, 'SPID_URLS_PREFIX', 'spid/')
+settings.SPID_URLS_PREFIX = getattr(settings, 'SPID_URLS_PREFIX', 'spid')
 
 settings.LOGIN_URL = getattr(settings, 'LOGIN_URL', '/spid/login')
 settings.LOGOUT_URL = getattr(settings, 'LOGOUT_URL', '/spid/logout')
@@ -164,21 +164,21 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
     spid_base_url = request.build_absolute_uri(os.path.join('/', settings.SPID_URLS_PREFIX))
 
     saml_config = {
-        'entityid': f'{spid_base_url}metadata',
+        'entityid': f'{spid_base_url}/metadata',
         'attribute_map_dir': os.path.join(djangosaml2_spid_config.path, 'attribute_maps/'),
 
         'service': {
             'sp': {
-                'name': f'{spid_base_url}metadata',
+                'name': f'{spid_base_url}/metadata',
                 'name_qualifier': request.build_absolute_uri('/'),
                 'name_id_format': [settings.SPID_NAMEID_FORMAT],
 
                 'endpoints': {
                     'assertion_consumer_service': [
-                        (f'{spid_base_url}acs/', settings.SPID_DEFAULT_BINDING),
+                        (f'{spid_base_url}/acs/', saml2.BINDING_HTTP_POST),
                     ],
                     'single_logout_service': [
-                        (f'{spid_base_url}ls/post/', settings.SPID_DEFAULT_BINDING),
+                        (f'{spid_base_url}/ls/post/', saml2.BINDING_HTTP_POST),
                     ],
                 },
 

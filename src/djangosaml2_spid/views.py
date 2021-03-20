@@ -37,7 +37,10 @@ logger = logging.getLogger('djangosaml2')
 
 
 def index(request):
-    """Barebone 'diagnostics' view, print user attributes if logged in + login/logout links."""
+    """
+       Barebone 'diagnostics' view, print user attributes
+       if logged in + login/logout links.
+    """
 
     if request.user.is_authenticated:
         out = f"LOGGED IN: <a href={settings.LOGOUT_URL}>LOGOUT</a><br>"
@@ -48,7 +51,9 @@ def index(request):
         )
         return HttpResponse(out)
     else:
-        return HttpResponse(f"LOGGED OUT: <a href={settings.LOGIN_URL}>LOGIN</a>")
+        return HttpResponse(
+                f"LOGGED OUT: <a href={settings.LOGIN_URL}>LOGIN</a>"
+        )
 
 
 def spid_login(request, config_loader_path=None, wayf_template='wayf.html',
@@ -71,12 +76,20 @@ def spid_login(request, config_loader_path=None, wayf_template='wayf.html',
         next_url = settings.LOGIN_REDIRECT_URL
 
     if request.user.is_authenticated:
-        redirect_authenticated_user = getattr(settings, 'SAML_IGNORE_AUTHENTICATED_USERS_ON_LOGIN', True)
+        redirect_authenticated_user = getattr(
+                    settings,
+                    'SAML_IGNORE_AUTHENTICATED_USERS_ON_LOGIN',
+                    True
+        )
         if redirect_authenticated_user:
             return HttpResponseRedirect(next_url)
         else:  # pragma: no cover
             logger.debug('User is already logged in')
-            return render(request, authorization_error_template, {'came_from': next_url})
+            return render(
+                request,
+                authorization_error_template,
+                {'came_from': next_url}
+            )
 
     # this works only if request came from wayf
     selected_idp = request.GET.get('idp', None)
@@ -104,8 +117,17 @@ def spid_login(request, config_loader_path=None, wayf_template='wayf.html',
             return HttpResponseNotFound(_msg)
 
     # ensure our selected binding is supported by the IDP
-    logger.debug(f'Trying binding {SPID_DEFAULT_BINDING} for IDP {selected_idp}')
-    supported_bindings = get_idp_sso_supported_bindings(selected_idp, config=conf)
+    logger.debug(
+        f'Trying binding {SPID_DEFAULT_BINDING} for IDP {selected_idp}'
+    )
+    supported_bindings = get_idp_sso_supported_bindings(
+                                                selected_idp,
+                                                config=conf
+                                            )
+    if not supported_bindings:
+        _msg = 'IdP Metadata not found or not valid'
+        return HttpResponseNotFound(_msg)
+
     if SPID_DEFAULT_BINDING not in supported_bindings:
         _msg = (
             f"Requested: {SPID_DEFAULT_BINDING} but the selected "
@@ -118,7 +140,11 @@ def spid_login(request, config_loader_path=None, wayf_template='wayf.html',
 
     # SPID things here
     try:
-        login_response = spid_sp_authn_request(conf, selected_idp, next_url)
+        login_response = spid_sp_authn_request(
+                                            conf,
+                                            selected_idp,
+                                            next_url
+                                        )
     except UnknownSystemEntity as e:  # pragma: no cover
         _msg = f'Unknown IDP Entity ID: {selected_idp}'
         logger.error(f'{_msg}: {e}')
@@ -128,7 +154,9 @@ def spid_login(request, config_loader_path=None, wayf_template='wayf.html',
     http_response = login_response['http_response']
 
     # success, so save the session ID and return our response
-    logger.debug(f'Saving session-id {session_id} in the OutstandingQueries cache')
+    logger.debug(
+        f'Saving session-id {session_id} in the OutstandingQueries cache'
+    )
     oq_cache = OutstandingQueriesCache(request.saml_session)
     oq_cache.set(session_id, next_url)
 
@@ -160,8 +188,12 @@ def spid_logout(request, config_loader_path=None, **kwargs):
 
     subject_id = djangosaml2_views._get_subject_id(request.saml_session)
     if subject_id is None:
-        logger.warning(f'The session does not contain the subject id for user {request.user}')
-        logger.error("Looks like the user %s is not logged in any IdP/AA", subject_id)
+        logger.warning(
+            f'The session does not contain the subject id for user {request.user}'
+        )
+        logger.error(
+            f"Looks like the user {subject_id} is not logged in any IdP/AA"
+        )
         return HttpResponseBadRequest("You are not logged in any IdP/AA")
 
     slo_req = saml2.samlp.LogoutRequest()
@@ -219,7 +251,9 @@ def spid_logout(request, config_loader_path=None, **kwargs):
     )
 
     _req_str = slo_req_signed
-    logger.debug(f'LogoutRequest to {subject_id.name_qualifier}: {repr_saml(_req_str)}')
+    logger.debug(
+        f'LogoutRequest to {subject_id.name_qualifier}: {repr_saml(_req_str)}'
+    )
 
     slo_location = client.metadata.single_logout_service(
         subject_id.name_qualifier,

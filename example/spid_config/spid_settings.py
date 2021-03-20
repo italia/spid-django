@@ -7,12 +7,12 @@ import saml2
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SPID_BASE_SCHEMA_HOST_PORT = os.environ.get('SPID_BASE_SCHEMA_HOST_PORT', 'http://localhost:8000')
-SPID_URLS_PREFIX = 'spid/'
+SPID_URLS_PREFIX = 'spid'
 SPID_BASE_URL = f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_URLS_PREFIX}'
 
-LOGIN_URL = '/spid/login'
-LOGOUT_URL = '/spid/logout'
-LOGIN_REDIRECT_URL = '/spid/echo_attributes'
+LOGIN_URL = f'/{SPID_URLS_PREFIX}/login'
+LOGOUT_URL = f'/{SPID_URLS_PREFIX}/logout'
+LOGIN_REDIRECT_URL = f'/{SPID_URLS_PREFIX}/echo_attributes'
 LOGOUT_REDIRECT_URL = '/'
 
 SPID_DEFAULT_BINDING = saml2.BINDING_HTTP_POST
@@ -41,6 +41,8 @@ SPID_PREFIXES = dict(
     fpa='https://spid.gov.it/invoicing-extensions'
 )
 
+APPEND_SLASH = True
+
 SPID_CONTACTS = [
     {
         'contact_type': 'other',
@@ -50,46 +52,46 @@ SPID_CONTACTS = [
         'FiscalCode': 'XYZABCAAMGGJ000W',
         'Private': ''
     },
-    {
-        'contact_type': 'billing',
-        'telephone_number': '+39 84756344785',
-        'email_address': 'info@example.org',
-        'company': 'example s.p.a.',
-        # 'CodiceFiscale': 'NGLMRA80A01D086T',
-        'IdCodice': '983745349857',
-        'IdPaese': 'IT',
-        'Denominazione': 'Destinatario Fatturazione',
-        'Indirizzo': 'via tante cose',
-        'NumeroCivico': '12',
-        'CAP': '87100',
-        'Comune': 'Cosenza',
-        'Provincia': 'CS',
-        'Nazione': 'IT',
-    },
+    # {
+        # 'contact_type': 'billing',
+        # 'telephone_number': '+39 84756344785',
+        # 'email_address': 'info@example.org',
+        # 'company': 'example s.p.a.',
+        ## 'CodiceFiscale': 'NGLMRA80A01D086T',
+        # 'IdCodice': '983745349857',
+        # 'IdPaese': 'IT',
+        # 'Denominazione': 'Destinatario Fatturazione',
+        # 'Indirizzo': 'via tante cose',
+        # 'NumeroCivico': '12',
+        # 'CAP': '87100',
+        # 'Comune': 'Cosenza',
+        # 'Provincia': 'CS',
+        # 'Nazione': 'IT',
+    # },
 ]
 
 SAML_CONFIG = {
     'debug': True,
     'xmlsec_binary': get_xmlsec_binary(['/opt/local/bin', '/usr/bin/xmlsec1']),
-    'entityid': f'{SPID_BASE_URL}metadata',
+    'entityid': f'{SPID_BASE_URL}/metadata',
 
     # Attribute maps moved to src/djangosaml2_spid/attribute_maps/
     # 'attribute_map_dir': f'{BASE_DIR}/spid_config/attribute-maps/',
 
     'service': {
         'sp': {
-            'name': f'{SPID_BASE_URL}metadata',
+            'name': f'{SPID_BASE_URL}/metadata/',
             'name_qualifier': SPID_BASE_SCHEMA_HOST_PORT,
 
             'name_id_format': [SPID_NAMEID_FORMAT],
 
             'endpoints': {
                 'assertion_consumer_service': [
-                    (f'{SPID_BASE_URL}acs', SPID_DEFAULT_BINDING),
+                    (f'{SPID_BASE_URL}/acs/', saml2.BINDING_HTTP_POST),
                 ],
                 'single_logout_service': [
-                    (f'{SPID_BASE_URL}ls/post', SPID_DEFAULT_BINDING),
-                    # (f'{SPID_BASE_URL}/ls', saml2.BINDING_HTTP_REDIRECT),
+                    (f'{SPID_BASE_URL}/ls/post/', saml2.BINDING_HTTP_POST),
+                    # (f'{SPID_BASE_URL}/ls/', saml2.BINDING_HTTP_REDIRECT),
                 ],
             },
 
