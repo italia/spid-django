@@ -130,4 +130,3 @@ dmypy.json
 
 # example project downloaded metadata
 example/spid_config/metadata/idp_*.xml
-example/djangosaml2_spid
