@@ -65,7 +65,7 @@ jobs:
       working-directory: ./example
       run: |
         ./manage.py migrate
-        ./manage.py runserver &> /dev/null 2>&1
+        ./manage.py runserver > /dev/null 2>&1 &
         sleep 5
         spid_sp_test --metadata-url http://localhost:8000/spid/metadata/ --authn-url http://localhost:8000/spid/login/?idp=http://localhost:54321 --extra --debug ERROR -tr
     #- name: Upload coverage to Codecov
