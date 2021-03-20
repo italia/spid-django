@@ -40,6 +40,11 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        #
+        # force pplnx's pysaml2 due to spid-sp-test requirements
+        #
+        pip uninstall pysaml2
+        pip install --no-cache --upgrade git+https://github.com/peppelinux/pysaml2.git@pplnx-v6.5.1#pysaml2
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
