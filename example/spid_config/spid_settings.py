@@ -7,12 +7,12 @@ import saml2
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SPID_BASE_SCHEMA_HOST_PORT = os.environ.get('SPID_BASE_SCHEMA_HOST_PORT', 'http://localhost:8000')
-SPID_URLS_PREFIX = 'spid/'
+SPID_URLS_PREFIX = 'spid'
 SPID_BASE_URL = f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_URLS_PREFIX}'
 
-LOGIN_URL = '/spid/login'
-LOGOUT_URL = '/spid/logout'
-LOGIN_REDIRECT_URL = '/spid/echo_attributes'
+LOGIN_URL = f'/{SPID_URLS_PREFIX}/login'
+LOGOUT_URL = f'/{SPID_URLS_PREFIX}/logout'
+LOGIN_REDIRECT_URL = f'/{SPID_URLS_PREFIX}/echo_attributes'
 LOGOUT_REDIRECT_URL = '/'
 
 SPID_DEFAULT_BINDING = saml2.BINDING_HTTP_POST
@@ -27,7 +27,7 @@ SPID_PRIVATE_KEY = os.path.join(SPID_CERTS_DIR, 'private.key')
 
 # source: https://registry.spid.gov.it/identity-providers
 SPID_IDENTITY_PROVIDERS_URL = 'https://registry.spid.gov.it/assets/data/idp.json'
-SPID_IDENTITY_PROVIDERS_METADATAS_DIR = os.path.join(BASE_DIR, 'spid_config/metadata/')
+SPID_IDENTITY_PROVIDERS_METADATA_DIR = os.path.join(BASE_DIR, 'spid_config/metadata/')
 
 SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', 'False') == 'True'
 SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
@@ -41,6 +41,8 @@ SPID_PREFIXES = dict(
     fpa='https://spid.gov.it/invoicing-extensions'
 )
 
+APPEND_SLASH = True
+
 SPID_CONTACTS = [
     {
         'contact_type': 'other',
@@ -50,46 +52,48 @@ SPID_CONTACTS = [
         'FiscalCode': 'XYZABCAAMGGJ000W',
         'Private': ''
     },
-    {
-        'contact_type': 'billing',
-        'telephone_number': '+39 84756344785',
-        'email_address': 'info@example.org',
-        'company': 'example s.p.a.',
-        # 'CodiceFiscale': 'NGLMRA80A01D086T',
-        'IdCodice': '983745349857',
-        'IdPaese': 'IT',
-        'Denominazione': 'Destinatario Fatturazione',
-        'Indirizzo': 'via tante cose',
-        'NumeroCivico': '12',
-        'CAP': '87100',
-        'Comune': 'Cosenza',
-        'Provincia': 'CS',
-        'Nazione': 'IT',
-    },
+    # {
+    # 'contact_type': 'billing',
+    # 'telephone_number': '+39 84756344785',
+    # 'email_address': 'info@example.org',
+    # 'company': 'example s.p.a.',
+    ## 'CodiceFiscale': 'NGLMRA80A01D086T',
+    # 'IdCodice': '983745349857',
+    # 'IdPaese': 'IT',
+    # 'Denominazione': 'Destinatario Fatturazione',
+    # 'Indirizzo': 'via tante cose',
+    # 'NumeroCivico': '12',
+    # 'CAP': '87100',
+    # 'Comune': 'Cosenza',
+    # 'Provincia': 'CS',
+    # 'Nazione': 'IT',
+    # },
 ]
 
 SAML_CONFIG = {
     'debug': True,
     'xmlsec_binary': get_xmlsec_binary(['/opt/local/bin', '/usr/bin/xmlsec1']),
-    'entityid': f'{SPID_BASE_URL}metadata',
-    'attribute_map_dir': f'{BASE_DIR}/spid_config/attribute-maps/',
+    'entityid': f'{SPID_BASE_URL}/metadata',
+
+    # Attribute maps moved to src/djangosaml2_spid/attribute_maps/
+    # 'attribute_map_dir': f'{BASE_DIR}/spid_config/attribute-maps/',
 
     'service': {
         'sp': {
-            'name': f'{SPID_BASE_URL}metadata',
+            'name': f'{SPID_BASE_URL}/metadata/',
             'name_qualifier': SPID_BASE_SCHEMA_HOST_PORT,
 
             'name_id_format': [SPID_NAMEID_FORMAT],
 
             'endpoints': {
                 'assertion_consumer_service': [
-                    (f'https://previousservice.example.it/acs', SPID_DEFAULT_BINDING), # current production service (index="0")
-                    (f'{SPID_BASE_URL}acs', SPID_DEFAULT_BINDING),
+                    (f'https://previousservice.example.it/acs', SPID_DEFAULT_BINDING),
+                    (f'{SPID_BASE_URL}/acs/', saml2.BINDING_HTTP_POST),
                 ],
                 'single_logout_service': [
-                    (f'https://previousservice.example.it/ls/post', SPID_DEFAULT_BINDING), # current production service (index="0")
-                    (f'{SPID_BASE_URL}ls/post', SPID_DEFAULT_BINDING),
-                    # (f'{SPID_BASE_URL}/ls', saml2.BINDING_HTTP_REDIRECT),
+                    (f'https://previousservice.example.it/ls/post', SPID_DEFAULT_BINDING),
+                    (f'{SPID_BASE_URL}/ls/post/', saml2.BINDING_HTTP_POST),
+                    # (f'{SPID_BASE_URL}/ls/', saml2.BINDING_HTTP_REDIRECT),
                 ],
             },
 
@@ -151,7 +155,7 @@ SAML_CONFIG = {
     # many metadata, many idp...
     'metadata': {
         'local': [
-            SPID_IDENTITY_PROVIDERS_METADATAS_DIR
+            SPID_IDENTITY_PROVIDERS_METADATA_DIR
         ],
         'remote': []
     },
@@ -162,8 +166,8 @@ SAML_CONFIG = {
 
     # Encryption
     'encryption_keypairs': [{
-        'key_file': SPID_PRIVATE_KEY, # use private key of current production service (index="0")
-        'cert_file': SPID_PUBLIC_CERT, # use public crt of current production service (index="0")
+        'key_file': SPID_PRIVATE_KEY,  # use private key of current production service (index="0")
+        'cert_file': SPID_PUBLIC_CERT,  # use public crt of current production service (index="0")
     }, {
         'key_file': SPID_PRIVATE_KEY,
         'cert_file': SPID_PUBLIC_CERT,
@@ -208,7 +212,8 @@ SAML_ATTRIBUTE_MAPPING = {
     'dateOfBirth': ('birth_date',),
 }
 
-SPID_CURRENT_INDEX: int = int(os.getenv("SPID_CURRENT_INDEX", "1"), 10) # in my case export SPID_CURRENT_INDEX=1
+# new features parameter
+SPID_CURRENT_INDEX: int = int(os.getenv("SPID_CURRENT_INDEX", "1"), 10)  # in my case export SPID_CURRENT_INDEX=1
 
 SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST = (
     {
