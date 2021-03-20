@@ -29,10 +29,10 @@ SPID_PRIVATE_KEY = os.path.join(SPID_CERTS_DIR, 'private.key')
 SPID_IDENTITY_PROVIDERS_URL = 'https://registry.spid.gov.it/assets/data/idp.json'
 SPID_IDENTITY_PROVIDERS_METADATA_DIR = os.path.join(BASE_DIR, 'spid_config/metadata/')
 
-SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', 'False') == 'True'
+SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', '0') == '1'
 SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
 
-SPID_TESTENV2_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_TESTENV2_REMOTE_METADATA_ACTIVE', 'False') == 'True'
+SPID_TESTENV2_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_TESTENV2_REMOTE_METADATA_ACTIVE', '0') == '1'
 SPID_TESTENV2_METADATA_URL = os.environ.get('SPID_TESTENV2_METADATA_URL', 'http://localhost:8088/metadata')
 
 # Avviso 29v3
@@ -70,6 +70,65 @@ SPID_CONTACTS = [
     # },
 ]
 
+# new features parameter
+SPID_CURRENT_INDEX: int = int(os.getenv("SPID_CURRENT_INDEX", "0"), 10)  # in my case export SPID_CURRENT_INDEX=1
+
+SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST = [
+    {
+        "serviceNames": (
+            {"lang": "en", "text": "service #1"},
+            {"lang": "it", "text": "servizio #1"},
+        ),
+        "serviceDescriptions": (
+            {"lang": "en", "text": "description of service #1"},
+            {"lang": "it", "text": "descrizione del servizio #1"},
+        ),
+        "attributes": ("spidCode", "fiscalNumber", "email", "name", "familyName", "placeOfBirth", "dateOfBirth",)
+    }
+]
+
+assertion_consumer_service = [
+    (f'{SPID_BASE_URL}/acs/', saml2.BINDING_HTTP_POST),
+]
+
+single_logout_service = [
+    (f'{SPID_BASE_URL}/ls/post/', saml2.BINDING_HTTP_POST),
+    # (f'{SPID_BASE_URL}/ls/', saml2.BINDING_HTTP_REDIRECT),
+]
+
+encryption_keypairs = [{
+    'key_file': SPID_PRIVATE_KEY,
+    'cert_file': SPID_PUBLIC_CERT,
+}]
+
+if 1 == SPID_CURRENT_INDEX:
+    assertion_consumer_service.insert(0, (f'https://previousservice.example.it/acs', SPID_DEFAULT_BINDING))
+
+    single_logout_service.insert(0, (f'https://previousservice.example.it/ls/post', SPID_DEFAULT_BINDING))
+
+    encryption_keypairs.insert(0,
+                               {
+                                   # use private key of current production service (index="0")
+                                   'key_file': SPID_PRIVATE_KEY,
+                                   # use public crt of current production service (index="0")
+                                   'cert_file': SPID_PUBLIC_CERT,
+
+                               })
+
+    SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST += [
+        {
+            "serviceNames": (
+                {"lang": "en", "text": "service #2"},
+                {"lang": "it", "text": "servizio #2"},
+            ),
+            "serviceDescriptions": (
+                {"lang": "en", "text": "description of service #2"},
+                {"lang": "it", "text": "descrizione del servizio #2"},
+            ),
+            "attributes": ("spidCode", "fiscalNumber", "email", "name", "familyName",)
+        }
+    ]
+
 SAML_CONFIG = {
     'debug': True,
     'xmlsec_binary': get_xmlsec_binary(['/opt/local/bin', '/usr/bin/xmlsec1']),
@@ -86,15 +145,8 @@ SAML_CONFIG = {
             'name_id_format': [SPID_NAMEID_FORMAT],
 
             'endpoints': {
-                'assertion_consumer_service': [
-                    (f'https://previousservice.example.it/acs', SPID_DEFAULT_BINDING),
-                    (f'{SPID_BASE_URL}/acs/', saml2.BINDING_HTTP_POST),
-                ],
-                'single_logout_service': [
-                    (f'https://previousservice.example.it/ls/post', SPID_DEFAULT_BINDING),
-                    (f'{SPID_BASE_URL}/ls/post/', saml2.BINDING_HTTP_POST),
-                    # (f'{SPID_BASE_URL}/ls/', saml2.BINDING_HTTP_REDIRECT),
-                ],
+                'assertion_consumer_service': assertion_consumer_service,
+                'single_logout_service': single_logout_service,
             },
 
             # Mandates that the IdP MUST authenticate the presenter directly
@@ -165,13 +217,7 @@ SAML_CONFIG = {
     'cert_file': SPID_PUBLIC_CERT,
 
     # Encryption
-    'encryption_keypairs': [{
-        'key_file': SPID_PRIVATE_KEY,  # use private key of current production service (index="0")
-        'cert_file': SPID_PUBLIC_CERT,  # use public crt of current production service (index="0")
-    }, {
-        'key_file': SPID_PRIVATE_KEY,
-        'cert_file': SPID_PUBLIC_CERT,
-    }],
+    'encryption_keypairs': encryption_keypairs,
 
     # you can set multilanguage information here
     'organization': {
@@ -211,34 +257,6 @@ SAML_ATTRIBUTE_MAPPING = {
     'placeOfBirth': ('place_of_birth',),
     'dateOfBirth': ('birth_date',),
 }
-
-# new features parameter
-SPID_CURRENT_INDEX: int = int(os.getenv("SPID_CURRENT_INDEX", "0"), 10)  # in my case export SPID_CURRENT_INDEX=1
-
-SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST = (
-    {
-        "serviceNames": (
-            {"lang": "en", "text": "service #1"},
-            {"lang": "it", "text": "servizio #1"},
-        ),
-        "serviceDescriptions": (
-            {"lang": "en", "text": "description of service #1"},
-            {"lang": "it", "text": "descrizione del servizio #1"},
-        ),
-        "attributes": ("spidCode", "fiscalNumber", "email", "name", "familyName", "placeOfBirth", "dateOfBirth",)
-    },
-    {
-        "serviceNames": (
-            {"lang": "en", "text": "service #2"},
-            {"lang": "it", "text": "servizio #2"},
-        ),
-        "serviceDescriptions": (
-            {"lang": "en", "text": "description of service #2"},
-            {"lang": "it", "text": "descrizione del servizio #2"},
-        ),
-        "attributes": ("spidCode", "fiscalNumber", "email", "name", "familyName",)
-    },
-)
 
 LOGGING = {
     'version': 1,
