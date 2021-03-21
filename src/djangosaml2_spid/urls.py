@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .conf import settings
+from django.conf import settings
 from . import views
 
 
@@ -24,22 +24,22 @@ urlpatterns = [
             name='spid_logout'
     ),
     path(
-            f'{SPID_URLS_PREFIX}/metadata/',
+            settings.SPID_METADATA_URL_PATH,
             views.metadata_spid,
             name='spid_metadata'
     ),
     path(
-            f'{SPID_URLS_PREFIX}/acs/',
+            settings.SPID_ACS_URL_PATH,
             views.AssertionConsumerServiceView.as_view(),
             name='saml2_acs'
     ),
     path(
-            f'{SPID_URLS_PREFIX}/ls/',
+            settings.SPID_SLO_URL_PATH,
             views.LogoutView.as_view(),
             name='saml2_ls'
     ),
     path(
-            f'{SPID_URLS_PREFIX}/ls/post/',
+            settings.SPID_SLO_POST_URL_PATH,
             views.LogoutView.as_view(),
             name='saml2_ls_post'
     )

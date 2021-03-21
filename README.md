@@ -17,7 +17,12 @@ for a Single Sign On with SPID, the Italian Digital Identity System.
 This project comes with a demo on a Spid button template with both *spid-testenv2*
 and *spid-saml-check* IDP preconfigured. See running the Demo project paragaph for details.
 
-The technical documentation on SPID and SAML is available at [Docs Italia](https://docs.italia.it/italia/spid/spid-regole-tecniche/it/34.1.1/index.html)
+Furthermore, this application integrates the checks of
+[Spid QA](https://www.spid.gov.it/assets/download/SPID_QAD.pdf)
+within its CI pipeline, through [spid-sp-test](https://github.com/peppelinux/spid-sp-test).
+See github actions log for details.
+
+The technical documentation on SPID and SAML is available at [Docs Italia](https://docs.italia.it/italia/spid/spid-regole-tecniche)
 
 ![big picture](gallery/animated.gif)
 
@@ -51,19 +56,19 @@ pip install -r ../requirements.txt
 ````
 
 Your example saml2 configuration is in `spid_config/spid_settings.py`.
-See djangosaml2 or pysaml2 official docs for clarifications.
+See djangosaml2 and pysaml2 official docs for clarifications.
 
 To run the demo project:
  - create the database `./manage.py migrate`
  - run `./manage.py runserver 0.0.0.0:8000`
 
-or execute the run.sh script with these environment settings:
+or execute the run.sh script with these environment settings to enable tests idps:
 
  ````
  SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE=True SPID_TESTENV2_REMOTE_METADATA_ACTIVE=True bash run.sh
  ````
 
-If you choosed to use *spid-testenv2*, fefore starting it, you just have to save the
+If you choosed to use *spid-testenv2*, before starting it, you just have to save the
 current demo metadata in *spid-testenv2* configuration, this way:
 
 ````
@@ -96,7 +101,7 @@ djangosaml2_spid uses a pySAML2 fork.
 
 * `pip install git+https://github.com/peppelinux/pysaml2.git@pplnx-v6.5.1`
 * `pip install git+https://github.com/italia/spid-django`
-* Copy the `example/spid_config/` to your project base dir
+* Copy the `example/spid_config/` to your project base dir and remember to edit with your custom paramenters
 * Import SAML2 entity configuration in your project settings file: `from spid_config.spid_settings import *`
 * Add in `settings.INSTALLED_APPS` the following
   ```
@@ -113,7 +118,7 @@ djangosaml2_spid uses a pySAML2 fork.
     'djangosaml2.backends.Saml2Backend',
   ```
 * Generate X.509 certificates and store them to a path, generally in `./certificates`, using [spid-compliant-certificates](https://github.com/italia/spid-compliant-certificates)
-* Register the SP metadata to your test Spid IDP
+* Register the SP metadata to your test Spid IDPs
 * Start the django server for tests `./manage.py runserver 0.0.0.0:8000`
 
 
@@ -165,7 +170,6 @@ coverage erase
 coverage run ./manage.py test djangosaml2_spid.tests
 coverage report -m
 ````
-
 
 Warnings
 --------
