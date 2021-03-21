@@ -10,6 +10,11 @@ SPID_BASE_SCHEMA_HOST_PORT = os.environ.get('SPID_BASE_SCHEMA_HOST_PORT', 'http:
 SPID_URLS_PREFIX = 'spid'
 SPID_BASE_URL = f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_URLS_PREFIX}'
 
+SPID_ACS_URL_PATH = f'{SPID_URLS_PREFIX}/acs/'
+SPID_SLO_POST_URL_PATH = f'{SPID_URLS_PREFIX}/ls/post/'
+SPID_SLO_URL_PATH = f'{SPID_URLS_PREFIX}/ls/'
+SPID_METADATA_URL_PATH = f'{SPID_URLS_PREFIX}/metadata/'
+
 LOGIN_URL = f'/{SPID_URLS_PREFIX}/login'
 LOGOUT_URL = f'/{SPID_URLS_PREFIX}/logout'
 LOGIN_REDIRECT_URL = f'/{SPID_URLS_PREFIX}/echo_attributes'
@@ -87,11 +92,12 @@ SAML_CONFIG = {
 
             'endpoints': {
                 'assertion_consumer_service': [
-                    (f'{SPID_BASE_URL}/acs/', saml2.BINDING_HTTP_POST),
+                    (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_ACS_URL_PATH}',
+                     saml2.BINDING_HTTP_POST),
                 ],
                 'single_logout_service': [
-                    (f'{SPID_BASE_URL}/ls/post/', saml2.BINDING_HTTP_POST),
-                    # (f'{SPID_BASE_URL}/ls/', saml2.BINDING_HTTP_REDIRECT),
+                    (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_SLO_POST_URL_PATH}',
+                     saml2.BINDING_HTTP_POST),
                 ],
             },
 

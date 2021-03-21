@@ -37,11 +37,31 @@ elif 'organization' not in settings.SAML_CONFIG:
 #
 # SPID settings with default values
 
+settings.SPID_BASE_SCHEMA_HOST_PORT = os.environ.get(
+    'SPID_BASE_SCHEMA_HOST_PORT', 'http://localhost:8000'
+)
 settings.SPID_URLS_PREFIX = getattr(settings, 'SPID_URLS_PREFIX', 'spid')
+settings.SPID_BASE_URL = f'{settings.SPID_BASE_SCHEMA_HOST_PORT}/{settings.SPID_URLS_PREFIX}'
+
+
+settings.SPID_ACS_URL_PATH = getattr(
+    settings, 'SPID_ACS_URL_PATH', f'{settings.SPID_BASE_URL}/acs/'
+)
+SPID_SLO_POST_URL_PATH = getattr(
+    settings, 'SPID_SLO_POST_URL_PATH', f'{settings.SPID_BASE_URL}/ls/post/'
+)
+settings.SPID_SLO_URL_PATH = getattr(
+    settings, 'SPID_SLO_URL_PATH', f'{settings.SPID_BASE_URL}/ls/'
+)
+settings.SPID_METADATA_URL_PATH = getattr(
+    settings, 'SPID_METADATA_URL_PATH', f'{settings.SPID_BASE_URL}/metadata/'
+)
 
 settings.LOGIN_URL = getattr(settings, 'LOGIN_URL', '/spid/login')
 settings.LOGOUT_URL = getattr(settings, 'LOGOUT_URL', '/spid/logout')
-settings.LOGIN_REDIRECT_URL = getattr(settings, 'LOGIN_REDIRECT_URL', '/spid/echo_attributes')
+settings.LOGIN_REDIRECT_URL = getattr(
+    settings, 'LOGIN_REDIRECT_URL', '/spid/echo_attributes'
+)
 
 settings.SPID_DEFAULT_BINDING = getattr(
     settings, 'SPID_DEFAULT_BINDING', saml2.BINDING_HTTP_POST
@@ -115,7 +135,6 @@ settings.SPID_PREFIXES = getattr(settings, 'SPID_PREFIXES', dict(
     fpa='https://spid.gov.it/invoicing-extensions'
 ))
 
-
 #
 # Defaults for other SAML settings
 
@@ -175,10 +194,12 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
 
                 'endpoints': {
                     'assertion_consumer_service': [
-                        (f'{spid_base_url}/acs/', saml2.BINDING_HTTP_POST),
+                        (f'{settings.SPID_BASE_SCHEMA_HOST_PORT}/{settings.SPID_ACS_URL_PATH}',
+                         saml2.BINDING_HTTP_POST),
                     ],
                     'single_logout_service': [
-                        (f'{spid_base_url}/ls/post/', saml2.BINDING_HTTP_POST),
+                        (f'{settings.SPID_BASE_SCHEMA_HOST_PORT}/{settings.SPID_SLO_POST_URL_PATH}',
+                         saml2.BINDING_HTTP_POST),
                     ],
                 },
 
@@ -273,6 +294,6 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
             {'url': settings.SPID_TESTENV2_METADATA_URL}
         )
 
-    logger.debug('SAML_CONFIG: %r', saml_config)
+    logger.debug(f'SAML_CONFIG: {saml_config}')
     conf.load(saml_config)
     return conf
