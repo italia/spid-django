@@ -17,6 +17,11 @@ for a Single Sign On with SPID, the Italian Digital Identity System.
 This project comes with a demo on a Spid button template with both *spid-testenv2*
 and *spid-saml-check* IDP preconfigured. See running the Demo project paragaph for details.
 
+Furthermore, this application integrates the checks of
+[Spid QA](https://www.spid.gov.it/assets/download/SPID_QAD.pdf)
+within its CI pipeline, through [spid-sp-test](https://github.com/peppelinux/spid-sp-test).
+See github actions log for details.
+
 The technical documentation on SPID and SAML is available at [Docs Italia](https://docs.italia.it/italia/spid/spid-regole-tecniche)
 
 ![big picture](gallery/animated.gif)
