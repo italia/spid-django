@@ -34,10 +34,10 @@ SPID_PRIVATE_KEY = os.path.join(SPID_CERTS_DIR, 'private.key')
 SPID_IDENTITY_PROVIDERS_URL = 'https://registry.spid.gov.it/assets/data/idp.json'
 SPID_IDENTITY_PROVIDERS_METADATA_DIR = os.path.join(BASE_DIR, 'spid_config/metadata/')
 
-SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', 'False') == 'True'
+SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', '0') == '1'
 SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
 
-SPID_TESTENV2_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_TESTENV2_REMOTE_METADATA_ACTIVE', 'False') == 'True'
+SPID_TESTENV2_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_TESTENV2_REMOTE_METADATA_ACTIVE', '0') == '1'
 SPID_TESTENV2_METADATA_URL = os.environ.get('SPID_TESTENV2_METADATA_URL', 'http://localhost:8088/metadata')
 
 # Avviso 29v3
@@ -60,22 +60,27 @@ SPID_CONTACTS = [
         #'PublicServicesFullOperator':''
     },
     # {
-        # 'contact_type': 'billing',
-        # 'telephone_number': '+39 84756344785',
-        # 'email_address': 'info@example.org',
-        # 'company': 'example s.p.a.',
-        ## 'CodiceFiscale': 'NGLMRA80A01D086T',
-        # 'IdCodice': '983745349857',
-        # 'IdPaese': 'IT',
-        # 'Denominazione': 'Destinatario Fatturazione',
-        # 'Indirizzo': 'via tante cose',
-        # 'NumeroCivico': '12',
-        # 'CAP': '87100',
-        # 'Comune': 'Cosenza',
-        # 'Provincia': 'CS',
-        # 'Nazione': 'IT',
+    # 'contact_type': 'billing',
+    # 'telephone_number': '+39 84756344785',
+    # 'email_address': 'info@example.org',
+    # 'company': 'example s.p.a.',
+    ## 'CodiceFiscale': 'NGLMRA80A01D086T',
+    # 'IdCodice': '983745349857',
+    # 'IdPaese': 'IT',
+    # 'Denominazione': 'Destinatario Fatturazione',
+    # 'Indirizzo': 'via tante cose',
+    # 'NumeroCivico': '12',
+    # 'CAP': '87100',
+    # 'Comune': 'Cosenza',
+    # 'Provincia': 'CS',
+    # 'Nazione': 'IT',
     # },
 ]
+
+encryption_keypairs = [{
+    'key_file': SPID_PRIVATE_KEY,
+    'cert_file': SPID_PUBLIC_CERT,
+}]
 
 SAML_CONFIG = {
     'debug': True,
@@ -104,6 +109,7 @@ SAML_CONFIG = {
                     (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_SLO_POST_URL_PATH}',
                      saml2.BINDING_HTTP_POST),
                 ],
+
             },
 
             # Mandates that the IdP MUST authenticate the presenter directly
@@ -174,10 +180,7 @@ SAML_CONFIG = {
     'cert_file': SPID_PUBLIC_CERT,
 
     # Encryption
-    'encryption_keypairs': [{
-        'key_file': SPID_PRIVATE_KEY,
-        'cert_file': SPID_PUBLIC_CERT,
-    }],
+    'encryption_keypairs': encryption_keypairs,
 
     # you can set multilanguage information here
     'organization': {
@@ -209,14 +212,63 @@ SAML_CREATE_UNKNOWN_USER = True
 SAML_LOGOUT_REQUEST_PREFERRED_BINDING = saml2.BINDING_HTTP_POST
 
 SAML_ATTRIBUTE_MAPPING = {
-    'spidCode': ('username', ),
-    'fiscalNumber': ('tin', ),
-    'email': ('email', ),
-    'name': ('first_name', ),
-    'familyName': ('last_name', ),
+    'spidCode': ('username',),
+    'fiscalNumber': ('tin',),
+    'email': ('email',),
+    'name': ('first_name',),
+    'familyName': ('last_name',),
     'placeOfBirth': ('place_of_birth',),
     'dateOfBirth': ('birth_date',),
 }
+
+# Additional ACS
+# new features parameter
+SPID_CURRENT_INDEX: int = int(os.getenv("SPID_CURRENT_INDEX", "0"), 10)  # in my case export SPID_CURRENT_INDEX=1
+
+SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST = [
+    {
+        "serviceNames": (
+            {"lang": "en", "text": "service #1"},
+            {"lang": "it", "text": "servizio #1"},
+        ),
+        "serviceDescriptions": (
+            {"lang": "en", "text": "description of service #1"},
+            {"lang": "it", "text": "descrizione del servizio #1"},
+        ),
+        "attributes": ("spidCode", "fiscalNumber", "email", "name", "familyName", "placeOfBirth", "dateOfBirth",)
+    }
+]
+
+
+if SPID_CURRENT_INDEX == 1:
+    endpoints = SAML_CONFIG['service']['sp']['endpoints']
+    endpoints['assertion_consumer_service'].insert(0, (f'https://previousservice.example.it/acs', SPID_DEFAULT_BINDING))
+
+    single_logout_service.insert(0, (f'https://previousservice.example.it/ls/post', SPID_DEFAULT_BINDING))
+
+    encryption_keypairs.insert(0,
+                               {
+                                   # use private key of current production service (index="0")
+                                   'key_file': SPID_PRIVATE_KEY,
+                                   # use public crt of current production service (index="0")
+                                   'cert_file': SPID_PUBLIC_CERT,
+
+                               })
+
+    SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST += [
+        {
+            "serviceNames": (
+                {"lang": "en", "text": "service #2"},
+                {"lang": "it", "text": "servizio #2"},
+            ),
+            "serviceDescriptions": (
+                {"lang": "en", "text": "description of service #2"},
+                {"lang": "it", "text": "descrizione del servizio #2"},
+            ),
+            "attributes": ("spidCode", "fiscalNumber", "email", "name", "familyName",)
+        }
+    ]
+### end additiona ACS feature
 
 LOGGING = {
     'version': 1,

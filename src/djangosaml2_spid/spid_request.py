@@ -25,7 +25,7 @@ def spid_sp_authn_request(conf, selected_idp, next_url=''):
     authn_req = saml2.samlp.AuthnRequest()
     authn_req.destination = location_fixed
     # spid-testenv2 preleva l'attribute consumer service dalla authnRequest (anche se questo sta già nei metadati...)
-    authn_req.attribute_consuming_service_index = "0"
+    authn_req.attribute_consuming_service_index = str(settings.SPID_CURRENT_INDEX)
 
     # issuer
     issuer = saml2.saml.Issuer()
@@ -51,7 +51,7 @@ def spid_sp_authn_request(conf, selected_idp, next_url=''):
 
     authn_req.protocol_binding = SPID_DEFAULT_BINDING
 
-    assertion_consumer_service_url = client.config._sp_endpoints['assertion_consumer_service'][0][0]
+    assertion_consumer_service_url = client.config._sp_endpoints['assertion_consumer_service'][settings.SPID_CURRENT_INDEX][0]
     authn_req.assertion_consumer_service_url = assertion_consumer_service_url
 
     authn_req_signed = client.sign(

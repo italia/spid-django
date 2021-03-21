@@ -31,7 +31,6 @@ from .spid_request import spid_sp_authn_request
 from .spid_validator import Saml2ResponseValidator
 from .utils import repr_saml
 
-
 SPID_DEFAULT_BINDING = settings.SPID_DEFAULT_BINDING
 
 logger = logging.getLogger('djangosaml2')
@@ -53,7 +52,7 @@ def index(request):
         return HttpResponse(out)
     else:
         return HttpResponse(
-                f"LOGGED OUT: <a href={settings.LOGIN_URL}>LOGIN</a>"
+            f"LOGGED OUT: <a href={settings.LOGIN_URL}>LOGIN</a>"
         )
 
 
@@ -78,9 +77,9 @@ def spid_login(request, config_loader_path=None, wayf_template='wayf.html',
 
     if request.user.is_authenticated:
         redirect_authenticated_user = getattr(
-                    settings,
-                    'SAML_IGNORE_AUTHENTICATED_USERS_ON_LOGIN',
-                    True
+            settings,
+            'SAML_IGNORE_AUTHENTICATED_USERS_ON_LOGIN',
+            True
         )
         if redirect_authenticated_user:
             return HttpResponseRedirect(next_url)
@@ -122,9 +121,9 @@ def spid_login(request, config_loader_path=None, wayf_template='wayf.html',
         f'Trying binding {SPID_DEFAULT_BINDING} for IDP {selected_idp}'
     )
     supported_bindings = get_idp_sso_supported_bindings(
-                                                selected_idp,
-                                                config=conf
-                                            )
+        selected_idp,
+        config=conf
+    )
     if not supported_bindings:
         _msg = 'IdP Metadata not found or not valid'
         return HttpResponseNotFound(_msg)
@@ -142,10 +141,10 @@ def spid_login(request, config_loader_path=None, wayf_template='wayf.html',
     # SPID things here
     try:
         login_response = spid_sp_authn_request(
-                                            conf,
-                                            selected_idp,
-                                            next_url
-                                        )
+            conf,
+            selected_idp,
+            next_url
+        )
     except UnknownSystemEntity as e:  # pragma: no cover
         _msg = f'Unknown IDP Entity ID: {selected_idp}'
         logger.error(f'{_msg}: {e}')
@@ -201,7 +200,7 @@ def spid_logout(request, config_loader_path=None, **kwargs):
 
     slo_req.destination = subject_id.name_qualifier
     # spid-testenv2 preleva l'attribute consumer service dalla authnRequest (anche se questo sta già nei metadati...)
-    slo_req.attribute_consuming_service_index = "0"
+    slo_req.attribute_consuming_service_index = str(settings.SPID_CURRENT_INDEX)
 
     issuer = saml2.saml.Issuer()
     issuer.name_qualifier = client.config.entityid
@@ -241,7 +240,8 @@ def spid_logout(request, config_loader_path=None, **kwargs):
 
     slo_req.protocol_binding = SPID_DEFAULT_BINDING
 
-    assertion_consumer_service_url = client.config._sp_endpoints['assertion_consumer_service'][0][0]
+    assertion_consumer_service_url = \
+    client.config._sp_endpoints['assertion_consumer_service'][settings.SPID_CURRENT_INDEX][0]
     slo_req.assertion_consumer_service_url = assertion_consumer_service_url
 
     slo_req_signed = client.sign(

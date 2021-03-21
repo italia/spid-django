@@ -5,24 +5,45 @@ from saml2.sigver import security_context
 
 
 def spid_sp_metadata(conf):
-    metadata = entity_descriptor(conf)
+    from saml2.saml import NAME_FORMAT_BASIC
+    from saml2.md import AttributeConsumingService, AssertionConsumerService, EntityDescriptor, RequestedAttribute, \
+        ServiceDescription, ServiceName, SPSSODescriptor
+    from django.conf import settings
+
+    metadata: EntityDescriptor = entity_descriptor(conf)
+    _spsso_descriptor: SPSSODescriptor = metadata.spsso_descriptor
 
     # this will renumber acs starting from 0 and set index=0 as is_default
-    cnt = 0
-    for attribute_consuming_service in metadata.spsso_descriptor.attribute_consuming_service:
-        attribute_consuming_service.index = str(cnt)
-        cnt += 1
-
-    cnt = 0
-    for assertion_consumer_service in metadata.spsso_descriptor.assertion_consumer_service:
-        assertion_consumer_service.is_default = 'true' if not cnt else ''
+    for (cnt, assertion_consumer_service) in enumerate(
+            _spsso_descriptor.assertion_consumer_service):  # type: int, AssertionConsumerService
+        assertion_consumer_service.is_default = 'true' if 0 == cnt else 'false'
         assertion_consumer_service.index = str(cnt)
-        cnt += 1
 
-    # nameformat patch
-    for reqattr in metadata.spsso_descriptor.attribute_consuming_service[0].requested_attribute:
-        reqattr.name_format = None  # "urn:oasis:names:tc:SAML:2.0:attrname-format:basic"
-        reqattr.friendly_name = None
+        if cnt == 0:
+            _attribute_consuming_service: AttributeConsumingService = _spsso_descriptor.attribute_consuming_service[cnt]
+            _attribute_consuming_service.index = str(cnt)
+        else:
+            _attribute_consuming_service: AttributeConsumingService = AttributeConsumingService(index=str(cnt))
+            _spsso_descriptor.attribute_consuming_service.append(_attribute_consuming_service)
+
+        _attribute_consuming_service.service_name = list()
+        _attribute_consuming_service.service_description = list()
+
+        _attributes = settings.SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST[cnt]
+
+        for item in _attributes.get("serviceNames"):
+            _attribute_consuming_service.service_name.append(ServiceName(**item))
+
+        for item in _attributes.get("serviceDescriptions"):
+            _attribute_consuming_service.service_description.append(ServiceDescription(**item))
+
+        # with is_required attribute
+        # _attribute_consuming_service.requested_attribute = list(
+        #    RequestedAttribute(name=_name, is_required="true") for _name in
+        #    _attributes.get("attributes"))
+
+        _attribute_consuming_service.requested_attribute = list(
+            RequestedAttribute(name=_name, name_format=NAME_FORMAT_BASIC) for _name in _attributes.get("attributes"))
 
     metadata.extensions = None
 
