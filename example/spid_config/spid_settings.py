@@ -57,7 +57,7 @@ SPID_CONTACTS = [
         'VATNumber': 'IT12345678901',
         'FiscalCode': 'XYZABCAAMGGJ000W',
         'Private': '',
-        #'PublicServicesFullOperator':''
+        # 'PublicServicesFullOperator':''
     },
     # {
     # 'contact_type': 'billing',
@@ -95,11 +95,11 @@ SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST = [
 ]
 
 assertion_consumer_service = [
-    (f'{SPID_BASE_URL}/acs/', saml2.BINDING_HTTP_POST),
+    (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_ACS_URL_PATH}', saml2.BINDING_HTTP_POST),
 ]
 
 single_logout_service = [
-    (f'{SPID_BASE_URL}/ls/post/', saml2.BINDING_HTTP_POST),
+    (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_SLO_POST_URL_PATH}', saml2.BINDING_HTTP_POST),
     # (f'{SPID_BASE_URL}/ls/', saml2.BINDING_HTTP_REDIRECT),
 ]
 
@@ -141,7 +141,7 @@ SAML_CONFIG = {
     'xmlsec_binary': get_xmlsec_binary(['/opt/local/bin', '/usr/bin/xmlsec1']),
 
     # Avviso SPID n. 19 v.4 per enti AGGREGATORI l’entityID deve contenere il codice attività pub-op-full
-    #'entityid': f'{BASE_URL}/pub-op-full/',
+    # 'entityid': f'{BASE_URL}/pub-op-full/',
     'entityid': f'{SPID_BASE_URL}/metadata',
 
     # Attribute maps moved to src/djangosaml2_spid/attribute_maps/
@@ -155,14 +155,8 @@ SAML_CONFIG = {
             'name_id_format': [SPID_NAMEID_FORMAT],
 
             'endpoints': {
-                'assertion_consumer_service': [
-                    (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_ACS_URL_PATH}',
-                     saml2.BINDING_HTTP_POST),
-                ],
-                'single_logout_service': [
-                    (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_SLO_POST_URL_PATH}',
-                     saml2.BINDING_HTTP_POST),
-                ],
+                'assertion_consumer_service': assertion_consumer_service,
+                'single_logout_service': single_logout_service
             },
 
             # Mandates that the IdP MUST authenticate the presenter directly
@@ -273,6 +267,54 @@ SAML_ATTRIBUTE_MAPPING = {
     'placeOfBirth': ('place_of_birth',),
     'dateOfBirth': ('birth_date',),
 }
+
+# Additional ACS
+# new features parameter
+SPID_CURRENT_INDEX: int = int(os.getenv("SPID_CURRENT_INDEX", "0"), 10)  # in my case export SPID_CURRENT_INDEX=1
+
+SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST = [
+    {
+        "serviceNames": (
+            {"lang": "en", "text": "service #1"},
+            {"lang": "it", "text": "servizio #1"},
+        ),
+        "serviceDescriptions": (
+            {"lang": "en", "text": "description of service #1"},
+            {"lang": "it", "text": "descrizione del servizio #1"},
+        ),
+        "attributes": ("spidCode", "fiscalNumber", "email", "name", "familyName", "placeOfBirth", "dateOfBirth",)
+    }
+]
+
+if SPID_CURRENT_INDEX == 1:
+    endpoints = SAML_CONFIG['service']['sp']['endpoints']
+    endpoints['assertion_consumer_service'].insert(0, (f'https://previousservice.example.it/acs', SPID_DEFAULT_BINDING))
+
+    single_logout_service.insert(0, (f'https://previousservice.example.it/ls/post', SPID_DEFAULT_BINDING))
+
+    encryption_keypairs.insert(0,
+                               {
+                                   # use private key of current production service (index="0")
+                                   'key_file': SPID_PRIVATE_KEY,
+                                   # use public crt of current production service (index="0")
+                                   'cert_file': SPID_PUBLIC_CERT,
+
+                               })
+
+    SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST += [
+        {
+            "serviceNames": (
+                {"lang": "en", "text": "service #2"},
+                {"lang": "it", "text": "servizio #2"},
+            ),
+            "serviceDescriptions": (
+                {"lang": "en", "text": "description of service #2"},
+                {"lang": "it", "text": "descrizione del servizio #2"},
+            ),
+            "attributes": ("spidCode", "fiscalNumber", "email", "name", "familyName",)
+        }
+    ]
+### end additiona ACS feature
 
 LOGGING = {
     'version': 1,
