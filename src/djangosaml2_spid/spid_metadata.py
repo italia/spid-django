@@ -2,6 +2,9 @@ import saml2
 from django.conf import settings
 from saml2.metadata import entity_descriptor, sign_entity_descriptor
 from saml2.sigver import security_context
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def spid_sp_metadata(conf):
@@ -14,6 +17,14 @@ def spid_sp_metadata(conf):
     _spsso_descriptor: SPSSODescriptor = metadata.spsso_descriptor
 
     # this will renumber acs starting from 0 and set index=0 as is_default
+    _n_assertion_consumer_service: int = len(_spsso_descriptor.assertion_consumer_service)
+    _check: bool = _n_assertion_consumer_service > settings.SPID_CURRENT_INDEX
+    if _check is False:
+        message: str = f"Number of assertion_consumer_service: {_n_assertion_consumer_service}." \
+                       f" Expected at least {_n_assertion_consumer_service + 1} "
+        logger.error(message)
+        raise Exception(message)
+
     for (cnt, assertion_consumer_service) in enumerate(
             _spsso_descriptor.assertion_consumer_service):  # type: int, AssertionConsumerService
         assertion_consumer_service.is_default = 'true' if 0 == cnt else 'false'
