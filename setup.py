@@ -11,7 +11,7 @@ with open(os.path.join(os.path.dirname(__file__), 'requirements.txt')) as requir
 
 setup(
     name="djangosaml2-spid",
-    version='0.6.6',
+    version='0.6.8',
     description="Djangosaml2 SPID Service Provider",
     long_description=README,
     long_description_content_type='text/markdown',

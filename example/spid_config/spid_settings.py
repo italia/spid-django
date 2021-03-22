@@ -10,6 +10,11 @@ SPID_BASE_SCHEMA_HOST_PORT = os.environ.get('SPID_BASE_SCHEMA_HOST_PORT', 'http:
 SPID_URLS_PREFIX = 'spid'
 SPID_BASE_URL = f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_URLS_PREFIX}'
 
+SPID_ACS_URL_PATH = f'{SPID_URLS_PREFIX}/acs/'
+SPID_SLO_POST_URL_PATH = f'{SPID_URLS_PREFIX}/ls/post/'
+SPID_SLO_URL_PATH = f'{SPID_URLS_PREFIX}/ls/'
+SPID_METADATA_URL_PATH = f'{SPID_URLS_PREFIX}/metadata/'
+
 LOGIN_URL = f'/{SPID_URLS_PREFIX}/login'
 LOGOUT_URL = f'/{SPID_URLS_PREFIX}/logout'
 LOGIN_REDIRECT_URL = f'/{SPID_URLS_PREFIX}/echo_attributes'
@@ -41,7 +46,8 @@ SPID_PREFIXES = dict(
     fpa='https://spid.gov.it/invoicing-extensions'
 )
 
-APPEND_SLASH = True
+# Avviso SPID n. 19 v.4 per enti AGGREGATORI aggiungere chiave vuota PublicServicesFullOperator
+# Il plugin genererà automaticamente anche il tag ContactPerson con l’attributo spid:entityType valorizzato a spid:aggregator
 
 SPID_CONTACTS = [
     {
@@ -50,7 +56,8 @@ SPID_CONTACTS = [
         'email_address': 'tech-info@example.org',
         'VATNumber': 'IT12345678901',
         'FiscalCode': 'XYZABCAAMGGJ000W',
-        'Private': ''
+        'Private': '',
+        #'PublicServicesFullOperator':''
     },
     # {
     # 'contact_type': 'billing',
@@ -132,6 +139,9 @@ if 1 == SPID_CURRENT_INDEX:
 SAML_CONFIG = {
     'debug': True,
     'xmlsec_binary': get_xmlsec_binary(['/opt/local/bin', '/usr/bin/xmlsec1']),
+
+    # Avviso SPID n. 19 v.4 per enti AGGREGATORI l’entityID deve contenere il codice attività pub-op-full
+    #'entityid': f'{BASE_URL}/pub-op-full/',
     'entityid': f'{SPID_BASE_URL}/metadata',
 
     # Attribute maps moved to src/djangosaml2_spid/attribute_maps/
@@ -145,8 +155,14 @@ SAML_CONFIG = {
             'name_id_format': [SPID_NAMEID_FORMAT],
 
             'endpoints': {
-                'assertion_consumer_service': assertion_consumer_service,
-                'single_logout_service': single_logout_service,
+                'assertion_consumer_service': [
+                    (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_ACS_URL_PATH}',
+                     saml2.BINDING_HTTP_POST),
+                ],
+                'single_logout_service': [
+                    (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_SLO_POST_URL_PATH}',
+                     saml2.BINDING_HTTP_POST),
+                ],
             },
 
             # Mandates that the IdP MUST authenticate the presenter directly
