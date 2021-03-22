@@ -115,7 +115,7 @@ if 1 == SPID_CURRENT_INDEX:
 
                                })
 
-    SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST += [
+    SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST.append(
         {
             "serviceNames": (
                 {"lang": "en", "text": "service #2"},
@@ -127,7 +127,7 @@ if 1 == SPID_CURRENT_INDEX:
             ),
             "attributes": ("spidCode", "fiscalNumber", "email", "name", "familyName",)
         }
-    ]
+    )
 
 SAML_CONFIG = {
     'debug': True,
