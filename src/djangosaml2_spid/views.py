@@ -318,7 +318,7 @@ class AssertionConsumerServiceView(djangosaml2_views.AssertionConsumerServiceVie
 
         # Spid and SAML2 additional tests
         accepted_time_diff = conf.accepted_time_diff
-        recipient = conf._sp_endpoints['assertion_consumer_service'][0][0]
+        recipient = conf._sp_endpoints['assertion_consumer_service'][0][0] # [0][0] should be [settings.settings.SPID_CURRENT_INDEX][0] ?
         authn_context_classref = settings.SPID_AUTH_CONTEXT
         issuer = response.response.issuer
         # in_response_to = todo
