@@ -100,7 +100,7 @@ assertion_consumer_service = [
 
 single_logout_service = [
     (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_SLO_POST_URL_PATH}', saml2.BINDING_HTTP_POST),
-    # (f'{SPID_BASE_URL}/ls/', saml2.BINDING_HTTP_REDIRECT),
+    # (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_SLO_URL_PATH}', saml2.BINDING_HTTP_REDIRECT),
 ]
 
 encryption_keypairs = [{
