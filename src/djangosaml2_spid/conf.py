@@ -13,6 +13,7 @@ from django.conf import settings
 from django.apps import apps
 from django.http import HttpRequest
 from django.core.exceptions import ImproperlyConfigured
+from django.urls import reverse
 
 logger = logging.getLogger('djangosaml2')
 
@@ -37,24 +38,19 @@ elif 'organization' not in settings.SAML_CONFIG:
 #
 # SPID settings with default values
 
-settings.SPID_BASE_SCHEMA_HOST_PORT = os.environ.get(
-    'SPID_BASE_SCHEMA_HOST_PORT', 'http://localhost:8000'
-)
 settings.SPID_URLS_PREFIX = getattr(settings, 'SPID_URLS_PREFIX', 'spid')
-settings.SPID_BASE_URL = f'{settings.SPID_BASE_SCHEMA_HOST_PORT}/{settings.SPID_URLS_PREFIX}'
-
 
 settings.SPID_ACS_URL_PATH = getattr(
-    settings, 'SPID_ACS_URL_PATH', f'{settings.SPID_BASE_URL}/acs/'
+    settings, 'SPID_ACS_URL_PATH', f'{settings.SPID_URLS_PREFIX}/acs/'
 )
-SPID_SLO_POST_URL_PATH = getattr(
-    settings, 'SPID_SLO_POST_URL_PATH', f'{settings.SPID_BASE_URL}/ls/post/'
+settings.SPID_SLO_POST_URL_PATH = getattr(
+    settings, 'SPID_SLO_POST_URL_PATH', f'{settings.SPID_URLS_PREFIX}/ls/post/'
 )
 settings.SPID_SLO_URL_PATH = getattr(
-    settings, 'SPID_SLO_URL_PATH', f'{settings.SPID_BASE_URL}/ls/'
+    settings, 'SPID_SLO_URL_PATH', f'{settings.SPID_URLS_PREFIX}/ls/'
 )
 settings.SPID_METADATA_URL_PATH = getattr(
-    settings, 'SPID_METADATA_URL_PATH', f'{settings.SPID_BASE_URL}/metadata/'
+    settings, 'SPID_METADATA_URL_PATH', f'{settings.SPID_URLS_PREFIX}/metadata/'
 )
 
 settings.LOGIN_URL = getattr(settings, 'LOGIN_URL', '/spid/login')
@@ -180,25 +176,25 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
         return conf
 
     # Build a SAML_CONFIG for SPID
-    spid_base_url = request.build_absolute_uri(os.path.join('/', settings.SPID_URLS_PREFIX))
+    metadata_url = request.build_absolute_uri(reverse('djangosaml2_spid:spid_metadata'))
 
     saml_config = {
-        'entityid': f'{spid_base_url}/metadata',
+        'entityid': metadata_url,
         'attribute_map_dir': os.path.join(djangosaml2_spid_config.path, 'attribute_maps/'),
 
         'service': {
             'sp': {
-                'name': f'{spid_base_url}/metadata',
+                'name': metadata_url,
                 'name_qualifier': request.build_absolute_uri('/'),
                 'name_id_format': [settings.SPID_NAMEID_FORMAT],
 
                 'endpoints': {
                     'assertion_consumer_service': [
-                        (f'{settings.SPID_BASE_SCHEMA_HOST_PORT}/{settings.SPID_ACS_URL_PATH}',
+                        (request.build_absolute_uri(reverse('djangosaml2_spid:saml2_acs')),
                          saml2.BINDING_HTTP_POST),
                     ],
                     'single_logout_service': [
-                        (f'{settings.SPID_BASE_SCHEMA_HOST_PORT}/{settings.SPID_SLO_POST_URL_PATH}',
+                        (request.build_absolute_uri(reverse('djangosaml2_spid:saml2_ls_post')),
                          saml2.BINDING_HTTP_POST),
                     ],
                 },

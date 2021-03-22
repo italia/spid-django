@@ -55,7 +55,7 @@ class TestSpidConfig(TestCase):
 
         request = self.factory.get('/spid/metadata')
         saml_config = get_config(request=request)
-        self.assertEqual(saml_config.entityid, 'http://testserver/spid/metadata')
+        self.assertEqual(saml_config.entityid, 'http://testserver/spid/metadata/')
         self.assertEqual(
             saml_config.organization,
             {'name': [('Example', 'it'), ('Example', 'en')],
