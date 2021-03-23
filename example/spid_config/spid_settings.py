@@ -44,7 +44,8 @@ SPID_PREFIXES = dict(
     fpa='https://spid.gov.it/invoicing-extensions'
 )
 
-APPEND_SLASH = True
+# Avviso SPID n. 19 v.4 per enti AGGREGATORI aggiungere chiave vuota PublicServicesFullOperator
+# Il plugin genererà automaticamente anche il tag ContactPerson con l’attributo spid:entityType valorizzato a spid:aggregator
 
 SPID_CONTACTS = [
     {
@@ -53,7 +54,8 @@ SPID_CONTACTS = [
         'email_address': 'tech-info@example.org',
         'VATNumber': 'IT12345678901',
         'FiscalCode': 'XYZABCAAMGGJ000W',
-        'Private': ''
+        'Private': '',
+        #'PublicServicesFullOperator':''
     },
     # {
         # 'contact_type': 'billing',
@@ -94,6 +96,8 @@ SAML_CONFIG = {
     # configurations, adapted for the running Django service on the basis of the
     # defined SPID_* settings.
 
+    # TODO: Avviso SPID n. 19 v.4 per enti AGGREGATORI l’entityID deve contenere il codice attività pub-op-full
+    #'entityid': f'{BASE_URL}/pub-op-full/',  # TODO: Aggiungere voce di configurazione SPID_* apposita??
     'entityid': f'http://localhost:8000/{SPID_URLS_PREFIX}/metadata',
 
     'attribute_map_dir': f'{BASE_DIR}/djangosaml2_spid/attribute_maps/',
