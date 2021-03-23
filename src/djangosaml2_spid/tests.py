@@ -78,25 +78,23 @@ class TestSpidConfig(TestCase):
                  'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST')]
         })
 
+        metadata_files = list(saml_config.metadata.metadata)
+
         if base_dir.name == 'example':
             self.assertEqual(saml_config.cert_file,
                              str(base_dir.joinpath('certificates/public.cert')))
             self.assertEqual(saml_config.key_file,
                              str(base_dir.joinpath('certificates/private.key')))
 
-            self.assertListEqual(
-                list(saml_config.metadata.metadata),
-                [str(base_dir.joinpath('spid_config/metadata/satosa-spid.xml')),
-                 str(base_dir.joinpath('spid_config/metadata/spid-sp-test.xml'))]
-            )
+            self.assertIn(str(base_dir.joinpath('spid_config/metadata/satosa-spid.xml')),
+                          metadata_files),
+            self.assertIn(str(base_dir.joinpath('spid_config/metadata/spid-sp-test.xml')),
+                          metadata_files)
         else:
             self.assertEqual(saml_config.cert_file, 'tests/certificates/public.cert')
             self.assertEqual(saml_config.key_file, 'tests/certificates/private.key')
-
-            self.assertListEqual(
-                list(saml_config.metadata.metadata),
-                ['tests/metadata/satosa-spid.xml', 'tests/metadata/spid-sp-test.xml']
-            )
+            self.assertIn('tests/metadata/satosa-spid.xml', metadata_files)
+            self.assertIn('tests/metadata/spid-sp-test.xml', metadata_files)
 
         self.assertEqual(
             saml_config.organization,
