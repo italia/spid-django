@@ -1,6 +1,10 @@
 import os
-import re
+import unittest
 import xml.etree.ElementTree as ElementTree
+from xml.parsers.expat import ExpatError
+import zlib
+import binascii
+import base64
 
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles import finders
@@ -13,20 +17,7 @@ from django.urls import reverse
 from djangosaml2.conf import get_config_loader, get_config
 
 from .conf import config_settings_loader
-from .utils import repr_saml
-
-
-def samlrequest_from_html_form(htmlstr):
-    regexp = 'name="SAMLRequest" value="(?P<value>[a-zA-Z0-9+=]*)"'
-    authn_request = re.findall(regexp, htmlstr)
-    if not authn_request:
-        raise Exception('AuthnRequest not found in htmlform')
-    
-    return authn_request[0]
-
-
-def repr_samlrequest(authnreqstr, **kwargs):
-    return repr_saml(authnreqstr, **kwargs)
+from .utils import repr_saml_request, saml_request_from_html_form
 
 
 def dummy_loader():
@@ -96,6 +87,55 @@ class TestStaticFiles(TestCase):
         self.assertTrue(os.path.isfile(abs_path))
 
 
+class TestUtils(unittest.TestCase):
+
+    def test_repr_saml_request(self):
+        xml_str = repr_saml_request('PGZvby8+', b64=True)
+        self.assertEqual(xml_str, '<?xml version="1.0" ?>\n<foo/>\n')
+
+        xml_str = repr_saml_request(b'PGZvby8+', b64=True)
+        self.assertEqual(xml_str, '<?xml version="1.0" ?>\n<foo/>\n')
+
+        xml_str = repr_saml_request('<foo/>')
+        self.assertEqual(xml_str, '<?xml version="1.0" ?>\n<foo/>\n')
+
+        xml_str = repr_saml_request(b'<foo/>')
+        self.assertEqual(xml_str, '<?xml version="1.0" ?>\n<foo/>\n')
+
+        with self.assertRaises(ExpatError):
+            repr_saml_request(b'PGZvby8+')
+
+        with self.assertRaises(ExpatError):
+            repr_saml_request('foo')
+
+        with self.assertRaises(binascii.Error):
+            repr_saml_request('foo', b64=True)
+
+    def test_repr_saml_request_with_compressed_data(self):
+        compressor = zlib.compressobj(wbits=-15)
+        zipped_data = compressor.compress(b'<foo/>')
+        zipped_data += compressor.flush()
+
+        xml_str = repr_saml_request(zipped_data)
+        self.assertEqual(xml_str, '<?xml version="1.0" ?>\n<foo/>\n')
+
+        with self.assertRaises(binascii.Error):
+            repr_saml_request(zipped_data, b64=True)
+
+        xml_str = repr_saml_request(base64.b64encode(zipped_data), b64=True)
+        self.assertEqual(xml_str, '<?xml version="1.0" ?>\n<foo/>\n')
+
+    def test_saml_request_from_html_form(self):
+        with self.assertRaises(ValueError):
+            saml_request_from_html_form('<empty/>')
+
+        with self.assertRaises(ValueError):
+            saml_request_from_html_form('<input name="SAMLRequest" value="???"/>')
+
+        saml_str = saml_request_from_html_form('<input name="SAMLRequest" value="PGZvby8+"/>')
+        self.assertEqual(saml_str, 'PGZvby8+')
+
+
 class TestSpid(TestCase):
 
     def setUp(self):
@@ -143,9 +183,9 @@ class TestSpid(TestCase):
         self.assertEqual(res.status_code, 200)
         
         html_form = res.content.decode()
-        encoded_authn_req = samlrequest_from_html_form(html_form)
+        encoded_authn_req = saml_request_from_html_form(html_form)
         
-        fancy_saml = repr_samlrequest(encoded_authn_req.encode(), b64=1)
+        fancy_saml = repr_saml_request(encoded_authn_req.encode(), b64=True)
         self.assertNotIn('ns0', fancy_saml)
         
         lines = fancy_saml.split('\n')
