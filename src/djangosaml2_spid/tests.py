@@ -5,19 +5,27 @@ from xml.parsers.expat import ExpatError
 import zlib
 import binascii
 import base64
+import pathlib
+
+from saml2.saml import NAMEID_FORMAT_TRANSIENT, NAMEID_FORMAT_ENCRYPTED
+from saml2.xmldsig import DIGEST_SHA256, DIGEST_SHA512, SIG_RSA_SHA256, SIG_RSA_SHA512
 
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles import finders
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponseBadRequest
-from django.test import Client, TestCase, RequestFactory
+from django.test import Client, TestCase, RequestFactory, override_settings
 from django.urls import reverse
+from django.conf import settings
 
 from djangosaml2.conf import get_config_loader, get_config
 
 from .conf import config_settings_loader
 from .utils import repr_saml_request, saml_request_from_html_form
+
+
+base_dir = pathlib.Path(settings.BASE_DIR)
 
 
 def dummy_loader():
@@ -47,12 +55,92 @@ class TestSpidConfig(TestCase):
         request = self.factory.get('/spid/metadata')
         saml_config = get_config(request=request)
         self.assertEqual(saml_config.entityid, 'http://testserver/spid/metadata/')
+
+    def test_default_spid_saml_config(self):
+        request = self.factory.get('/spid/metadata')
+        saml_config = get_config(request=request)
+        self.assertEqual(saml_config.entityid, 'http://testserver/spid/metadata/')
+
+        self.assertEqual(saml_config.name_qualifier, '')  # ???
+
+        self.assertEqual(saml_config._sp_name, 'http://testserver/spid/metadata/')
+        self.assertEqual(saml_config._sp_name_id_format, [NAMEID_FORMAT_TRANSIENT])
+        self.assertEqual(saml_config._sp_digest_algorithm, DIGEST_SHA256)
+        self.assertEqual(saml_config._sp_signing_algorithm, SIG_RSA_SHA256)
+
+        self.assertEqual(saml_config._sp_endpoints, {
+            'assertion_consumer_service': [
+                ('http://testserver/spid/acs/',
+                 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST')
+            ],
+            'single_logout_service': [
+                ('http://testserver/spid/ls/post/',
+                 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST')]
+        })
+
+        if base_dir.name == 'example':
+            self.assertEqual(saml_config.cert_file,
+                             str(base_dir.joinpath('certificates/public.cert')))
+            self.assertEqual(saml_config.key_file,
+                             str(base_dir.joinpath('certificates/private.key')))
+
+            self.assertListEqual(
+                list(saml_config.metadata.metadata),
+                [str(base_dir.joinpath('spid_config/metadata/satosa-spid.xml')),
+                 str(base_dir.joinpath('spid_config/metadata/spid-sp-test.xml'))]
+            )
+        else:
+            self.assertEqual(saml_config.cert_file, 'tests/certificates/public.cert')
+            self.assertEqual(saml_config.key_file, 'tests/certificates/private.key')
+
+            self.assertListEqual(
+                list(saml_config.metadata.metadata),
+                ['tests/metadata/satosa-spid.xml', 'tests/metadata/spid-sp-test.xml']
+            )
+
         self.assertEqual(
             saml_config.organization,
             {'name': [('Example', 'it'), ('Example', 'en')],
              'display_name': [('Example', 'it'), ('Example', 'en')],
              'url': [('http://www.example.it', 'it'), ('http://www.example.it', 'en')]}
         )
+
+    @override_settings(SPID_NAMEID_FORMAT=NAMEID_FORMAT_ENCRYPTED)
+    def test_spid_public_cert(self):
+        request = self.factory.get('/spid/metadata')
+        saml_config = get_config(request=request)
+        self.assertEqual(saml_config._sp_name_id_format, [NAMEID_FORMAT_ENCRYPTED])
+
+    @override_settings(SPID_DIG_ALG=DIGEST_SHA512, SPID_SIG_ALG=SIG_RSA_SHA512)
+    def test_spid_digest_and_signing_algorithms(self):
+        request = self.factory.get('/spid/metadata')
+        saml_config = get_config(request=request)
+        self.assertEqual(saml_config._sp_digest_algorithm, DIGEST_SHA512)
+        self.assertEqual(saml_config._sp_signing_algorithm, SIG_RSA_SHA512)
+
+    @unittest.skipIf(base_dir.name == 'example', "Skip for demo project")
+    @override_settings(SPID_PRIVATE_KEY='example/certificates/private.key')
+    def test_spid_private_key(self):
+        request = self.factory.get('/spid/metadata')
+        saml_config = get_config(request=request)
+        self.assertEqual(saml_config.key_file, 'example/certificates/private.key')
+        self.assertEqual(saml_config.cert_file, 'tests/certificates/public.cert')
+        self.assertListEqual(saml_config.encryption_keypairs, [{
+            'key_file': 'example/certificates/private.key',
+            'cert_file': 'tests/certificates/public.cert'
+        }])
+
+    @unittest.skipIf(base_dir.name == 'example', "Skip for demo project")
+    @override_settings(SPID_PUBLIC_CERT='example/certificates/public.cert')
+    def test_spid_public_cert(self):
+        request = self.factory.get('/spid/metadata')
+        saml_config = get_config(request=request)
+        self.assertEqual(saml_config.key_file, 'tests/certificates/private.key')
+        self.assertEqual(saml_config.cert_file, 'example/certificates/public.cert')
+        self.assertListEqual(saml_config.encryption_keypairs, [{
+            'key_file': 'tests/certificates/private.key',
+            'cert_file': 'example/certificates/public.cert'
+        }])
 
 
 class TestStaticFiles(TestCase):
