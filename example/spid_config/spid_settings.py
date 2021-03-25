@@ -6,9 +6,7 @@ import saml2
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SPID_BASE_SCHEMA_HOST_PORT = os.environ.get('SPID_BASE_SCHEMA_HOST_PORT', 'http://localhost:8000')
 SPID_URLS_PREFIX = 'spid'
-SPID_BASE_URL = f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_URLS_PREFIX}'
 
 SPID_ACS_URL_PATH = f'{SPID_URLS_PREFIX}/acs/'
 SPID_SLO_POST_URL_PATH = f'{SPID_URLS_PREFIX}/ls/post/'
@@ -77,31 +75,47 @@ SPID_CONTACTS = [
     # },
 ]
 
+
+# Configuration for pysaml2 managed by djangosaml2, that is usually replaced or
+# updated by a dynamic configurations adapted for the running Django service.
 SAML_CONFIG = {
+    #
+    # Non SPID-only related info are used for building dynamic running config.
+
+    # you can set multilanguage information here
+    'organization': {
+        'name': [('Example', 'it'), ('Example', 'en')],
+        'display_name': [('Example', 'it'), ('Example', 'en')],
+        'url': [('http://www.example.it', 'it'), ('http://www.example.it', 'en')],
+    },
     'debug': True,
     'xmlsec_binary': get_xmlsec_binary(['/opt/local/bin', '/usr/bin/xmlsec1']),
 
-    # Avviso SPID n. 19 v.4 per enti AGGREGATORI l’entityID deve contenere il codice attività pub-op-full
-    #'entityid': f'{BASE_URL}/pub-op-full/',
-    'entityid': f'{SPID_BASE_URL}/metadata',
+    # The following entries are reported here only for show a complete configuration
+    # for pysaml2. When a SPID URL is requested these entries are replaced by proper
+    # configurations, adapted for the running Django service on the basis of the
+    # defined SPID_* settings.
 
-    # Attribute maps moved to src/djangosaml2_spid/attribute_maps/
-    # 'attribute_map_dir': f'{BASE_DIR}/spid_config/attribute-maps/',
+    # TODO: Avviso SPID n. 19 v.4 per enti AGGREGATORI l’entityID deve contenere il codice attività pub-op-full
+    #'entityid': f'{BASE_URL}/pub-op-full/',  # TODO: Aggiungere voce di configurazione SPID_* apposita??
+    'entityid': f'http://localhost:8000/{SPID_URLS_PREFIX}/metadata',
+
+    'attribute_map_dir': f'{BASE_DIR}/djangosaml2_spid/attribute_maps/',
 
     'service': {
         'sp': {
-            'name': f'{SPID_BASE_URL}/metadata/',
-            'name_qualifier': SPID_BASE_SCHEMA_HOST_PORT,
+            'name': f'http://localhost:8000/{SPID_URLS_PREFIX}/metadata/',
+            'name_qualifier': 'http://localhost:8000',
 
             'name_id_format': [SPID_NAMEID_FORMAT],
 
             'endpoints': {
                 'assertion_consumer_service': [
-                    (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_ACS_URL_PATH}',
+                    (f'http://localhost:8000/{SPID_ACS_URL_PATH}',
                      saml2.BINDING_HTTP_POST),
                 ],
                 'single_logout_service': [
-                    (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_SLO_POST_URL_PATH}',
+                    (f'http://localhost:8000/{SPID_SLO_POST_URL_PATH}',
                      saml2.BINDING_HTTP_POST),
                 ],
             },
@@ -178,13 +192,6 @@ SAML_CONFIG = {
         'key_file': SPID_PRIVATE_KEY,
         'cert_file': SPID_PUBLIC_CERT,
     }],
-
-    # you can set multilanguage information here
-    'organization': {
-        'name': [('Example', 'it'), ('Example', 'en')],
-        'display_name': [('Example', 'it'), ('Example', 'en')],
-        'url': [('http://www.example.it', 'it'), ('http://www.example.it', 'en')],
-    },
 }
 
 if SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE:
