@@ -75,6 +75,10 @@ def avviso_29_v3(metadata):
                     namespace=settings.SPID_PREFIXES['spid'],
                     text=v
                 )
+                # Avviso SPID n. 19 v.4 per enti AGGREGATORI il tag ContactPerson deve avere l’attributo spid:entityType valorizzato come spid:aggregator
+                if k == "PublicServicesFullOperator":
+                    spid_contact.extension_attributes= {"spid:entityType": "spid:aggregator"}
+
                 spid_extensions.children.append(ext)
 
             spid_contact.extensions = spid_extensions

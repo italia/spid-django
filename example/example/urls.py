@@ -7,5 +7,5 @@ import djangosaml2_spid.urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include((djangosaml2_spid.urls, 'djangosaml2_spid',))),
-    path('', RedirectView.as_view(url=settings.SPID_BASE_URL), name='example-index')
+    path('', RedirectView.as_view(url=settings.SPID_URLS_PREFIX), name='example-index')
 ]
