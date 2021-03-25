@@ -88,13 +88,13 @@ class TestSpidConfig(TestCase):
 
             self.assertIn(str(base_dir.joinpath('spid_config/metadata/satosa-spid.xml')),
                           metadata_files),
-            self.assertIn(str(base_dir.joinpath('spid_config/metadata/spid-sp-test.xml')),
+            self.assertIn(str(base_dir.joinpath('spid_config/metadata/spid-saml-check.xml')),
                           metadata_files)
         else:
             self.assertEqual(saml_config.cert_file, 'tests/certificates/public.cert')
             self.assertEqual(saml_config.key_file, 'tests/certificates/private.key')
             self.assertIn('tests/metadata/satosa-spid.xml', metadata_files)
-            self.assertIn('tests/metadata/spid-sp-test.xml', metadata_files)
+            self.assertIn('tests/metadata/spid-saml-check.xml', metadata_files)
 
         self.assertEqual(
             saml_config.organization,
@@ -265,15 +265,15 @@ class TestSpid(TestCase):
     def test_authnreq(self):
         url = reverse('djangosaml2_spid:spid_login')
         client = Client()
-        res = client.get(f'{url}?idp=http://localhost:54321')
+        res = client.get(f'{url}?idp=http://localhost:8080')
         self.assertEqual(res.status_code, 200)
-        
+
         html_form = res.content.decode()
         encoded_authn_req = saml_request_from_html_form(html_form)
-        
+
         fancy_saml = repr_saml_request(encoded_authn_req.encode(), b64=True)
         self.assertNotIn('ns0', fancy_saml)
-        
+
         lines = fancy_saml.split('\n')
         self.assertEqual(lines[0], '<?xml version="1.0" ?>')
         self.assertTrue(lines[1].startswith('<samlp:AuthnRequest '))
