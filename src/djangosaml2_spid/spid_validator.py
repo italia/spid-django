@@ -7,6 +7,13 @@ import time
 from saml2 import samlp
 
 
+ALLOWED_AUTHN_CONTEXT_CLASS = [
+    'https://www.spid.gov.it/SpidL1',
+    'https://www.spid.gov.it/SpidL2',
+    'https://www.spid.gov.it/SpidL3'
+]
+
+
 class Saml2ResponseValidator(object):
 
     def __init__(self, authn_response='', issuer='',
@@ -15,7 +22,7 @@ class Saml2ResponseValidator(object):
                  accepted_time_diff=1,
                  in_response_to='',
                  requester='',
-                 authn_context_class_ref='https://www.spid.gov.it/SpidL2',
+                 authn_context_class_ref = 'https://www.spid.gov.it/SpidL2',
                  return_addrs = []):
 
         self.response = samlp.response_from_string(authn_response)
@@ -52,17 +59,21 @@ class Saml2ResponseValidator(object):
         # check that this issuer is in the metadata...
         if self.requester:
             if self.requester != self.response.issuer.text:
-                raise Exception('Issuer different {}'.format(self.response.issuer.text))
+                raise Exception(
+                    f'Issuer different {self.response.issuer.text}'
+                )
 
         msg = 'Issuer format is not valid: {}'
         # 70, 71
-        if not hasattr(self.response.issuer, 'format') or \
-           not getattr(self.response.issuer, 'format', None):
-            raise Exception(msg.format(self.response.issuer.format))
+        # if not hasattr(self.response.issuer, 'format') or \
+           # not getattr(self.response.issuer, 'format', None):
+            # raise Exception(msg.format(self.response.issuer.format))
 
-        # 72
+        # 70, 71, 72
         for i in self.response.assertion:
-            if i.issuer.format != "urn:oasis:names:tc:SAML:2.0:nameid-format:entity":
+            if not hasattr(i.issuer, 'format'):
+                raise Exception(msg.format(self.response.issuer.format))
+            elif i.issuer.format != "urn:oasis:names:tc:SAML:2.0:nameid-format:entity":
                raise Exception(msg.format(self.response.issuer.format))
 
 
@@ -202,13 +213,20 @@ class Saml2ResponseValidator(object):
                    not getattr(authns, 'authn_context', None) or \
                    not hasattr(authns.authn_context, 'authn_context_class_ref') or \
                    not getattr(authns.authn_context, 'authn_context_class_ref', None):
-                    raise Exception('Assertion authn_statement.authn_context_class_ref is missing/invalid')
+                    raise Exception(
+                        'Assertion authn_statement.authn_context_class_ref is missing/invalid'
+                    )
 
-                # 97 - TODO
-                # if authns.authn_context.authn_context_class_ref.text != self.authn_context_class_ref:
-                    # raise Exception(('Assertion '
-                                     # 'authn_statement.authn_context.authn_context_class_ref is '
-                                     # 'missing/invalid'))
+                # if not authns.authn_context.authn_context_class_ref.text:
+                    # raise Exception(
+                        # 'Assertion authn_statement.authn_context.authn_context_class_ref.text is missing/invalid'
+                    # )
+
+                # 97
+                if authns.authn_context.authn_context_class_ref.text not in ALLOWED_AUTHN_CONTEXT_CLASS:
+                    raise Exception(
+                        'Assertion authn_statement.authn_context.authn_context_class_ref is missing/invalid'
+                    )
                 # 98
                 if not hasattr(i, 'attribute_statement') or \
                    not getattr(i, 'attribute_statement', None):
@@ -222,12 +240,12 @@ class Saml2ResponseValidator(object):
         """ run all tests/methods
         """
         if not tests:
-            tests = [i[0] for i in inspect.getmembers(self, predicate=inspect.ismethod)
+            tests = [i[0]
+                     for i in inspect.getmembers(self, predicate=inspect.ismethod)
                      if not i[0].startswith('_')]
             tests.remove('run')
 
-            # poste italiane risponde con issuer format -> None
-            tests.remove('validate_issuer')
+            # tests.remove('validate_issuer')
 
         for element in tests:
             getattr(self, element)()

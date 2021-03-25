@@ -171,6 +171,66 @@ coverage run ./manage.py test djangosaml2_spid.tests
 coverage report -m
 ````
 
+Multiple ACS (new feature)
+--------------------------
+Current project allow to manage Service Provider metadata but with limitation to only one Assertion Consumer Service (or ACS) .
+
+In case of metadata statically generated and validated positevely by AGID where there are multiple ACS, the assumption of index="0"
+could result not correct.
+
+Configuration, should allow to:
+- to indicate which ACS id reference by current deploy: now it is work always as index="0"
+- to create dinamically N nodes such as:
+  - <md:KeyDescriptor use="signing">
+  - <md:KeyDescriptor use="encryption">
+  - <md:SingleLogoutService .../>
+  - <md:AssertionConsumerService ... index="N" isDefault="true|false/>
+  - <md:AttributeConsumingService index="N">
+
+Pull request proposal (visible in example.spid_config.spid_settings) help to manage:
+- service name (multiple languages)
+- service description (multiple languages)
+- list of attributes (does not matter if required or optional ones)
+- multiple assertion_consumer_service
+- mutiple single_logout_service
+- multiple encryption_keypairs
+```
+SPID_CURRENT_INDEX: int = int(os.getenv("SPID_CURRENT_INDEX", "0"), 10)
+
+SAML_ATTRIBUTE_CONSUMING_SERVICE_LIST = [
+    {
+        "serviceNames": (
+            {"lang": "en", "text": "service #1"},
+            {"lang": "it", "text": "servizio #1"},
+        ),
+        "serviceDescriptions": (
+            {"lang": "en", "text": "description of service #1"},
+            {"lang": "it", "text": "descrizione del servizio #1"},
+        ),
+        "attributes": ("spidCode", "fiscalNumber", "email", "name", "familyName", "placeOfBirth", "dateOfBirth",)
+    },     # index="0"
+    {...}, # index="1"
+]
+assertion_consumer_service = [
+    ('...', saml2.BINDING_HTTP_POST), # index="0"
+    (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_ACS_URL_PATH}', saml2.BINDING_HTTP_POST), # index="1"
+]
+
+single_logout_service = [
+    ('...', saml2.BINDING_HTTP_POST), # index="0"
+    (f'{SPID_BASE_SCHEMA_HOST_PORT}/{SPID_SLO_POST_URL_PATH}', saml2.BINDING_HTTP_POST), # index="1"
+]
+
+encryption_keypairs = [{
+    'key_file': '...', # index="0": not necessarily valid for runtime validation
+    'cert_file': '...', # index="0": not necessarily valid for runtime validation
+},{
+    'key_file': SPID_PRIVATE_KEY, # index="1"
+    'cert_file': SPID_PUBLIC_CERT, # index="1"
+}]
+```
+
+
 Warnings
 --------
 
