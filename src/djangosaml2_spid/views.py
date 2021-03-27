@@ -29,7 +29,7 @@ from .spid_anomalies import SpidAnomaly
 from .spid_metadata import spid_sp_metadata
 from .spid_request import spid_sp_authn_request
 from .spid_validator import Saml2ResponseValidator
-from .utils import repr_saml
+from .utils import repr_saml_request
 
 SPID_DEFAULT_BINDING = settings.SPID_DEFAULT_BINDING
 
@@ -253,7 +253,7 @@ def spid_logout(request, config_loader_path=None, **kwargs):
 
     _req_str = slo_req_signed
     logger.debug(
-        f'LogoutRequest to {subject_id.name_qualifier}: {repr_saml(_req_str)}'
+        f'LogoutRequest to {subject_id.name_qualifier}: {repr_saml_request(_req_str)}'
     )
 
     slo_location = client.metadata.single_logout_service(
