@@ -7,6 +7,7 @@ import binascii
 import base64
 import pathlib
 
+from saml2 import BINDING_HTTP_REDIRECT, BINDING_HTTP_POST
 from saml2.saml import NAMEID_FORMAT_TRANSIENT, NAMEID_FORMAT_ENCRYPTED
 from saml2.xmldsig import DIGEST_SHA256, DIGEST_SHA512, SIG_RSA_SHA256, SIG_RSA_SHA512
 
@@ -262,7 +263,8 @@ class TestSpid(TestCase):
         self.assertEqual(
             metadata_xml.find('.//spid:FiscalCode', namespaces).text, 'XYZABCAAMGGJ000W')
 
-    def test_authnreq(self):
+    @override_settings(SAML2_DEFAULT_BINDING = BINDING_HTTP_POST)
+    def test_authnreq_post(self):
         url = reverse('djangosaml2_spid:spid_login')
         client = Client()
         res = client.get(f'{url}?idp=http://localhost:8080')
