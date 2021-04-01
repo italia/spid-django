@@ -181,3 +181,4 @@ Authors
 ------------
 
 Giuseppe De Marco
+Davide Brunato
