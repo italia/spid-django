@@ -59,8 +59,8 @@ settings.LOGIN_REDIRECT_URL = getattr(
     settings, 'LOGIN_REDIRECT_URL', '/spid/echo_attributes'
 )
 
-settings.SPID_DEFAULT_BINDING = getattr(
-    settings, 'SPID_DEFAULT_BINDING', saml2.BINDING_HTTP_POST
+settings.SAML2_DEFAULT_BINDING = getattr(
+    settings, 'SAML2_DEFAULT_BINDING', saml2.BINDING_HTTP_POST
 )
 
 settings.SPID_DIG_ALG = getattr(settings, 'SPID_DIG_ALG', DIGEST_SHA256)
