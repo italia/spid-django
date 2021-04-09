@@ -11,14 +11,14 @@ with open(os.path.join(os.path.dirname(__file__), 'requirements.txt')) as requir
 
 setup(
     name="djangosaml2-spid",
-    version='0.7.1',
+    version='0.7.2',
     description="Djangosaml2 SPID Service Provider",
     long_description=README,
     long_description_content_type='text/markdown',
     author='Giuseppe De Marco',
     author_email='demarcog83@gmail.com',
     license="Apache 2.0",
-    url='https://github.com/peppelinux/djangosaml2_spid',
+    url='https://github.com/italia/djangosaml2_spid',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     include_package_data=True,
