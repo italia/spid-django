@@ -5,4 +5,5 @@ black
 flake8
 isort
 bandit
+tox
 spid-sp-test>=0.4.6

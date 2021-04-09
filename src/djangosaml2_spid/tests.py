@@ -1,5 +1,8 @@
 import os
+import io
+import glob
 import unittest
+from unittest.mock import patch
 import xml.etree.ElementTree as ElementTree
 from xml.parsers.expat import ExpatError
 import zlib
@@ -7,7 +10,7 @@ import binascii
 import base64
 import pathlib
 
-from saml2 import BINDING_HTTP_REDIRECT, BINDING_HTTP_POST
+from saml2 import BINDING_HTTP_POST  # , BINDING_HTTP_REDIRECT
 from saml2.saml import NAMEID_FORMAT_TRANSIENT, NAMEID_FORMAT_ENCRYPTED
 from saml2.xmldsig import DIGEST_SHA256, DIGEST_SHA512, SIG_RSA_SHA256, SIG_RSA_SHA512
 
@@ -15,6 +18,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.staticfiles import finders
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ImproperlyConfigured
+from django.core.management import call_command
 from django.http import HttpResponseBadRequest
 from django.test import Client, TestCase, RequestFactory, override_settings
 from django.urls import reverse
@@ -96,6 +100,7 @@ class TestSpidConfig(TestCase):
             self.assertEqual(saml_config.key_file, 'tests/certificates/private.key')
             self.assertIn('tests/metadata/satosa-spid.xml', metadata_files)
             self.assertIn('tests/metadata/spid-saml-check.xml', metadata_files)
+            self.assertIn('tests/metadata/spid-sp-test.xml', metadata_files)
 
         self.assertEqual(
             saml_config.organization,
@@ -103,6 +108,25 @@ class TestSpidConfig(TestCase):
              'display_name': [('Example', 'it'), ('Example', 'en')],
              'url': [('http://www.example.it', 'it'), ('http://www.example.it', 'en')]}
         )
+
+    @override_settings(SAML_CONFIG={
+        'debug': True,
+        'entityid': settings.SAML_CONFIG['entityid'],
+        'organization': settings.SAML_CONFIG['organization'],
+    })
+    def test_saml_debug_mode(self):
+        request = self.factory.get('/spid/metadata')
+        saml_config = get_config(request=request)
+        self.assertTrue(saml_config.debug)
+
+    @override_settings(SAML_CONFIG={
+        'entityid': settings.SAML_CONFIG['entityid'],
+        'organization': settings.SAML_CONFIG['organization'],
+    })
+    def test_saml_no_debug_mode(self):
+        request = self.factory.get('/spid/metadata')
+        saml_config = get_config(request=request)
+        self.assertFalse(saml_config.debug)
 
     @override_settings(SPID_NAMEID_FORMAT=NAMEID_FORMAT_ENCRYPTED)
     def test_spid_public_cert(self):
@@ -223,6 +247,29 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(saml_str, 'PGZvby8+')
 
 
+class TestCommands(TestCase):
+
+    @patch('sys.stderr', new_callable=io.StringIO)
+    @patch('sys.stdout', new_callable=io.StringIO)
+    def test_update_idps_command(self, mock_out, mock_err):
+        metadata_dir = settings.SPID_IDENTITY_PROVIDERS_METADATA_DIR
+        self.assertTrue(metadata_dir.endswith('metadata/'))
+        self.assertTrue(os.path.isdir(metadata_dir))
+
+        idp_files_wildcard = os.path.join(metadata_dir, 'idp_*.xml')
+        for filename in glob.glob(idp_files_wildcard):
+            os.remove(filename)
+
+        self.assertListEqual(glob.glob(idp_files_wildcard), [])
+        call_command('update_idps')
+
+        self.assertEqual(len(glob.glob(idp_files_wildcard)), 9)
+        self.assertEqual(mock_err.getvalue(), '')
+
+        success_message = "Successfully wrote all IdPs metadata XML files"
+        self.assertIn(success_message, mock_out.getvalue().strip().split('\n')[-1])
+
+
 class TestSpid(TestCase):
 
     def setUp(self):
@@ -263,7 +310,7 @@ class TestSpid(TestCase):
         self.assertEqual(
             metadata_xml.find('.//spid:FiscalCode', namespaces).text, 'XYZABCAAMGGJ000W')
 
-    @override_settings(SAML2_DEFAULT_BINDING = BINDING_HTTP_POST)
+    @override_settings(SAML2_DEFAULT_BINDING=BINDING_HTTP_POST)
     def test_authnreq_post(self):
         url = reverse('djangosaml2_spid:spid_login')
         client = Client()
