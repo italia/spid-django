@@ -1,8 +1,6 @@
 import datetime
 import pytz
 import inspect
-import os
-import time
 
 from saml2 import samlp
 
@@ -17,13 +15,13 @@ ALLOWED_AUTHN_CONTEXT_CLASS = [
 class Saml2ResponseValidator(object):
 
     def __init__(self, authn_response='', issuer='',
-                 nameid_formats=['urn:oasis:names:tc:SAML:2.0:nameid-format:transient'],
+                 nameid_formats=('urn:oasis:names:tc:SAML:2.0:nameid-format:transient',),
                  recipient='spidSaml2/acs/post',
                  accepted_time_diff=1,
                  in_response_to='',
                  requester='',
-                 authn_context_class_ref = 'https://www.spid.gov.it/SpidL2',
-                 return_addrs = []):
+                 authn_context_class_ref='https://www.spid.gov.it/SpidL2',
+                 return_addrs=()):
 
         self.response = samlp.response_from_string(authn_response)
         self.nameid_formats = nameid_formats
@@ -66,16 +64,15 @@ class Saml2ResponseValidator(object):
         msg = 'Issuer format is not valid: {}'
         # 70, 71
         # if not hasattr(self.response.issuer, 'format') or \
-           # not getattr(self.response.issuer, 'format', None):
-            # raise Exception(msg.format(self.response.issuer.format))
+        #     not getattr(self.response.issuer, 'format', None):
+        #     raise Exception(msg.format(self.response.issuer.format))
 
         # 70, 71, 72
         for i in self.response.assertion:
             if not hasattr(i.issuer, 'format'):
                 raise Exception(msg.format(self.response.issuer.format))
             elif i.issuer.format != "urn:oasis:names:tc:SAML:2.0:nameid-format:entity":
-               raise Exception(msg.format(self.response.issuer.format))
-
+                raise Exception(msg.format(self.response.issuer.format))
 
     def validate_assertion_version(self):
         """ spid saml check 35
@@ -132,7 +129,7 @@ class Saml2ResponseValidator(object):
             for subject_confirmation in i.subject.subject_confirmation:
                 # 61
                 if not hasattr(subject_confirmation, 'subject_confirmation_data') or \
-                     not getattr(subject_confirmation, 'subject_confirmation_data', None):
+                        not getattr(subject_confirmation, 'subject_confirmation_data', None):
                     msg = 'subject_confirmation_data not present'
                     raise Exception(msg)
 
@@ -147,17 +144,16 @@ class Saml2ResponseValidator(object):
                 # 50
                 if self.recipient != subject_confirmation.subject_confirmation_data.recipient:
                     msg = 'subject_confirmation_data.recipient not valid: {}'
-                    raise Exception(msg.format(subject_confirmation_data.recipient))
+                    raise Exception(msg.format(subject_confirmation.subject_confirmation_data.recipient))
 
                 # 63 ,64
                 if not hasattr(subject_confirmation.subject_confirmation_data, 'not_on_or_after') or \
-                     not getattr(subject_confirmation.subject_confirmation_data, 'not_on_or_after', None):
+                        not getattr(subject_confirmation.subject_confirmation_data, 'not_on_or_after', None):
                     raise Exception('subject.subject_confirmation_data not_on_or_after not valid')
 
                 if not hasattr(subject_confirmation.subject_confirmation_data, 'in_response_to') or \
-                     not getattr(subject_confirmation.subject_confirmation_data, 'in_response_to', None):
+                        not getattr(subject_confirmation.subject_confirmation_data, 'in_response_to', None):
                     raise Exception('subject.subject_confirmation_data in response to not valid')
-
 
     def validate_assertion_conditions(self):
         """ spid saml check 73, 74, 75, 76, 79, 80, 84, 85
@@ -177,16 +173,15 @@ class Saml2ResponseValidator(object):
                # or not i.conditions.text.strip(' ').strip('\n'):
                 raise Exception('Assertion conditions not_before not valid')
 
-
             # 79, 80
             if not hasattr(i.conditions, 'not_on_or_after') or \
-               not getattr(i.conditions, 'not_on_or_after', None):
-               # or not i.conditions.text.strip(' ').strip('\n'):
+                    not getattr(i.conditions, 'not_on_or_after', None):
+                    # or not i.conditions.text.strip(' ').strip('\n'):
                 raise Exception('Assertion conditions not_on_or_after not valid')
 
             # 84
             if not hasattr(i.conditions, 'audience_restriction') or \
-               not getattr(i.conditions, 'audience_restriction', None):
+                    not getattr(i.conditions, 'audience_restriction', None):
                 raise Exception('Assertion conditions without audience_restriction')
 
             # 85
@@ -223,20 +218,20 @@ class Saml2ResponseValidator(object):
                     # )
 
                 # 97
-                if authns.authn_context.authn_context_class_ref.text not in ALLOWED_AUTHN_CONTEXT_CLASS:
-                    raise Exception(
-                        'Assertion authn_statement.authn_context.authn_context_class_ref is missing/invalid'
-                    )
+                if authns.authn_context.authn_context_class_ref.text \
+                        not in ALLOWED_AUTHN_CONTEXT_CLASS:
+                    raise Exception('Assertion authn_statement.authn_context.'
+                                    'authn_context_class_ref is missing/invalid')
                 # 98
                 if not hasattr(i, 'attribute_statement') or \
-                   not getattr(i, 'attribute_statement', None):
+                        not getattr(i, 'attribute_statement', None):
                     raise Exception('Assertion attribute_statement is missing/invalid')
 
                 for attri in i.attribute_statement:
                     if not attri.attribute:
                         raise Exception('Assertion attribute_statement.attribute is missing/invalid')
 
-    def run(self, tests=[]):
+    def run(self, tests=()):
         """ run all tests/methods
         """
         if not tests:

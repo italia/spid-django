@@ -109,6 +109,25 @@ class TestSpidConfig(TestCase):
              'url': [('http://www.example.it', 'it'), ('http://www.example.it', 'en')]}
         )
 
+    @override_settings(SAML_CONFIG={
+        'debug': True,
+        'entityid': settings.SAML_CONFIG['entityid'],
+        'organization': settings.SAML_CONFIG['organization'],
+    })
+    def test_saml_debug_mode(self):
+        request = self.factory.get('/spid/metadata')
+        saml_config = get_config(request=request)
+        self.assertTrue(saml_config.debug)
+
+    @override_settings(SAML_CONFIG={
+        'entityid': settings.SAML_CONFIG['entityid'],
+        'organization': settings.SAML_CONFIG['organization'],
+    })
+    def test_saml_no_debug_mode(self):
+        request = self.factory.get('/spid/metadata')
+        saml_config = get_config(request=request)
+        self.assertFalse(saml_config.debug)
+
     @override_settings(SPID_NAMEID_FORMAT=NAMEID_FORMAT_ENCRYPTED)
     def test_spid_public_cert(self):
         request = self.factory.get('/spid/metadata')
