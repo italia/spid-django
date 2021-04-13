@@ -331,11 +331,16 @@ class AssertionConsumerServiceView(djangosaml2_views.AssertionConsumerServiceVie
 
 
     def handle_acs_failure(self, request, exception=None, status=403, **kwargs):
+        if isinstance(exception, SpidAnomaly):
+            spid_anomaly = exception
+        else:
+            spid_anomaly = SpidAnomaly.from_saml2_exception(exception)
+
         return render(
             request,
             'spid_login_error.html', {
                 'exception': exception,
-                'spid_anomaly': SpidAnomaly.from_saml2_exception(exception)
+                'spid_anomaly': spid_anomaly
             },
             status=status
         )
