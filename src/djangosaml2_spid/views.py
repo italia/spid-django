@@ -25,7 +25,7 @@ import logging
 import saml2
 
 from .conf import settings
-from .spid_anomalies import SpidAnomaly
+from .spid_errors import SpidAnomaly
 from .spid_metadata import spid_sp_metadata
 from .spid_request import spid_sp_authn_request, SAML2_DEFAULT_BINDING
 from .spid_validator import Saml2ResponseValidator
