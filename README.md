@@ -1,4 +1,5 @@
 SPID Django
+-----------
 
 ![CI build](https://github.com/italia/spid-django/workflows/spid-django/badge.svg)
 ![Python version](https://img.shields.io/badge/license-Apache%202-blue.svg)
@@ -122,13 +123,14 @@ djangosaml2_spid uses a pySAML2 fork.
 * Start the django server for tests `./manage.py runserver 0.0.0.0:8000`
 
 ---
-  **NOTE**
+**NOTE**
   
-  Instead of copy the whole demo project configuration you can add only the
-  necessary configuration entries (eg. SAML_CONFIG with 'organization' info, 
-  and SPID_CONTACTS, other configurations that you want to be different from
-  defaults) directly to your project settings file. In this case don't
-  add `'spid_config'` to `settings.INSTALLED_APPS`.
+Instead of copy the whole demo project configuration you can add only the
+necessary configuration entries (eg. SAML_CONFIG with 'organization' info, 
+and SPID_CONTACTS, other configurations that you want to be different from
+defaults) directly to your project settings file. In this case don't
+add `'spid_config'` to `settings.INSTALLED_APPS`.
+
 ---
 
 
