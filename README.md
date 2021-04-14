@@ -121,6 +121,16 @@ djangosaml2_spid uses a pySAML2 fork.
 * Register the SP metadata to your test Spid IDPs
 * Start the django server for tests `./manage.py runserver 0.0.0.0:8000`
 
+---
+  **NOTE**
+  
+  Instead of copy the whole demo project configuration you can add only the
+  necessary configuration entries (eg. SAML_CONFIG with 'organization' info, 
+  and SPID_CONTACTS, other configurations that you want to be different from
+  defaults) directly to your project settings file. In this case don't
+  add `'spid_config'` to `settings.INSTALLED_APPS`.
+---
+
 
 Attribute Mapping
 -----------------

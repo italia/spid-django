@@ -10,3 +10,7 @@ omit =
     */migrations/*
     */site-packages/*
     */tests.py
+
+[coverage:report]
+exclude_lines =
+    raise ImproperlyConfigured
