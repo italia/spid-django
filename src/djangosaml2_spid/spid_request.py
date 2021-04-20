@@ -1,15 +1,13 @@
 import logging
 
 import saml2
-from django.conf import settings
 from django.urls import reverse
 from djangosaml2.overrides import Saml2Client
 from saml2.authn_context import requested_authn_context
 
+from .conf import settings
 
-SAML2_DEFAULT_BINDING = getattr(
-    settings, 'SAML2_DEFAULT_BINDING', saml2.BINDING_HTTP_POST
-)
+SAML2_DEFAULT_BINDING = settings.SAML2_DEFAULT_BINDING
 
 logger = logging.getLogger('djangosaml2')
 
@@ -26,7 +24,8 @@ def spid_sp_authn_request(conf, selected_idp, next_url=''):
 
     authn_req = saml2.samlp.AuthnRequest()
     authn_req.destination = location_fixed
-    # spid-testenv2 preleva l'attribute consumer service dalla authnRequest (anche se questo sta già nei metadati...)
+    # spid-testenv2 preleva l'attribute consumer service dalla authnRequest
+    # (anche se questo sta già nei metadati...)
     authn_req.attribute_consuming_service_index = "0"
 
     # issuer

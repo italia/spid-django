@@ -1,7 +1,8 @@
 import saml2
-from django.conf import settings
 from saml2.metadata import entity_descriptor, sign_entity_descriptor
 from saml2.sigver import security_context
+
+from .conf import settings
 
 
 def spid_sp_metadata(conf):
@@ -75,9 +76,10 @@ def avviso_29_v3(metadata):
                     namespace=settings.SPID_PREFIXES['spid'],
                     text=v
                 )
-                # Avviso SPID n. 19 v.4 per enti AGGREGATORI il tag ContactPerson deve avere l’attributo spid:entityType valorizzato come spid:aggregator
+                # Avviso SPID n. 19 v.4 per enti AGGREGATORI il tag ContactPerson deve avere
+                # l’attributo spid:entityType valorizzato come spid:aggregator
                 if k == "PublicServicesFullOperator":
-                    spid_contact.extension_attributes= {"spid:entityType": "spid:aggregator"}
+                    spid_contact.extension_attributes = {"spid:entityType": "spid:aggregator"}
 
                 spid_extensions.children.append(ext)
 

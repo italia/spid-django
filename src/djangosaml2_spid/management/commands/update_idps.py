@@ -1,9 +1,9 @@
-from django.conf import settings
 from django.core.management.base import BaseCommand
 import json
 import os
 import requests
 
+from djangosaml2_spid.conf import settings
 
 SPID_IDENTITY_PROVIDERS_URL = settings.SPID_IDENTITY_PROVIDERS_URL
 SPID_IDENTITY_PROVIDERS_METADATA_DIR = settings.SPID_IDENTITY_PROVIDERS_METADATA_DIR
