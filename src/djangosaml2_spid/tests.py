@@ -51,11 +51,11 @@ class TestSpidConfig(TestCase):
 
     def test_get_config(self):
         saml_config = get_config()
-        self.assertEqual(saml_config.entityid, 'http://localhost:8000/spid/metadata')
+        self.assertEqual(saml_config.entityid, 'http://localhost:8000/spid/metadata/')
 
         request = self.factory.get('')
         saml_config = get_config(request=request)
-        self.assertEqual(saml_config.entityid, 'http://localhost:8000/spid/metadata')
+        self.assertEqual(saml_config.entityid, 'http://localhost:8000/spid/metadata/')
 
         request = self.factory.get('/spid/metadata')
         saml_config = get_config(request=request)
