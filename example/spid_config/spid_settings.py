@@ -38,6 +38,8 @@ SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'h
 SPID_TESTENV2_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_TESTENV2_REMOTE_METADATA_ACTIVE', 'False') == 'True'
 SPID_TESTENV2_METADATA_URL = os.environ.get('SPID_TESTENV2_METADATA_URL', 'http://localhost:8088/metadata')
 
+BASE_URL = "http://localhost:8000"
+
 # Avviso 29v3
 SPID_PREFIXES = dict(
     spid='https://spid.gov.it/saml-extensions',
@@ -98,24 +100,24 @@ SAML_CONFIG = {
 
     # TODO: Avviso SPID n. 19 v.4 per enti AGGREGATORI l’entityID deve contenere il codice attività pub-op-full
     #'entityid': f'{BASE_URL}/pub-op-full/',  # TODO: Aggiungere voce di configurazione SPID_* apposita??
-    'entityid': f'http://localhost:8000/{SPID_URLS_PREFIX}/metadata',
+    'entityid': f'{BASE_URL}/{SPID_URLS_PREFIX}/metadata',
 
     'attribute_map_dir': f'{BASE_DIR}/djangosaml2_spid/attribute_maps/',
 
     'service': {
         'sp': {
-            'name': f'http://localhost:8000/{SPID_URLS_PREFIX}/metadata/',
-            'name_qualifier': 'http://localhost:8000',
+            'name': f'{BASE_URL}/{SPID_URLS_PREFIX}/metadata/',
+            'name_qualifier': f'{BASE_URL}',
 
             'name_id_format': [SPID_NAMEID_FORMAT],
 
             'endpoints': {
                 'assertion_consumer_service': [
-                    (f'http://localhost:8000/{SPID_ACS_URL_PATH}',
+                    (f'{BASE_URL}/{SPID_ACS_URL_PATH}',
                      saml2.BINDING_HTTP_POST),
                 ],
                 'single_logout_service': [
-                    (f'http://localhost:8000/{SPID_SLO_POST_URL_PATH}',
+                    (f'{BASE_URL}/{SPID_SLO_POST_URL_PATH}',
                      saml2.BINDING_HTTP_POST),
                 ],
             },

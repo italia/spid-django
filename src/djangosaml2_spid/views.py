@@ -10,7 +10,6 @@ from django.http import (
 from django.shortcuts import render
 from djangosaml2.cache import IdentityCache, OutstandingQueriesCache
 from djangosaml2.cache import StateCache
-from djangosaml2.conf import get_config
 from djangosaml2.overrides import Saml2Client
 from djangosaml2.utils import (
     available_idps,
@@ -30,7 +29,7 @@ from .spid_metadata import spid_sp_metadata
 from .spid_request import spid_sp_authn_request, SAML2_DEFAULT_BINDING
 from .spid_validator import Saml2ResponseValidator
 from .utils import repr_saml_request
-
+from .utils import get_config
 
 logger = logging.getLogger('djangosaml2')
 
@@ -282,7 +281,10 @@ def metadata_spid(request, config_loader_path=None, valid_for=None):
     """
     conf = get_config(config_loader_path, request)
     xmldoc = spid_sp_metadata(conf)
-    return HttpResponse(content=str(xmldoc).encode('utf-8'), content_type="text/xml; charset=utf8")
+    return HttpResponse(
+        content=str(xmldoc).encode('utf-8'),
+        content_type="text/xml; charset=utf8"
+    )
 
 
 class EchoAttributesView(LoginRequiredMixin,

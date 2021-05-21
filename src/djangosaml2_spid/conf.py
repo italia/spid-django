@@ -269,16 +269,22 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
             'cert_file': settings.SPID_PUBLIC_CERT,
         }],
 
-        'organization': copy.deepcopy(settings.SAML_CONFIG['organization'])
+        'organization': copy.deepcopy(
+            settings.SAML_CONFIG['organization']
+        )
     }
 
     if settings.SAML_CONFIG.get('debug'):
         saml_config['debug'] = True
 
     if 'xmlsec_binary' in settings.SAML_CONFIG:
-        saml_config['xmlsec_binary'] = copy.deepcopy(settings.SAML_CONFIG['xmlsec_binary'])
+        saml_config['xmlsec_binary'] = copy.deepcopy(
+            settings.SAML_CONFIG['xmlsec_binary']
+        )
     else:
-        saml_config['xmlsec_binary'] = get_xmlsec_binary(['/opt/local/bin', '/usr/bin/xmlsec1'])
+        saml_config['xmlsec_binary'] = get_xmlsec_binary(
+            ['/opt/local/bin', '/usr/bin/xmlsec1']
+        )
 
     if settings.SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE:
         saml_config['metadata']['remote'].append(

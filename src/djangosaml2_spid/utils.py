@@ -3,7 +3,9 @@ import base64
 import xml.dom.minidom
 import zlib
 
+from django.conf import settings
 from xml.parsers.expat import ExpatError
+from saml2.config import SPConfig
 
 
 def repr_saml_request(saml_str, b64=False):
@@ -36,3 +38,12 @@ def saml_request_from_html_form(html_str):
         raise ValueError('AuthnRequest not found in htmlform')
 
     return authn_request[0]
+
+
+def get_config(config_loader_path=None, request=None):
+    conf = getattr(settings, 'SAML_CONFIG', None)
+    if conf:
+        conf = SPConfig().load(conf)
+    if not conf:
+        conf = get_config(config_loader_path, request)
+    return conf
