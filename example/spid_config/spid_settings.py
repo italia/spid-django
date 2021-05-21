@@ -100,7 +100,7 @@ SAML_CONFIG = {
 
     # TODO: Avviso SPID n. 19 v.4 per enti AGGREGATORI l’entityID deve contenere il codice attività pub-op-full
     #'entityid': f'{BASE_URL}/pub-op-full/',  # TODO: Aggiungere voce di configurazione SPID_* apposita??
-    'entityid': f'{BASE_URL}/{SPID_URLS_PREFIX}/metadata',
+    'entityid': f'{BASE_URL}/{SPID_URLS_PREFIX}/metadata/',
 
     'attribute_map_dir': f'{BASE_DIR}/djangosaml2_spid/attribute_maps/',
 
