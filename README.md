@@ -86,7 +86,7 @@ Demo project with Docker
 
 To use Docker compose environment, add to /etc/hosts this line:
 ````
-127.0.0.1	hostnet
+127.0.0.1   hostnet
 ````
 
 then use `docker-compose --env-file docker-compose.env up` (the process takes some time) and when the services are up go to http://hostnet:8000/spid/login
@@ -124,9 +124,9 @@ djangosaml2_spid uses a pySAML2 fork.
 
 ---
 **NOTE**
-  
+
 Instead of copy the whole demo project configuration you can add only the
-necessary configuration entries (eg. SAML_CONFIG with 'organization' info, 
+necessary configuration entries (eg. SAML_CONFIG with 'organization' info,
 and SPID_CONTACTS, other configurations that you want to be different from
 defaults) directly to your project settings file. In this case don't
 add `'spid_config'` to `settings.INSTALLED_APPS`.
@@ -186,6 +186,8 @@ coverage report -m
 Warnings
 --------
 
+- DON'T USE a Chrome based web browsers during tests. SameSite cookie restrictions will block cookie in Cross Domain POST if not in https. Use Firefox for test on localhost and test idps.
+- Read djangosaml2 documentation, set COOKIE SECURE when in production and in https.
 - The SPID Button template is only for test purpose, please don't use it in production, do your customization instead!
 - In a production environment please don't use "remote" as metadata storage, use "local" or "mdq" instead!
 
