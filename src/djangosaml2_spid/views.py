@@ -19,6 +19,7 @@ from djangosaml2.utils import (
 from saml2 import BINDING_HTTP_REDIRECT, BINDING_HTTP_POST
 from saml2.mdstore import UnknownSystemEntity
 from saml2.s_utils import UnsupportedBinding
+from djangosaml2.conf import get_config
 import djangosaml2.views as djangosaml2_views
 import logging
 import saml2
@@ -29,7 +30,6 @@ from .spid_metadata import spid_sp_metadata
 from .spid_request import spid_sp_authn_request, SAML2_DEFAULT_BINDING
 from .spid_validator import Saml2ResponseValidator
 from .utils import repr_saml_request
-from .utils import get_config
 
 logger = logging.getLogger('djangosaml2')
 

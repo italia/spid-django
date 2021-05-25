@@ -6,6 +6,7 @@ import saml2
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+SPID_BASE_URL = "http://localhost:8000"
 SPID_URLS_PREFIX = 'spid'
 
 SPID_ACS_URL_PATH = f'{SPID_URLS_PREFIX}/acs/'
@@ -37,8 +38,6 @@ SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'h
 
 SPID_TESTENV2_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_TESTENV2_REMOTE_METADATA_ACTIVE', 'False') == 'True'
 SPID_TESTENV2_METADATA_URL = os.environ.get('SPID_TESTENV2_METADATA_URL', 'http://localhost:8088/metadata')
-
-BASE_URL = "http://localhost:8000"
 
 # Avviso 29v3
 SPID_PREFIXES = dict(
@@ -98,26 +97,27 @@ SAML_CONFIG = {
     # configurations, adapted for the running Django service on the basis of the
     # defined SPID_* settings.
 
-    # TODO: Avviso SPID n. 19 v.4 per enti AGGREGATORI l’entityID deve contenere il codice attività pub-op-full
-    #'entityid': f'{BASE_URL}/pub-op-full/',  # TODO: Aggiungere voce di configurazione SPID_* apposita??
-    'entityid': f'{BASE_URL}/{SPID_URLS_PREFIX}/metadata/',
+    # TODO: Avviso SPID n. 19 v.4 per enti AGGREGATORI l’entityID deve contenere
+    #  il codice attività pub-op-full
+    #'entityid': f'{SPID_BASE_URL}/pub-op-full/',  # TODO: Aggiungere voce di configurazione SPID_ENTITYID apposita??
+    'entityid': f'{SPID_BASE_URL}/{SPID_URLS_PREFIX}/metadata/',
 
     'attribute_map_dir': f'{BASE_DIR}/djangosaml2_spid/attribute_maps/',
 
     'service': {
         'sp': {
-            'name': f'{BASE_URL}/{SPID_URLS_PREFIX}/metadata/',
-            'name_qualifier': f'{BASE_URL}',
+            'name': f'{SPID_BASE_URL}/{SPID_URLS_PREFIX}/metadata/',
+            'name_qualifier': f'{SPID_BASE_URL}',
 
             'name_id_format': [SPID_NAMEID_FORMAT],
 
             'endpoints': {
                 'assertion_consumer_service': [
-                    (f'{BASE_URL}/{SPID_ACS_URL_PATH}',
+                    (f'{SPID_BASE_URL}/{SPID_ACS_URL_PATH}',
                      saml2.BINDING_HTTP_POST),
                 ],
                 'single_logout_service': [
-                    (f'{BASE_URL}/{SPID_SLO_POST_URL_PATH}',
+                    (f'{SPID_BASE_URL}/{SPID_SLO_POST_URL_PATH}',
                      saml2.BINDING_HTTP_POST),
                 ],
             },
