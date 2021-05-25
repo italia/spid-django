@@ -13,7 +13,9 @@ if __name__ == "__main__":
     os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.test_settings'
     django.setup()
     TestRunner = get_runner(settings)
-    test_runner = TestRunner()
-    failures = test_runner.run_tests(['tests', 'src'])
+    test_runner = TestRunner(verbosity=2 if '-v' in sys.argv else 1,
+                             failfast='-f' in sys.argv)
+    test_labels = [arg for arg in sys.argv[1:]
+                   if arg.startswith('tests') or arg.startswith('djangosaml2_spid')]
+    failures = test_runner.run_tests(test_labels or ['tests', 'src'])
     sys.exit(bool(failures))
-
