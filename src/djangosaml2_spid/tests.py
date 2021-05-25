@@ -57,10 +57,12 @@ class TestSpidConfig(TestCase):
         saml_config = get_config(request=request)
         self.assertEqual(saml_config.entityid, 'http://localhost:8000/spid/metadata/')
 
-        request = self.factory.get('/spid/metadata')
-        saml_config = get_config(request=request)
-        self.assertEqual(saml_config.entityid, 'http://testserver/spid/metadata/')
+        if base_dir.name != 'example':
+            request = self.factory.get('/spid/metadata')
+            saml_config = get_config(request=request)
+            self.assertEqual(saml_config.entityid, 'http://testserver/spid/metadata/')
 
+    @unittest.skipIf(base_dir.name == 'example', "Skip for demo project")
     def test_default_spid_saml_config(self):
         request = self.factory.get('/spid/metadata')
         saml_config = get_config(request=request)
