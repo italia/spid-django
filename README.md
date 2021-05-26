@@ -217,7 +217,7 @@ coverage report -m
 Warnings
 --------
 
-- DON'T USE a Chrome based web browsers during tests. SameSite cookie restrictions will block cookie in Cross Domain POST if not in https. Use Firefox for test on localhost and test idps.
+- Unsolicited response error: [SameSite cookie restrictions](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite) will block cookies in Cross Domain POST if not in https. Use Firefox during tests on localhost with spid-saml-check.
 - Read djangosaml2 documentation, set COOKIE SECURE when in production and in https.
 - The SPID Button template is only for test purpose, please don't use it in production, do your customization instead!
 - In a production environment please don't use "remote" as metadata storage, use "local" or "mdq" instead!
