@@ -126,8 +126,6 @@ STATIC_URL = '/static/'
 
 # PySAML2 base settings
 SAML_CONFIG = {
-    'entityid': 'http://localhost:8000/spid/metadata/',  # Only for testing, usually detected.
-
     'organization': {
         'name': [('Example', 'it'), ('Example', 'en')],
         'display_name': [('Example', 'it'), ('Example', 'en')],

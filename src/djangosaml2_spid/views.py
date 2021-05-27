@@ -313,6 +313,7 @@ class EchoAttributesView(LoginRequiredMixin,
 
 
 class AssertionConsumerServiceView(djangosaml2_views.AssertionConsumerServiceView):
+
     def custom_validation(self, response):
         conf = get_config(None, self.request)
 
@@ -320,17 +321,12 @@ class AssertionConsumerServiceView(djangosaml2_views.AssertionConsumerServiceVie
         accepted_time_diff = conf.accepted_time_diff
         recipient = conf._sp_endpoints['assertion_consumer_service'][0][0]
         authn_context_classref = settings.SPID_AUTH_CONTEXT
-        issuer = response.response.issuer
-        # in_response_to = todo
-        validator = Saml2ResponseValidator(authn_response = response.xmlstr,
-                                           recipient = recipient,
-                                           # in_response_to = in_response_to,
-                                           # requester = requester,
+        validator = Saml2ResponseValidator(authn_response=response.xmlstr,
+                                           recipient=recipient,
                                            accepted_time_diff = accepted_time_diff,
                                            authn_context_class_ref = authn_context_classref,
                                            return_addrs = response.return_addrs)
         validator.run()
-
 
     def handle_acs_failure(self, request, exception=None, status=403, **kwargs):
         if isinstance(exception, SpidAnomaly):
