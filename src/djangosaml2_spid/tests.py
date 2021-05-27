@@ -51,16 +51,19 @@ class TestSpidConfig(TestCase):
 
     def test_get_config(self):
         saml_config = get_config()
-        self.assertEqual(saml_config.entityid, 'http://localhost:8000/spid/metadata/')
+        self.assertIsNone(saml_config.entityid)
 
         request = self.factory.get('')
         saml_config = get_config(request=request)
-        self.assertEqual(saml_config.entityid, 'http://localhost:8000/spid/metadata/')
+        self.assertIsNone(saml_config.entityid)
 
+        # SPConfig for a SPID request
+        request = self.factory.get('/spid/metadata')
+        saml_config = get_config(request=request)
         if base_dir.name != 'example':
-            request = self.factory.get('/spid/metadata')
-            saml_config = get_config(request=request)
             self.assertEqual(saml_config.entityid, 'http://testserver/spid/metadata/')
+        else:
+            self.assertEqual(saml_config.entityid, 'http://localhost:8000/spid/metadata/')
 
     @unittest.skipIf(base_dir.name == 'example', "Skip for demo project")
     def test_default_spid_saml_config(self):
@@ -113,7 +116,6 @@ class TestSpidConfig(TestCase):
 
     @override_settings(SAML_CONFIG={
         'debug': True,
-        'entityid': settings.SAML_CONFIG['entityid'],
         'organization': settings.SAML_CONFIG['organization'],
     })
     def test_saml_debug_mode(self):
@@ -122,7 +124,6 @@ class TestSpidConfig(TestCase):
         self.assertTrue(saml_config.debug)
 
     @override_settings(SAML_CONFIG={
-        'entityid': settings.SAML_CONFIG['entityid'],
         'organization': settings.SAML_CONFIG['organization'],
     })
     def test_saml_no_debug_mode(self):
