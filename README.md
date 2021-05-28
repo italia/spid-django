@@ -122,8 +122,8 @@ djangosaml2_spid uses a pySAML2 fork.
 * Register the SP metadata to your test Spid IDPs
 * Start the django server for tests `./manage.py runserver 0.0.0.0:8000`
 
----
-**NOTE**
+Minimal SPID settings
+---------------------
 
 Instead of copy the whole demo project configuration you can add only the
 necessary configuration entries (eg. SAML_CONFIG with 'organization' info,
@@ -131,8 +131,39 @@ and SPID_CONTACTS, other configurations that you want to be different from
 defaults) directly to your project settings file. In this case don't
 add `'spid_config'` to `settings.INSTALLED_APPS`.
 
----
+An example of a minimal configuration for SPID is the following:
 
+```python
+SAML_CONFIG = {
+    'organization': {
+        'name': [('Example', 'it'), ('Example', 'en')],
+        'display_name': [('Example', 'it'), ('Example', 'en')],
+        'url': [('http://www.example.it', 'it'), ('http://www.example.it', 'en')],
+    },
+}
+
+SAML_USE_NAME_ID_AS_USERNAME = False
+SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
+SAML_CREATE_UNKNOWN_USER = True
+SAML_DJANGO_USER_MAIN_ATTRIBUTE_LOOKUP = '__iexact'
+SAML_ATTRIBUTE_MAPPING = {
+    'spidCode': ('username', ),
+    'email': ('email', ),
+    'name': ('first_name', ),
+    'familyName': ('last_name', ),
+}
+
+SPID_CONTACTS = [
+    {
+        'contact_type': 'other',
+        'telephone_number': '+39 8475634785',
+        'email_address': 'tech-info@example.org',
+        'VATNumber': 'IT12345678901',
+        'FiscalCode': 'XYZABCAAMGGJ000W',
+        'Private': '',
+    },
+]
+```
 
 Attribute Mapping
 -----------------
