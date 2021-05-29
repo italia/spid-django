@@ -53,7 +53,7 @@ SPID_CONTACTS = [
         'contact_type': 'other',
         'telephone_number': '+398475634785',
         'email_address': 'tech-info@example.org',
-        'IPACode': 'that-IPA-code',
+        'IPACode': 'unical',
         'VATNumber': 'IT12345678901',
         'FiscalCode': 'XYZABCAAMGGJ000W',
         'Public': '',
