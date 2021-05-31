@@ -31,6 +31,10 @@ SPID_ANOMALIES = {
     },
     25: {
         'message': 'Processo di autenticazione annullato dall\'utente'
+    },
+    30: {
+        'message': 'L\'identità digitale utilizzata non è un\'identità digitale del tipo atteso',
+        'troubleshoot': 'È necessario eseguire l\'autenticazione con le credenziali del corretto tipo di identità digitale richiesto'
     }
 }
 
