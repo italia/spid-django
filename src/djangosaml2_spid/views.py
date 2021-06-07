@@ -22,7 +22,11 @@ from saml2.s_utils import UnsupportedBinding
 from djangosaml2.conf import get_config
 import djangosaml2.views as djangosaml2_views
 import logging
+
 import saml2
+import saml2.samlp
+import saml2.saml
+import saml2.time_util
 
 from .conf import settings
 from .spid_errors import SpidAnomaly
@@ -323,9 +327,9 @@ class AssertionConsumerServiceView(djangosaml2_views.AssertionConsumerServiceVie
         authn_context_classref = settings.SPID_AUTH_CONTEXT
         validator = Saml2ResponseValidator(authn_response=response.xmlstr,
                                            recipient=recipient,
-                                           accepted_time_diff = accepted_time_diff,
-                                           authn_context_class_ref = authn_context_classref,
-                                           return_addrs = response.return_addrs)
+                                           accepted_time_diff=accepted_time_diff,
+                                           authn_context_class_ref=authn_context_classref,
+                                           return_addrs=response.return_addrs)
         validator.run()
 
     def handle_acs_failure(self, request, exception=None, status=403, **kwargs):
@@ -338,7 +342,8 @@ class AssertionConsumerServiceView(djangosaml2_views.AssertionConsumerServiceVie
             request,
             'spid_login_error.html', {
                 'exception': exception,
-                'spid_anomaly': spid_anomaly
+                'spid_anomaly': spid_anomaly,
+                'organization': settings.SAML_CONFIG['organization'],
             },
             status=status
         )
