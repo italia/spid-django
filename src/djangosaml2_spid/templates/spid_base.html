@@ -22,7 +22,7 @@
 
         <link type="text/css" rel="stylesheet" href="{% static 'spid/spid-sp-access-button.css' %}">
 
-        {% block head-extra-scripts %} {%  endblock %}
+        {% block extra_head %} {%  endblock %}
 
     </head>
     <body>
@@ -358,7 +358,7 @@ lorem ipsum
         <script src="{% static 'spid/spid-sp-access-button.js' %}"></script>
         <script src="{% static 'spid/spid_button.js' %}"></script>
 
-        {% block body-extra-scripts %} {%  endblock %}
+        {% block extra_scripts %} {%  endblock %}
 
     </body>
 </html>
