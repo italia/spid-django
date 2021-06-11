@@ -103,9 +103,7 @@ class TestSpidConfig(TestCase):
         else:
             self.assertEqual(saml_config.cert_file, 'tests/certificates/public.cert')
             self.assertEqual(saml_config.key_file, 'tests/certificates/private.key')
-            self.assertIn('tests/metadata/satosa-spid.xml', metadata_files)
             self.assertIn('tests/metadata/spid-saml-check.xml', metadata_files)
-            self.assertIn('tests/metadata/spid-sp-test.xml', metadata_files)
 
         self.assertEqual(
             saml_config.organization,

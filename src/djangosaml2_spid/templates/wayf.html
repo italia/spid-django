@@ -1,0 +1,115 @@
+{% extends 'spid_base.html' %}
+{% load spid static %}
+
+{% block extra_head %}
+<script type="text/javascript" src="{% static 'spid/brython.js' %}"></script>
+<!-- Useful only if urllib is needed ...
+<script type="text/javascript" src="/static/js/Brython-3.7.3/brython_stdlib.js"></script>
+-->
+
+<script type="text/javascript">
+    // brython init
+    document.addEventListener('DOMContentLoaded', function() {
+        brython({debug: 1});
+    }, false);
+</script>
+
+<script type="text/python">
+    import browser
+
+    debug = 1
+
+    def disco(ev):
+        if debug: browser.console.log(ev.__dict__)
+        if not hasattr(ev.currentTarget.dataset, 'entityid'):
+            browser.alert('dataset not found:\n please add \"data-entityid="$variable"\" to element ')
+            return
+        entity_id = ev.currentTarget.dataset.entityid
+        if debug: browser.console.log(entity_id)
+        # browser.console.log(args)
+        dest = browser.window.location.pathname + '?idp={}'.format(entity_id)
+        browser.console.log(dest)
+        browser.window.location = dest
+
+    # something like:
+    # {entityID: "https://satosa.testunical.it/Saml2/metadata",
+    #  return: "https://satosa.testunical.it/Saml2/disco"}
+    # args = get_args()
+    # if debug: browser.console.log(args)
+
+    # other_idp_ID button event on click
+    # browser.document["custon_idp_id"].bind("click", disco)
+
+    # spid buttons event on click
+    for ele in browser.document.select("li.spid-idp-button-link"):
+        ele.bind("click", disco)
+</script>
+{%  endblock %}
+
+{% block container %}
+<div class="col-12 py-md-5 bd-content">
+
+<h4 class="">Benvenuto in Nome Organizzazione Spid Discovery Service</h4>
+
+<p class="mb-lg-5 mb-2">
+    Seleziona il Provider di Identità presso il quale desideri autenticarti
+</p>
+
+<div class="card-wrapper card-space">
+    <div class="card card-bg no-after">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm text-center">
+                    <!-- AGID - SPID IDP BUTTON SMALL "ENTRA CON SPID" * begin * -->
+
+<a href="#" class="italia-it-button italia-it-button-size-xl button-spid" spid-idp-button="#spid-idp-button-xlarge-post" aria-haspopup="true" aria-expanded="false">
+    <span class="italia-it-button-icon"><img src="{% static 'spid/spid-ico-circle-bb.svg' %}" onerror="this.src='img/spid-ico-circle-bb.png'; this.onerror=null;" alt=""></span>
+    <span class="italia-it-button-text">SPID</span>
+</a>
+<div id="spid-idp-button-xlarge-post" class="spid-idp-button spid-idp-button-tip spid-idp-button-relative">
+    <ul id="spid-idp-list-medium-root-get" class="spid-idp-button-menu" aria-labelledby="spid-idp">
+
+        <li class="spid-idp-button-link" id="spid_saml_check" data-idp="spid_saml_check" data-entityid="{% spid_saml_check_url %}">
+            <a href="#"><span class="spid-sr-only">SPID-saml-check</span><img src="" onerror="this.src='/static/images/logo.jpg'; this.onerror=null;" alt="Spid saml check"></a>
+        </li>
+        <li class="spid-idp-button-link" id="spid_testenv2" data-idp="spid_testenv2" data-entityid="{% spid_testenv2_url %}">
+            <a href="#"><span class="spid-sr-only">SPID-testenv2</span><img src="" onerror="this.src='/static/images/logo.jpg'; this.onerror=null;" alt="Spid test env2"></a>
+        </li>
+
+        <li class="spid-idp-button-link" id="spiditalia" data-idp="spiditalia" data-entityid="https://spid.register.it">
+            <a href="#"><span class="spid-sr-only">SPIDItalia Register.it</span><img src="{% static 'spid/spid-idp-spiditalia.svg' %}" onerror="this.src='/static/images/spid-idp-spiditalia.svg'; this.onerror=null;" alt="SPIDItalia Register.it"></a>
+        </li>
+        <li class="spid-idp-button-link" id="timid" data-idp="timid" data-entityid="https://login.id.tim.it/affwebservices/public/saml2sso">
+            <a href="#"><span class="spid-sr-only">Tim ID</span><img src="{% static 'spid/spid-idp-timid.svg' %}" onerror="this.src='/static/images/spid-idp-timid.svg'; this.onerror=null;" alt="Tim ID"></a>
+        </li><li class="spid-idp-button-link" id="intesaid" data-idp="intesaid" data-entityid="https://spid.intesa.it">
+            <a href="#"><span class="spid-sr-only">Intesa ID</span><img src="{% static 'spid/spid-idp-intesaid.svg' %}" onerror="this.src='/static/images/spid-idp-intesaid.svg'; this.onerror=null;" alt="Intesa ID"></a>
+        </li><li class="spid-idp-button-link" id="posteid" data-idp="posteid" data-entityid="https://posteid.poste.it">
+            <a href="#"><span class="spid-sr-only">Poste ID</span><img src="{% static 'spid/spid-idp-posteid.svg' %}" onerror="this.src='/static/images/spid-idp-posteid.svg'; this.onerror=null;" alt="Poste ID"></a>
+        </li><li class="spid-idp-button-link" id="arubaid" data-idp="arubaid" data-entityid="https://loginspid.aruba.it">
+            <a href="#"><span class="spid-sr-only">Aruba ID</span><img src="{% static 'spid/spid-idp-arubaid.svg' %}" onerror="this.src='/static/images/spid-idp-arubaid.svg'; this.onerror=null;" alt="Aruba ID"></a>
+        </li><li class="spid-idp-button-link" id="lepidaid" data-idp="lepidaid" data-entityid="https://id.lepida.it/idp/shibboleth">
+            <a href="#"><span class="spid-sr-only">Lepida ID</span><img src="{% static 'spid/spid-idp-lepidaid.svg' %}" onerror="this.src='/static/images/spid-idp-lepidaid.svg'; this.onerror=null;" alt="Lepida ID"></a>
+        </li><li class="spid-idp-button-link" id="infocertid" data-idp="infocertid" data-entityid="https://identity.infocert.it">
+            <a href="#"><span class="spid-sr-only">Infocert ID</span><img src="{% static 'spid/spid-idp-infocertid.svg' %}" onerror="this.src='/static/images/spid-idp-infocertid.svg'; this.onerror=null;" alt="Infocert ID"></a>
+        </li><li class="spid-idp-button-link" id="namirialid" data-idp="namirialid" data-entityid="https://idp.namirialtsp.com/idp">
+            <a href="#"><span class="spid-sr-only">Namirial ID</span><img src="{% static 'spid/spid-idp-namirialid.svg' %}" onerror="this.src='/static/images/spid-idp-namirialid.svg'; this.onerror=null;" alt="Namirial ID"></a>
+        </li><li class="spid-idp-button-link" id="sielteid" data-idp="sielteid" data-entityid="https://identity.sieltecloud.it">
+            <a href="#"><span class="spid-sr-only">Sielte ID</span><img src="{% static 'spid/spid-idp-sielteid.svg' %}" onerror="this.src='/static/images/spid-idp-sielteid.svg'; this.onerror=null;" alt="Sielte ID"></a>
+        </li><li class="spid-idp-support-link">
+            <a href="https://www.spid.gov.it/">Maggiori informazioni</a>
+        </li><li class="spid-idp-support-link">
+            <a href="https://www.spid.gov.it/richiedi-spid">Non hai SPID?</a>
+        </li><li class="spid-idp-support-link">
+            <a href="https://www.spid.gov.it/serve-aiuto">Serve aiuto?</a>
+        </li></ul>
+</div>
+<!-- AGID - SPID IDP BUTTON SMALL "ENTRA CON SPID" * end * -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+{% endblock %}
