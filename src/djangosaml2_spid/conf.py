@@ -71,8 +71,22 @@ settings.SPID_SIG_ALG = getattr(settings, 'SPID_SIG_ALG', SIG_RSA_SHA256)
 settings.SPID_NAMEID_FORMAT = getattr(
     settings, 'SPID_NAMEID_FORMAT', NAMEID_FORMAT_TRANSIENT
 )
+
+SPID_ACR_L1 = 'https://www.spid.gov.it/SpidL1'
+SPID_ACR_L2 = 'https://www.spid.gov.it/SpidL2'
+SPID_ACR_L3 = 'https://www.spid.gov.it/SpidL3'
+
 settings.SPID_AUTH_CONTEXT = getattr(
-    settings, 'SPID_AUTH_CONTEXT', 'https://www.spid.gov.it/SpidL1'
+    settings, 'SPID_AUTH_CONTEXT', SPID_ACR_L1
+)
+
+settings.SPID_ACR_FAUTHN_MAP = getattr(
+    settings, 'SPID_ACR_FAUTHN_MAP',
+    {
+        SPID_ACR_L1 : 'false',
+        SPID_ACR_L2 : 'true',
+        SPID_ACR_L3 : 'true'
+    }
 )
 
 settings.SPID_CERTS_DIR = getattr(
