@@ -49,7 +49,7 @@ def spid_sp_authn_request(conf, selected_idp, next_url=''):
     authn_req.requested_authn_context = authn_context
 
     # if SPID authentication level is > 1 then forceauthn must be True
-    authn_req.force_authn = 'true'
+    authn_req.force_authn = settings.SPID_ACR_FAUTHN_MAP[settings.SPID_AUTH_CONTEXT]
 
     authn_req.protocol_binding = SAML2_DEFAULT_BINDING
 
