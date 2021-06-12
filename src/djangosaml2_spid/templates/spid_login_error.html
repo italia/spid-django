@@ -1,20 +1,24 @@
 {% extends 'spid_base.html' %}
+
+{% load i18n %}
 {% load static %}
 
+{% block page_title %}
+    <title>
+        {% trans "Error" %}
+    </title>
+{% endblock page_title %}
+
 {% block container %}
-<div class="card-wrapper card-space">
-    <div class="card card-bg no-after">
-        <div class="card-body">
-            <div class="row">
-                <h2>Errore di autenticazione</h2>
-            </div>
-            <div class="row">
-                <h3>{{ spid_anomaly.message|default:'Accesso negato' }}</h3>
-            </div>
-            <div class="row">
-                <h4>{{ spid_anomaly.troubleshoot|default:'' }}</h4>
-            </div>
+    <div class="callout danger">
+        <div class="callout-title">
+            Errore di autenticazione
         </div>
+        <p>
+            <p>{{ spid_anomaly.message|default:'Accesso negato' }}</p>
+            {% if spid_anomaly.troubleshoot %}
+                <p>{{ spid_anomaly.troubleshoot|default:'' }}</p>
+            {% endif %}
+        </p>
     </div>
-</div>
 {% endblock %}
