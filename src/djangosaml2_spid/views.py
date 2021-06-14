@@ -22,7 +22,11 @@ from saml2.s_utils import UnsupportedBinding
 from djangosaml2.conf import get_config
 import djangosaml2.views as djangosaml2_views
 import logging
+
 import saml2
+import saml2.samlp
+import saml2.saml
+import saml2.time_util
 
 from .conf import settings
 from .spid_errors import SpidAnomaly
@@ -348,7 +352,8 @@ class AssertionConsumerServiceView(djangosaml2_views.AssertionConsumerServiceVie
             request,
             'spid_login_error.html', {
                 'exception': exception,
-                'spid_anomaly': spid_anomaly
+                'spid_anomaly': spid_anomaly,
+                'organization': settings.SAML_CONFIG['organization'],
             },
             status=status
         )
