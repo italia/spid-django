@@ -325,11 +325,13 @@ class AssertionConsumerServiceView(djangosaml2_views.AssertionConsumerServiceVie
         accepted_time_diff = conf.accepted_time_diff
         recipient = conf._sp_endpoints['assertion_consumer_service'][0][0]
         authn_context_classref = settings.SPID_AUTH_CONTEXT
-
+        
         in_response_to = ''
         oq_cache = OutstandingQueriesCache(self.request.saml_session)
+        logger.debug("Cache queries: {}".format(oq_cache.outstanding_queries()))
         for key, _value in oq_cache.outstanding_queries().items():
-            in_response_to = key  # FIXME?: filtering by _value??
+            in_response_to = key
+            logger.debug("in_response_to={!r}".format(in_response_to))
             break
 
         validator = Saml2ResponseValidator(authn_response=response.xmlstr,
