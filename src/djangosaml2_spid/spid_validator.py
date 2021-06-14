@@ -55,13 +55,19 @@ class Saml2ResponseValidator(object):
         <saml:Issuer Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">http://localhost:8080</saml:Issuer>
         """
 
-        # 30
         # check that this issuer is in the metadata...
         if self.requester:
             if self.requester != self.response.issuer.text:
                 raise SpidError(
                     f'Issuer different {self.response.issuer.text}'
                 )
+
+        # 30
+        # check that this issuer is in the metadata...
+        if self.response.issuer.text != "urn:oasis:names:tc:SAML:2.0:nameid-format:entity":
+            raise SpidError(
+                f'Issuer NameFormat is invalid: {self.requester} != {self.response.issuer.text}'
+        )
 
         msg = 'Issuer format is not valid: {}'
         # 70, 71
