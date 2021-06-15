@@ -71,12 +71,13 @@ class Saml2ResponseValidator(object):
                     f'Issuer different {self.response.issuer.text}'
                 )
 
-        # 30
+        # 30, 31
         # check that this issuer is in the metadata...
-        if self.response.issuer.text != "urn:oasis:names:tc:SAML:2.0:nameid-format:entity":
-            raise SpidError(
-                f'Issuer NameFormat is invalid: {self.requester} != {self.response.issuer.text}'
-        )
+        if self.response.issuer.format:
+            if self.response.issuer.format != "urn:oasis:names:tc:SAML:2.0:nameid-format:entity":
+                raise SpidError(
+                    f'Issuer NameFormat is invalid: {self.response.issuer.format} != "urn:oasis:names:tc:SAML:2.0:nameid-format:entity"'
+            )
 
         msg = 'Issuer format is not valid: {}'
         # 70, 71
