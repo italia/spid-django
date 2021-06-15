@@ -35,12 +35,21 @@ class Saml2ResponseValidator(object):
 
     # handled adding authn req arguments in the session state (cookie)
     def validate_in_response_to(self):
-        """ spid test 18
+        """ spid test 16, 17 e 18
         """
-        if self.in_response_to:
-            if self.in_response_to != self.response.in_response_to:
-                raise SpidError(f'In response To not valid: '
-                                f'{self.in_response_to} != {self.response.in_response_to}')
+        if not self.response.in_response_to:
+            if self.response.in_response_to is None:
+                raise SpidError('InResponseTo not provided')  # Error nr.17
+            raise SpidError('InResponseTo unspecified')  # Error nr.16
+
+        # Check for error nr.18
+        if isinstance(self.in_response_to, str):
+            if self.response.in_response_to != self.in_response_to:
+                raise SpidError(f'InResponseTo not valid: '
+                                f'{self.response.in_response_to} != {self.in_response_to}')
+        elif self.response.in_response_to not in self.in_response_to:
+            raise SpidError(f'InResponseTo not valid: '
+                            f'{self.response.in_response_to} not in {self.in_response_to}')
 
     def validate_destination(self):
         """ spid test 19 e 20
