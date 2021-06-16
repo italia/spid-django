@@ -65,8 +65,8 @@ jobs:
     - name: Test SPID QA with spid-sp-test
       working-directory: ./example
       run: |
-        bash run.sh &
-        sleep 10
+        bash run.sh > /dev/null 2>&1 &
+        sleep 5
         spid_sp_test --metadata-url https://localhost:8000/spid/metadata/ --authn-url https://localhost:8000/spid/login/?idp=http://localhost:8080 --extra --debug ERROR -tr
     - name: Test Django reusable app
       working-directory: .
