@@ -45,7 +45,7 @@ jobs:
         # force pplnx's pysaml2 due to spid-sp-test requirements
         #
         pip uninstall -y pysaml2
-        pip install --no-cache --upgrade git+https://github.com/peppelinux/pysaml2.git@pplnx-v7.0.1#pysaml2
+        pip install --no-cache --upgrade git+https://github.com/peppelinux/pysaml2.git@pplnx-7.0.1#pysaml2
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
