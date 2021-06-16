@@ -219,7 +219,6 @@ Warnings
 --------
 
 - debug server uses the same SAML2 certificates, please create your SAML2 certificates for production and also a real TLS one for httpd!
-- Unsolicited response error: [SameSite cookie restrictions](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite) will block cookies in Cross Domain POST if not in https. Use Firefox during tests on localhost with spid-saml-check.
 - Read djangosaml2 documentation, set SESSION_COOKIE_SECURE in your project settings.py
 - The SPID Button template is only for test purpose, please don't use it in production, do your customization instead!
 - In a production environment please don't use "remote" as metadata storage, use "local" or "mdq" instead!
