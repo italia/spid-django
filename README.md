@@ -60,8 +60,9 @@ Your example saml2 configuration is in `spid_config/spid_settings.py`.
 See djangosaml2 and pysaml2 official docs for clarifications.
 
 To run the demo project:
- - create the database `./manage.py migrate`
- - run `./manage.py runserver 0.0.0.0:8000`
+ - python -B ./manage.py migrate
+ - python -B ./manage.py collectstatic --noinput
+ - uwsgi --https 0.0.0.0:8000,./certificates/public.cert,./certificates/private.key --module example.wsgi:application --env example.settings --chdir .
 
 or execute the run.sh script with these environment settings to enable tests idps:
 
@@ -217,10 +218,12 @@ coverage report -m
 Warnings
 --------
 
+- debug server uses the same SAML2 certificates, please create your SAML2 certificates for production and also a real TLS one for httpd!
 - Unsolicited response error: [SameSite cookie restrictions](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite) will block cookies in Cross Domain POST if not in https. Use Firefox during tests on localhost with spid-saml-check.
-- Read djangosaml2 documentation, set COOKIE SECURE when in production and in https.
+- Read djangosaml2 documentation, set SESSION_COOKIE_SECURE in your project settings.py
 - The SPID Button template is only for test purpose, please don't use it in production, do your customization instead!
 - In a production environment please don't use "remote" as metadata storage, use "local" or "mdq" instead!
+- When using spid-saml-check via docker image, mind that the metadata download url would match to `https://172.17.0.1:8000/spid/metadata` and not to localhost!
 
 Authors
 ------------

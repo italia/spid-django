@@ -9,3 +9,6 @@ djangosaml2>=1.0.0
 
 # For command update_idps.py
 requests
+
+# For a real https debug server :)
+uwsgi
