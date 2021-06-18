@@ -6,7 +6,7 @@ import saml2
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SPID_BASE_URL = "http://localhost:8000"
+SPID_BASE_URL = "https://localhost:8000"
 SPID_URLS_PREFIX = 'spid'
 
 SPID_ACS_URL_PATH = f'{SPID_URLS_PREFIX}/acs/'

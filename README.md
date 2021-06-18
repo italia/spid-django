@@ -53,15 +53,16 @@ Prepare environment:
 cd example/
 virtualenv -ppython3 env
 source env/bin/activate
-pip install -r ../requirements.txt
+pip install -r ../requirements-dev.txt
 ````
 
 Your example saml2 configuration is in `spid_config/spid_settings.py`.
 See djangosaml2 and pysaml2 official docs for clarifications.
 
 To run the demo project:
- - create the database `./manage.py migrate`
- - run `./manage.py runserver 0.0.0.0:8000`
+ - python -B ./manage.py migrate
+ - python -B ./manage.py collectstatic --noinput
+ - uwsgi --https 0.0.0.0:8000,./certificates/public.cert,./certificates/private.key --module example.wsgi:application --env example.settings --chdir .
 
 or execute the run.sh script with these environment settings to enable tests idps:
 
@@ -74,11 +75,11 @@ current demo metadata in *spid-testenv2* configuration, this way:
 
 ````
 # cd into spid-testenv2/ base dir ...
-wget http://localhost:8000/spid/metadata -O conf/sp_metadata.xml
+wget https://localhost:8000/spid/metadata -O conf/sp_metadata.xml
 ````
 
 Finally, start spid-testenv2 and spid-saml-check (docker is suggested) and
-then open 'http://localhost:8000' in your browser.
+then open 'https://localhost:8000' in your browser.
 
 
 Demo project with Docker
@@ -100,7 +101,6 @@ Setup for an existing project
 
 djangosaml2_spid uses a pySAML2 fork.
 
-* `pip install git+https://github.com/peppelinux/pysaml2.git@pplnx-v6.5.1`
 * `pip install git+https://github.com/italia/spid-django`
 * Copy the `example/spid_config/` to your project base dir and remember to edit with your custom paramenters
 * Import SAML2 entity configuration in your project settings file: `from spid_config.spid_settings import *`
@@ -202,6 +202,7 @@ only by developers.
 To test the application:
 ````
 pip install -r requirements-dev.txt
+pip install -e .
 python runtests.py
 ````
 
@@ -217,10 +218,11 @@ coverage report -m
 Warnings
 --------
 
-- Unsolicited response error: [SameSite cookie restrictions](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite) will block cookies in Cross Domain POST if not in https. Use Firefox during tests on localhost with spid-saml-check.
-- Read djangosaml2 documentation, set COOKIE SECURE when in production and in https.
+- debug server uses the same SAML2 certificates, please create your SAML2 certificates for production and also a real TLS one for httpd!
+- Read djangosaml2 documentation, set SESSION_COOKIE_SECURE in your project settings.py
 - The SPID Button template is only for test purpose, please don't use it in production, do your customization instead!
 - In a production environment please don't use "remote" as metadata storage, use "local" or "mdq" instead!
+- When using spid-saml-check via docker image, mind that the metadata download url would match to `https://172.17.0.1:8000/spid/metadata` and not to localhost!
 
 Authors
 ------------

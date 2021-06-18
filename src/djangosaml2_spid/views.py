@@ -325,9 +325,15 @@ class AssertionConsumerServiceView(djangosaml2_views.AssertionConsumerServiceVie
         accepted_time_diff = conf.accepted_time_diff
         recipient = conf._sp_endpoints['assertion_consumer_service'][0][0]
         authn_context_classref = settings.SPID_AUTH_CONTEXT
+        
+        oq_cache = OutstandingQueriesCache(self.request.saml_session)
+        in_response_to = oq_cache.outstanding_queries()
+        logger.debug("in_response_to=%r", in_response_to)
+
         validator = Saml2ResponseValidator(authn_response=response.xmlstr,
                                            recipient=recipient,
                                            accepted_time_diff=accepted_time_diff,
+                                           in_response_to=in_response_to,
                                            authn_context_class_ref=authn_context_classref,
                                            return_addrs=response.return_addrs)
         validator.run()
