@@ -63,7 +63,7 @@ class TestSpidConfig(TestCase):
         if base_dir.name != 'example':
             self.assertEqual(saml_config.entityid, 'http://testserver/spid/metadata/')
         else:
-            self.assertEqual(saml_config.entityid, 'http://localhost:8000/spid/metadata/')
+            self.assertEqual(saml_config.entityid, 'https://localhost:8000/spid/metadata/')
 
     @unittest.skipIf(base_dir.name == 'example', "Skip for demo project")
     def test_default_spid_saml_config(self):
@@ -166,37 +166,37 @@ class TestSpidConfig(TestCase):
             'cert_file': 'example/certificates/public.cert'
         }])
 
+#
+# class TestStaticFiles(TestCase):
 
-class TestStaticFiles(TestCase):
+    # def test_spid_logo(self):
+        # abs_path = finders.find('spid/logo.jpg')
+        # self.assertTrue(os.path.isfile(abs_path))
 
-    def test_spid_logo(self):
-        abs_path = finders.find('spid/logo.jpg')
-        self.assertTrue(os.path.isfile(abs_path))
+        ## For using staticfiles_storage you have to configure STATIC_ROOT setting
+        # with self.assertRaises(ImproperlyConfigured):
+            # staticfiles_storage.exists(abs_path)
 
-        # For using staticfiles_storage you have to configure STATIC_ROOT setting
-        with self.assertRaises(ImproperlyConfigured):
-            staticfiles_storage.exists(abs_path)
+    # def test_idp_logos(self):
+        # abs_path = finders.find('spid/spid-idp-intesaid.svg')
+        # self.assertTrue(os.path.isfile(abs_path))
 
-    def test_idp_logos(self):
-        abs_path = finders.find('spid/spid-idp-intesaid.svg')
-        self.assertTrue(os.path.isfile(abs_path))
+        # abs_path = finders.find('spid/spid-idp-posteid.svg')
+        # self.assertTrue(os.path.isfile(abs_path))
 
-        abs_path = finders.find('spid/spid-idp-posteid.svg')
-        self.assertTrue(os.path.isfile(abs_path))
+    # def test_css_files(self):
+        # abs_path = finders.find('spid/spid-sp-access-button.css')
+        # self.assertTrue(os.path.isfile(abs_path))
 
-    def test_css_files(self):
-        abs_path = finders.find('spid/spid-sp-access-button.css')
-        self.assertTrue(os.path.isfile(abs_path))
+    # def test_scripts(self):
+        # abs_path = finders.find('spid/brython.js')
+        # self.assertTrue(os.path.isfile(abs_path))
 
-    def test_scripts(self):
-        abs_path = finders.find('spid/brython.js')
-        self.assertTrue(os.path.isfile(abs_path))
+        # abs_path = finders.find('spid/spid_button.js')
+        # self.assertTrue(os.path.isfile(abs_path))
 
-        abs_path = finders.find('spid/spid_button.js')
-        self.assertTrue(os.path.isfile(abs_path))
-
-        abs_path = finders.find('spid/spid-sp-access-button.js')
-        self.assertTrue(os.path.isfile(abs_path))
+        # abs_path = finders.find('spid/spid-sp-access-button.js')
+        # self.assertTrue(os.path.isfile(abs_path))
 
 
 class TestUtils(unittest.TestCase):

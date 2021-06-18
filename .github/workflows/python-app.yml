@@ -40,12 +40,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         #
         # force pplnx's pysaml2 due to spid-sp-test requirements
         #
         pip uninstall -y pysaml2
-        pip install --no-cache --upgrade git+https://github.com/peppelinux/pysaml2.git@pplnx-v6.5.1#pysaml2
+        pip install --no-cache --upgrade git+https://github.com/peppelinux/pysaml2.git@pplnx-7.0.1#pysaml2
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -65,10 +64,9 @@ jobs:
     - name: Test SPID QA with spid-sp-test
       working-directory: ./example
       run: |
-        ./manage.py migrate > /dev/null 2>&1
-        ./manage.py runserver > /dev/null 2>&1 &
+        bash run.sh > /dev/null 2>&1 &
         sleep 5
-        spid_sp_test --metadata-url http://localhost:8000/spid/metadata/ --authn-url http://localhost:8000/spid/login/?idp=http://localhost:8080 --extra --debug ERROR -tr
+        spid_sp_test --metadata-url https://localhost:8000/spid/metadata/ --authn-url https://localhost:8000/spid/login/?idp=http://localhost:8080 --extra --debug ERROR -tr
     - name: Test Django reusable app
       working-directory: .
       run: |
