@@ -53,7 +53,7 @@ Prepare environment:
 cd example/
 virtualenv -ppython3 env
 source env/bin/activate
-pip install -r ../requirements.txt
+pip install -r ../requirements-dev.txt
 ````
 
 Your example saml2 configuration is in `spid_config/spid_settings.py`.
@@ -75,11 +75,11 @@ current demo metadata in *spid-testenv2* configuration, this way:
 
 ````
 # cd into spid-testenv2/ base dir ...
-wget http://localhost:8000/spid/metadata -O conf/sp_metadata.xml
+wget https://localhost:8000/spid/metadata -O conf/sp_metadata.xml
 ````
 
 Finally, start spid-testenv2 and spid-saml-check (docker is suggested) and
-then open 'http://localhost:8000' in your browser.
+then open 'https://localhost:8000' in your browser.
 
 
 Demo project with Docker
@@ -101,7 +101,6 @@ Setup for an existing project
 
 djangosaml2_spid uses a pySAML2 fork.
 
-* `pip install git+https://github.com/peppelinux/pysaml2.git@pplnx-v6.5.1`
 * `pip install git+https://github.com/italia/spid-django`
 * Copy the `example/spid_config/` to your project base dir and remember to edit with your custom paramenters
 * Import SAML2 entity configuration in your project settings file: `from spid_config.spid_settings import *`
@@ -203,6 +202,7 @@ only by developers.
 To test the application:
 ````
 pip install -r requirements-dev.txt
+pip install -e .
 python runtests.py
 ````
 
