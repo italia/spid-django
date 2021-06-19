@@ -325,7 +325,7 @@ class AssertionConsumerServiceView(djangosaml2_views.AssertionConsumerServiceVie
         accepted_time_diff = conf.accepted_time_diff
         recipient = conf._sp_endpoints['assertion_consumer_service'][0][0]
         authn_context_classref = settings.SPID_AUTH_CONTEXT
-        
+
         oq_cache = OutstandingQueriesCache(self.request.saml_session)
         in_response_to = oq_cache.outstanding_queries()
         logger.debug("in_response_to=%r", in_response_to)
@@ -341,7 +341,7 @@ class AssertionConsumerServiceView(djangosaml2_views.AssertionConsumerServiceVie
     def handle_acs_failure(self, request, exception=None, status=403, **kwargs):
         try:
             spid_error = SpidError.from_saml2_error(exception)
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, KeyError):
             spid_error = None
 
         return render(
