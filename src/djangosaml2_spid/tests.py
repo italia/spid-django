@@ -15,9 +15,6 @@ from saml2.saml import NAMEID_FORMAT_TRANSIENT, NAMEID_FORMAT_ENCRYPTED
 from saml2.xmldsig import DIGEST_SHA256, DIGEST_SHA512, SIG_RSA_SHA256, SIG_RSA_SHA512
 
 from django.contrib.auth import get_user_model
-from django.contrib.staticfiles import finders
-from django.contrib.staticfiles.storage import staticfiles_storage
-from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.http import HttpResponseBadRequest
 from django.test import SimpleTestCase, Client, TestCase, RequestFactory, override_settings
@@ -37,13 +34,15 @@ def dummy_loader():
     return
 
 
+# noinspection PyTypeChecker
 class TestSpidError(SimpleTestCase):
 
     def test_initialization(self):
         error = SpidError(19)
         self.assertEqual(error.code, 19)
         self.assertEqual(error.status_message, 'ErrorCode nr19')
-        self.assertEqual(error.description, '')
+        self.assertEqual(error.description, 'Autenticazione fallita per ripetuta sottomissione di credenziali '
+                                            'errate - superato numero tentativi secondo le policy adottate')
         self.assertEqual(error.message, 'Autenticazione fallita per ripetuta sottomissione di credenziali errate')
         self.assertEqual(error.troubleshoot, 'Inserire credenziali corrette')
 
@@ -223,38 +222,6 @@ class TestSpidConfig(TestCase):
             'key_file': 'tests/certificates/private.key',
             'cert_file': 'example/certificates/public.cert'
         }])
-
-#
-# class TestStaticFiles(TestCase):
-
-    # def test_spid_logo(self):
-        # abs_path = finders.find('spid/logo.jpg')
-        # self.assertTrue(os.path.isfile(abs_path))
-
-        ## For using staticfiles_storage you have to configure STATIC_ROOT setting
-        # with self.assertRaises(ImproperlyConfigured):
-            # staticfiles_storage.exists(abs_path)
-
-    # def test_idp_logos(self):
-        # abs_path = finders.find('spid/spid-idp-intesaid.svg')
-        # self.assertTrue(os.path.isfile(abs_path))
-
-        # abs_path = finders.find('spid/spid-idp-posteid.svg')
-        # self.assertTrue(os.path.isfile(abs_path))
-
-    # def test_css_files(self):
-        # abs_path = finders.find('spid/spid-sp-access-button.css')
-        # self.assertTrue(os.path.isfile(abs_path))
-
-    # def test_scripts(self):
-        # abs_path = finders.find('spid/brython.js')
-        # self.assertTrue(os.path.isfile(abs_path))
-
-        # abs_path = finders.find('spid/spid_button.js')
-        # self.assertTrue(os.path.isfile(abs_path))
-
-        # abs_path = finders.find('spid/spid-sp-access-button.js')
-        # self.assertTrue(os.path.isfile(abs_path))
 
 
 class TestUtils(unittest.TestCase):

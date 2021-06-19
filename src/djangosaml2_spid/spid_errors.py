@@ -8,15 +8,20 @@ from saml2.response import StatusAuthnFailed
 # Ref: https://docs.italia.it/italia/spid/spid-regole-tecniche/it/stabile/messaggi-errore.html
 #
 SPID_ERRORS = {
+    # Autenticazione corretta
     1: {
         'description': 'Autenticazione corretta',
     },
+
+    # Anomalie del sistema
     2: {
         'description': 'Indisponibilità sistema',
     },
     3: {
         'description': 'Errore di sistema',
     },
+
+    # Anomalie delle richieste
     4: {
         'description': 'Formato binding non corretto',
     },
@@ -36,7 +41,8 @@ SPID_ERRORS = {
         'description': 'Parametro version non presente, malformato o diverso da 2.0',
     },
     10: {
-        'description': 'Issuer non presente, malformato o non corrispondete all\'entità che sottoscrive la richiesta',
+        'description': 'Issuer non presente, malformato o non corrispondete '
+                       'all\'entità che sottoscrive la richiesta',
     },
     11: {
         'description': 'ID non presente, malformato o non conforme',
@@ -58,37 +64,50 @@ SPID_ERRORS = {
         'description': 'AssertionConsumerService non correttamente valorizzato',
     },
     17: {
-        'description': 'Attributo Format dell\'elemento NameIDPolicy assente o non valorizzato secondo specifica',
+        'description': 'Attributo Format dell\'elemento NameIDPolicy assente o '
+                       'non valorizzato secondo specifica',
     },
     18: {
         'description': 'AttributeConsumerServiceIndex malformato o che riferisce '
                        'a un valore non registrato nei metadati di SP',
     },
+
+    # Anomalie derivanti dall’utente
     19: {
+        'description': 'Autenticazione fallita per ripetuta sottomissione di credenziali errate - '
+                       'superato numero tentativi secondo le policy adottate',
         'message': 'Autenticazione fallita per ripetuta sottomissione di credenziali errate',
         'troubleshoot': 'Inserire credenziali corrette'
     },
     20: {
+        'description': 'Utente privo di credenziali compatibili con il livello HTTP '
+                       'richiesto dal fornitore del servizio',
         'message': 'Utente privo di credenziali compatibili con '
                    'il livello di autenticazione richiesto',
         'troubleshoot': 'Acquisire credenziali di livello idoneo all\'accesso al servizio',
     },
     21: {
+        'description': 'Timeout durante l\'autenticazione utente',
         'message': 'Timeout durante l\'autenticazione utente',
         'troubleshoot': 'Si ricorda che l\'operazione di autenticazione deve '
                         'essere completata entro un determinato periodo di tempo',
     },
     22: {
+        'description': 'Utente nega il consenso all\'invio di dati al SP in caso di sessione vigente',
         'message': 'L\'utente nega il consenso all\'invio di dati al fornitore del servizio',
         'troubleshoot': 'È necessario dare il consenso per poter accedere al servizio',
     },
     23: {
+        'description': 'Utente con identità sospesa/revocata o con credenziali bloccate',
         'message': 'Utente con identità sospesa/revocata o con credenziali bloccate'
     },
     25: {
+        'description': 'Processo di autenticazione annullato dall\'utente',
         'message': 'Processo di autenticazione annullato dall\'utente'
     },
     30: {
+        # TODO: controllare conformità quando sarà emessa una tabella errori SPID aggiornata
+        'description': 'L\'identità digitale utilizzata non è di tipo professionale',
         'message': 'L\'identità digitale utilizzata non è un\'identità digitale del tipo atteso',
         'troubleshoot': 'È necessario eseguire l\'autenticazione con le credenziali '
                         'del corretto tipo di identità digitale richiesto'
