@@ -15,12 +15,9 @@ from saml2.saml import NAMEID_FORMAT_TRANSIENT, NAMEID_FORMAT_ENCRYPTED
 from saml2.xmldsig import DIGEST_SHA256, DIGEST_SHA512, SIG_RSA_SHA256, SIG_RSA_SHA512
 
 from django.contrib.auth import get_user_model
-from django.contrib.staticfiles import finders
-from django.contrib.staticfiles.storage import staticfiles_storage
-from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.http import HttpResponseBadRequest
-from django.test import Client, TestCase, RequestFactory, override_settings
+from django.test import SimpleTestCase, Client, TestCase, RequestFactory, override_settings
 from django.urls import reverse
 from django.conf import settings
 
@@ -28,13 +25,73 @@ from djangosaml2.conf import get_config_loader, get_config
 
 from .conf import config_settings_loader
 from .utils import repr_saml_request, saml_request_from_html_form
-
+from .spid_errors import SpidError
 
 base_dir = pathlib.Path(settings.BASE_DIR)
 
 
 def dummy_loader():
     return
+
+
+# noinspection PyTypeChecker
+class TestSpidError(SimpleTestCase):
+
+    def test_initialization(self):
+        error = SpidError(19)
+        self.assertEqual(error.code, 19)
+        self.assertEqual(error.status_message, 'ErrorCode nr19')
+        self.assertEqual(error.description, 'Autenticazione fallita per ripetuta sottomissione di credenziali '
+                                            'errate - superato numero tentativi secondo le policy adottate')
+        self.assertEqual(error.message, 'Autenticazione fallita per ripetuta sottomissione di credenziali errate')
+        self.assertEqual(error.troubleshoot, 'Inserire credenziali corrette')
+
+        with self.assertRaises(ValueError) as ctx:
+            SpidError(-1)
+        self.assertEqual(str(ctx.exception), '-1 is not a SPID error code')
+
+        with self.assertRaises(TypeError) as ctx:
+            SpidError('19')
+        self.assertEqual(str(ctx.exception), "'19' is not a SPID error code")
+
+    def test_from_error(self):
+        error = SpidError.from_error('ErrorCode nr19')
+        self.assertEqual(error.code, 19)
+
+        error = SpidError.from_error(ValueError('ErrorCode nr19'))
+        self.assertEqual(error.code, 19)
+        self.assertIs(SpidError.from_error(error), error)
+
+        with self.assertRaises(ValueError) as ctx:
+            SpidError.from_error('19')
+        self.assertEqual(str(ctx.exception), "cannot create a SpidError instance from '19'")
+
+        with self.assertRaises(TypeError) as ctx:
+            SpidError.from_error(19)
+        self.assertEqual(str(ctx.exception), "cannot create a SpidError instance from 19")
+
+    def test_from_saml2_error(self):
+        error = SpidError.from_saml2_error(SpidError(19))
+        self.assertEqual(error.code, 19)
+        self.assertIs(SpidError.from_saml2_error(error), error)
+
+        with self.assertRaises(TypeError) as ctx:
+            SpidError.from_saml2_error('ErrorCode nr19')
+        self.assertEqual(str(ctx.exception), "'ErrorCode nr19' is not a SAML2 authentication error")
+
+    def test_repr(self):
+        error = SpidError(25)
+        self.assertEqual(repr(error), 'SpidError(code=25)')
+
+    def test_string_repr(self):
+        error = SpidError(25)
+        self.assertEqual(str(error), "Processo di autenticazione annullato dall'utente")
+
+        error = SpidError(19)
+        self.assertEqual(str(error), "Autenticazione fallita per ripetuta sottomissione di credenziali errate"
+                                     "\n\nInserire credenziali corrette")
+        error = SpidError(17)
+        self.assertEqual(str(error), "Accesso negato")
 
 
 class TestSpidConfig(TestCase):
@@ -165,38 +222,6 @@ class TestSpidConfig(TestCase):
             'key_file': 'tests/certificates/private.key',
             'cert_file': 'example/certificates/public.cert'
         }])
-
-#
-# class TestStaticFiles(TestCase):
-
-    # def test_spid_logo(self):
-        # abs_path = finders.find('spid/logo.jpg')
-        # self.assertTrue(os.path.isfile(abs_path))
-
-        ## For using staticfiles_storage you have to configure STATIC_ROOT setting
-        # with self.assertRaises(ImproperlyConfigured):
-            # staticfiles_storage.exists(abs_path)
-
-    # def test_idp_logos(self):
-        # abs_path = finders.find('spid/spid-idp-intesaid.svg')
-        # self.assertTrue(os.path.isfile(abs_path))
-
-        # abs_path = finders.find('spid/spid-idp-posteid.svg')
-        # self.assertTrue(os.path.isfile(abs_path))
-
-    # def test_css_files(self):
-        # abs_path = finders.find('spid/spid-sp-access-button.css')
-        # self.assertTrue(os.path.isfile(abs_path))
-
-    # def test_scripts(self):
-        # abs_path = finders.find('spid/brython.js')
-        # self.assertTrue(os.path.isfile(abs_path))
-
-        # abs_path = finders.find('spid/spid_button.js')
-        # self.assertTrue(os.path.isfile(abs_path))
-
-        # abs_path = finders.find('spid/spid-sp-access-button.js')
-        # self.assertTrue(os.path.isfile(abs_path))
 
 
 class TestUtils(unittest.TestCase):
