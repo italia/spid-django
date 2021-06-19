@@ -29,7 +29,7 @@ import saml2.saml
 import saml2.time_util
 
 from .conf import settings
-from .spid_errors import SpidAnomaly
+from .spid_errors import SpidError
 from .spid_metadata import spid_sp_metadata
 from .spid_request import spid_sp_authn_request, SAML2_DEFAULT_BINDING
 from .spid_validator import Saml2ResponseValidator
@@ -339,16 +339,16 @@ class AssertionConsumerServiceView(djangosaml2_views.AssertionConsumerServiceVie
         validator.run()
 
     def handle_acs_failure(self, request, exception=None, status=403, **kwargs):
-        if isinstance(exception, SpidAnomaly):
-            spid_anomaly = exception
-        else:
-            spid_anomaly = SpidAnomaly.from_saml2_exception(exception)
+        try:
+            spid_error = SpidError.from_saml2_error(exception)
+        except (ValueError, TypeError):
+            spid_error = None
 
         return render(
             request,
             'spid_login_error.html', {
                 'exception': exception,
-                'spid_anomaly': spid_anomaly,
+                'spid_error': spid_error,
                 'organization': settings.SAML_CONFIG['organization'],
             },
             status=status
