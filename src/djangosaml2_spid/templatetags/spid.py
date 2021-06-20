@@ -12,6 +12,6 @@ def spid_saml_check_url():
 
 
 @register.simple_tag()
-def spid_testenv2_url():
-    url = urlparse(settings.SPID_TESTENV2_METADATA_URL)
-    return f'{url.scheme}://{url.netloc}'
+def spid_saml_check_demo_url():
+    url = urlparse(settings.SPID_SAML_CHECK_DEMO_METADATA_URL)
+    return f'{url.scheme}://{url.netloc}{url.path.rpartition("/")[0]}'

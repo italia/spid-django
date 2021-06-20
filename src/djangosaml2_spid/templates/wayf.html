@@ -71,14 +71,12 @@
 </a>
 <div id="spid-idp-button-xlarge-post" class="spid-idp-button spid-idp-button-tip spid-idp-button-relative">
     <ul id="spid-idp-list-medium-root-get" class="spid-idp-button-menu" aria-labelledby="spid-idp">
-
+        <li class="spid-idp-button-link" id="spid_saml_check_demo_idp" data-idp="spid_saml_check_demo_idp" data-entityid="{% spid_saml_check_demo_url %}">
+            <a href="#"><span class="spid-sr-only">SPID-saml-check Demo IdP</span><img src="" onerror="this.src=''; this.onerror=null;" alt="Spid saml check demo IdP"></a>
+        </li>
         <li class="spid-idp-button-link" id="spid_saml_check" data-idp="spid_saml_check" data-entityid="{% spid_saml_check_url %}">
             <a href="#"><span class="spid-sr-only">SPID-saml-check</span><img src="" onerror="this.src=''; this.onerror=null;" alt="Spid saml check"></a>
         </li>
-        <li class="spid-idp-button-link" id="spid_testenv2" data-idp="spid_testenv2" data-entityid="{% spid_testenv2_url %}">
-            <a href="#"><span class="spid-sr-only">SPID-testenv2</span><img src="" onerror="this.src=''; this.onerror=null;" alt="Spid test env2"></a>
-        </li>
-
         <li class="spid-idp-button-link" id="spiditalia" data-idp="spiditalia" data-entityid="https://spid.register.it">
             <a href="#"><span class="spid-sr-only">SPIDItalia Register.it</span><img src="{% static 'spid/spid-idp-spiditalia.svg' %}" onerror="this.src='{% static 'spid/spid-idp-spiditalia.svg' %}'; this.onerror=null;" alt="SPIDItalia Register.it"></a>
         </li>
