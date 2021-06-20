@@ -15,9 +15,9 @@
             Errore di autenticazione
         </div>
         <p>
-            <p>{{ spid_anomaly.message|default:'Accesso negato' }}</p>
-            {% if spid_anomaly.troubleshoot %}
-                <p>{{ spid_anomaly.troubleshoot|default:'' }}</p>
+            <p>{{ spid_error.message|default:'Accesso negato' }}</p>
+            {% if spid_error.troubleshoot %}
+                <p>{{ spid_error.troubleshoot|default:'' }}</p>
             {% endif %}
         </p>
     </div>
