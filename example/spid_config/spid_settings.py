@@ -23,7 +23,7 @@ SAML2_DEFAULT_BINDING = saml2.BINDING_HTTP_POST
 SPID_DIG_ALG = saml2.xmldsig.DIGEST_SHA256
 SPID_SIG_ALG = saml2.xmldsig.SIG_RSA_SHA256
 SPID_NAMEID_FORMAT = NAMEID_FORMAT_TRANSIENT
-SPID_AUTH_CONTEXT = 'https://www.spid.gov.it/SpidL2'
+SPID_AUTH_CONTEXT = 'https://www.spid.gov.it/SpidL1'
 
 SPID_CERTS_DIR = os.path.join(os.environ.get('PWD'), 'certificates/')
 SPID_PUBLIC_CERT = os.path.join(SPID_CERTS_DIR, 'public.cert')
