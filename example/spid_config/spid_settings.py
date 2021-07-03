@@ -37,7 +37,7 @@ SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_REMOTE_
 SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
 
 SPID_SAML_CHECK_DEMO_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_DEMO_REMOTE_METADATA_ACTIVE', 'False') == 'True'
-SPID_SAML_CHECK_DEMO_METADATA_URL = os.environ.get('SPID_SAML_CHECK_DEMO_METADATA_URL', 'http://localhost:8088/demo/metadata.xml')
+SPID_SAML_CHECK_DEMO_METADATA_URL = os.environ.get('SPID_SAML_CHECK_DEMO_METADATA_URL', 'http://localhost:8080/demo/metadata.xml')
 
 # Avviso 29v3
 SPID_PREFIXES = dict(
