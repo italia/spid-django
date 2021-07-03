@@ -1,0 +1,39 @@
+{% comment %}
+Template with SPID button scripts, that have to be included before <body> ending.
+{% endcomment %}
+{% load static %}
+
+<script type="text/javascript" src="{% static 'spid/brython.js' %}"></script>
+<script type="text/javascript">
+    // brython init
+    document.addEventListener('DOMContentLoaded', function() {
+        brython({debug: 1});
+    }, false);
+</script>
+
+<script type="text/python">
+    import browser
+
+    debug = 1
+
+    def disco(ev):
+        if debug: browser.console.log(ev.__dict__)
+        if not hasattr(ev.currentTarget.dataset, 'entityid'):
+            browser.alert('dataset not found:\n please add \"data-entityid="$variable"\" to element ')
+            return
+        entity_id = ev.currentTarget.dataset.entityid
+        if debug: browser.console.log(entity_id)
+        # browser.console.log(args)
+        # dest = browser.window.location.pathname + '?idp={}'.format(entity_id)
+        dest = '/spid/login/?idp={}'.format(entity_id)
+        browser.console.log(dest)
+        browser.window.location = dest
+
+    # spid buttons event on click
+    for ele in browser.document.select("li.spid-idp-button-link"):
+        ele.bind("click", disco)
+
+</script>
+
+<script src="{% static 'spid/spid-sp-access-button.js' %}"></script>
+<script src="{% static 'spid/spid_button.js' %}"></script>
