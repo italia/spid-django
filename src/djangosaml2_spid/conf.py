@@ -184,6 +184,31 @@ settings.SAML_ATTRIBUTE_MAPPING = getattr(settings, 'SAML_ATTRIBUTE_MAPPING', {
 })
 
 
+# Attributes that this project need to identify a user
+settings.SPID_REQUIRED_ATTRIBUTES = getattr(settings, 'SPID_REQUIRED_ATTRIBUTES', [
+    'spidCode',
+    'name',
+    'familyName',
+    'fiscalNumber',
+    'email',
+])
+
+# Attributes that may be useful to have but not required
+settings.SPID_OPTIONAL_ATTRIBUTES = getattr(settings, 'SPID_OPTIONAL_ATTRIBUTES', [
+    'gender',
+    'companyName',
+    'registeredOffice',
+    'ivaCode',
+    'idCard',
+    'digitalAddress',
+    'placeOfBirth',
+    'countyOfBirth',
+    'dateOfBirth',
+    'address',
+    'mobilePhone',
+    'expirationDate',
+])
+
 def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
     conf = SPConfig()
     if request is None or not request.path.lstrip('/').startswith(settings.SPID_URLS_PREFIX):
@@ -222,32 +247,11 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
                 'name_id_format_allow_create': False,
 
                 # attributes that this project need to identify a user
-                'required_attributes': [
-                    'spidCode',
-                    'name',
-                    'familyName',
-                    'fiscalNumber',
-                    'email'
-                ],
+                'required_attributes': settings.SPID_REQUIRED_ATTRIBUTES,
+                'optional_attributes': settings.SPID_OPTIONAL_ATTRIBUTES,
 
                 'requested_attribute_name_format': saml2.saml.NAME_FORMAT_BASIC,
                 'name_format': saml2.saml.NAME_FORMAT_BASIC,
-
-                # attributes that may be useful to have but not required
-                'optional_attributes': [
-                    'gender',
-                    'companyName',
-                    'registeredOffice',
-                    'ivaCode',
-                    'idCard',
-                    'digitalAddress',
-                    'placeOfBirth',
-                    'countyOfBirth',
-                    'dateOfBirth',
-                    'address',
-                    'mobilePhone',
-                    'expirationDate'
-                ],
 
                 'signing_algorithm': settings.SPID_SIG_ALG,
                 'digest_algorithm': settings.SPID_DIG_ALG,
