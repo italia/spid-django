@@ -129,16 +129,16 @@ settings.SPID_SAML_CHECK_METADATA_URL = getattr(
     os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
 )
 
-settings.SPID_TESTENV2_REMOTE_METADATA_ACTIVE = getattr(
+settings.SPID_SAML_CHECK_DEMO_REMOTE_METADATA_ACTIVE = getattr(
     settings,
-    'SPID_TESTENV2_REMOTE_METADATA_ACTIVE',
-    os.environ.get('SPID_TESTENV2_REMOTE_METADATA_ACTIVE', 'False') == 'True'
+    'SPID_SAML_CHECK_DEMO_REMOTE_METADATA_ACTIVE',
+    os.environ.get('SPID_SAML_CHECK_DEMO_REMOTE_METADATA_ACTIVE', 'False') == 'True'
 )
 
-settings.SPID_TESTENV2_METADATA_URL = getattr(
+settings.SPID_SAML_CHECK_DEMO_METADATA_URL = getattr(
     settings,
-    'SPID_TESTENV2_METADATA_URL',
-    os.environ.get('SPID_TESTENV2_METADATA_URL', 'http://localhost:8088/metadata')
+    'SPID_SAML_CHECK_DEMO_METADATA_URL',
+    os.environ.get('SPID_SAML_CHECK_DEMO_METADATA_URL', 'http://localhost:8080/demo/metadata.xml')
 )
 
 # Avviso 29v3
@@ -183,6 +183,7 @@ settings.SAML_ATTRIBUTE_MAPPING = getattr(settings, 'SAML_ATTRIBUTE_MAPPING', {
     'dateOfBirth': ('birth_date',),
 })
 
+
 # Attributes that this project need to identify a user
 settings.SPID_REQUIRED_ATTRIBUTES = getattr(settings, 'SPID_REQUIRED_ATTRIBUTES', [
     'spidCode',
@@ -207,7 +208,6 @@ settings.SPID_OPTIONAL_ATTRIBUTES = getattr(settings, 'SPID_OPTIONAL_ATTRIBUTES'
     'mobilePhone',
     'expirationDate',
 ])
-
 
 def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
     conf = SPConfig()
@@ -246,9 +246,10 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
                 'force_authn': False,  # SPID
                 'name_id_format_allow_create': False,
 
-                # Required and optional attributes
+                # attributes that this project need to identify a user
                 'required_attributes': settings.SPID_REQUIRED_ATTRIBUTES,
                 'optional_attributes': settings.SPID_OPTIONAL_ATTRIBUTES,
+
                 'requested_attribute_name_format': saml2.saml.NAME_FORMAT_BASIC,
                 'name_format': saml2.saml.NAME_FORMAT_BASIC,
 
@@ -312,9 +313,9 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
             {'url': settings.SPID_SAML_CHECK_METADATA_URL}
         )
 
-    if settings.SPID_TESTENV2_REMOTE_METADATA_ACTIVE:
+    if settings.SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE:
         saml_config['metadata']['remote'].append(
-            {'url': settings.SPID_TESTENV2_METADATA_URL}
+            {'url': settings.SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE}
         )
 
     logger.debug(f'SAML_CONFIG: {saml_config}')
