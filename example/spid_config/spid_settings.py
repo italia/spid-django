@@ -36,8 +36,8 @@ SPID_IDENTITY_PROVIDERS_METADATA_DIR = os.path.join(BASE_DIR, 'spid_config/metad
 SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', 'False') == 'True'
 SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
 
-SPID_TESTENV2_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_TESTENV2_REMOTE_METADATA_ACTIVE', 'False') == 'True'
-SPID_TESTENV2_METADATA_URL = os.environ.get('SPID_TESTENV2_METADATA_URL', 'http://localhost:8088/metadata')
+SPID_SAML_CHECK_DEMO_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_DEMO_REMOTE_METADATA_ACTIVE', 'False') == 'True'
+SPID_SAML_CHECK_DEMO_METADATA_URL = os.environ.get('SPID_SAML_CHECK_DEMO_METADATA_URL', 'http://localhost:8080/demo/metadata.xml')
 
 # Avviso 29v3
 SPID_PREFIXES = dict(
@@ -95,6 +95,13 @@ SAML_CONFIG = {
     # The other entries are dynamically generated from SPID_* provided settings
     # and defaults. You can still provide those entries here but they can useful
     # only for other SAML2 service in your installation, not for SPID.
+    #
+    # If you want to provide a full static SAML_CONFIG you need to define also
+    # SAML_CONFIG_LOADER setting, typically it can be set pointing to the default
+    # djangosaml2's config loader function:
+    #
+    #   SAML_CONFIG_LOADER = 'djangosaml2.conf.config_settings_loader'
+    #
 }
 
 # OR NAME_ID or MAIN_ATTRIBUTE (not together!)

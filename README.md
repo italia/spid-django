@@ -67,7 +67,7 @@ To run the demo project:
 or execute the run.sh script with these environment settings to enable tests idps:
 
  ````
- SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE=True SPID_TESTENV2_REMOTE_METADATA_ACTIVE=True bash run.sh
+ SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE=True SPID_SAML_CHECK_DEMO_METADATA_ACTIVE=True bash run.sh
  ````
 
 If you choosed to use *spid-testenv2*, before starting it, you just have to save the
