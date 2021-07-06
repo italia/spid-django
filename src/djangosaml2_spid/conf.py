@@ -138,7 +138,7 @@ settings.SPID_SAML_CHECK_DEMO_REMOTE_METADATA_ACTIVE = getattr(
 settings.SPID_SAML_CHECK_DEMO_METADATA_URL = getattr(
     settings,
     'SPID_SAML_CHECK_DEMO_METADATA_URL',
-    os.environ.get('SPID_SAML_CHECK_DEMO_METADATA_URL', 'http://localhost:8080/demo/metadata.xml')
+    os.environ.get('SPID_SAML_CHECK_DEMO_METADATA_URL', 'https://demo.spid.gov.it/metadata.xml')
 )
 
 # Avviso 29v3
