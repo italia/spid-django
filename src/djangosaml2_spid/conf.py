@@ -117,11 +117,16 @@ settings.SPID_IDENTITY_PROVIDERS_METADATA_DIR = getattr(
 )
 
 # Validation tools settings
-settings.SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = getattr(
-    settings,
-    'SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE',
-    os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', 'False') == 'True'
-)
+if hasattr(settings, 'SPID_SAML_CHECK_IDP_ACTIVE'):
+    pass
+elif 'SPID_SAML_CHECK_IDP_ACTIVE' in os.environ:
+    settings.SPID_SAML_CHECK_IDP_ACTIVE = os.environ['SPID_SAML_CHECK_IDP_ACTIVE'] == 'True'
+else:
+    # Checks the old setting name
+    settings.SPID_SAML_CHECK_IDP_ACTIVE = getattr(
+        settings, 'SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE',
+        os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', 'False') == 'True'
+    )
 
 settings.SPID_SAML_CHECK_METADATA_URL = getattr(
     settings,
@@ -129,16 +134,24 @@ settings.SPID_SAML_CHECK_METADATA_URL = getattr(
     os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
 )
 
-settings.SPID_SAML_CHECK_DEMO_REMOTE_METADATA_ACTIVE = getattr(
+settings.SPID_DEMO_IDP_ACTIVE = getattr(
     settings,
-    'SPID_SAML_CHECK_DEMO_REMOTE_METADATA_ACTIVE',
-    os.environ.get('SPID_SAML_CHECK_DEMO_REMOTE_METADATA_ACTIVE', 'False') == 'True'
+    'SPID_DEMO_ACTIVE',
+    os.environ.get('SPID_DEMO_ACTIVE', 'False') == 'True'
 )
 
-settings.SPID_SAML_CHECK_DEMO_METADATA_URL = getattr(
+settings.SPID_DEMO_METADATA_URL = getattr(
     settings,
-    'SPID_SAML_CHECK_DEMO_METADATA_URL',
-    os.environ.get('SPID_SAML_CHECK_DEMO_METADATA_URL', 'https://demo.spid.gov.it/metadata.xml')
+    'SPID_DEMO_METADATA_URL',
+    os.environ.get('SPID_DEMO_METADATA_URL', 'https://demo.spid.gov.it/metadata.xml')
+)
+
+settings.SPID_VALIDATOR_IDP_ACTIVE = getattr(
+    settings, 'SPID_VALIDATOR_ACTIVE', False
+)
+
+settings.SPID_VALIDATOR_METADATA_URL = getattr(
+    settings, 'SPID_VALIDATOR_METADATA_URL', 'https://validator.spid.gov.it'
 )
 
 # Avviso 29v3
@@ -308,14 +321,19 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
             ['/opt/local/bin', '/usr/bin/xmlsec1']
         )
 
-    if settings.SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE:
+    if settings.SPID_SAML_CHECK_IDP_ACTIVE:
         saml_config['metadata']['remote'].append(
             {'url': settings.SPID_SAML_CHECK_METADATA_URL}
         )
 
-    if settings.SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE:
+    if settings.SPID_DEMO_IDP_ACTIVE:
         saml_config['metadata']['remote'].append(
-            {'url': settings.SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE}
+            {'url': settings.SPID_DEMO_METADATA_URL}
+        )
+
+    if settings.SPID_VALIDATOR_IDP_ACTIVE:
+        saml_config['metadata']['remote'].append(
+            {'url': settings.SPID_VALIDATOR_METADATA_URL}
         )
 
     logger.debug(f'SAML_CONFIG: {saml_config}')

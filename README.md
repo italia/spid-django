@@ -64,13 +64,13 @@ To run the demo project:
  - python -B ./manage.py collectstatic --noinput
  - uwsgi --https 0.0.0.0:8000,./certificates/public.cert,./certificates/private.key --module example.wsgi:application --env example.settings --chdir .
 
-or execute the run.sh script with these environment settings to enable tests idps:
+or execute the run.sh script with these environment settings to enable tests IdPs:
 
  ````
- SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE=True SPID_SAML_CHECK_DEMO_METADATA_ACTIVE=True bash run.sh
+ SPID_SAML_CHECK_IDP_ACTIVE=True SPID_DEMO_IDP_ACTIVE=True bash run.sh
  ````
 
-If you choosed to use *spid-testenv2*, before starting it, you just have to save the
+If you chose to use *spid-testenv2*, before starting it, you just have to save the
 current demo metadata in *spid-testenv2* configuration, this way:
 
 ````
