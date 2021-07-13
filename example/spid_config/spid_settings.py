@@ -33,11 +33,11 @@ SPID_PRIVATE_KEY = os.path.join(SPID_CERTS_DIR, 'private.key')
 SPID_IDENTITY_PROVIDERS_URL = 'https://registry.spid.gov.it/assets/data/idp.json'
 SPID_IDENTITY_PROVIDERS_METADATA_DIR = os.path.join(BASE_DIR, 'spid_config/metadata/')
 
-SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_REMOTE_METADATA_ACTIVE', 'False') == 'True'
+SPID_SAML_CHECK_IDP_ACTIVE = os.environ.get('SPID_SAML_CHECK_IDP_ACTIVE', 'False') == 'True'
 SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
 
-SPID_SAML_CHECK_DEMO_REMOTE_METADATA_ACTIVE = os.environ.get('SPID_SAML_CHECK_DEMO_REMOTE_METADATA_ACTIVE', 'False') == 'True'
-SPID_SAML_CHECK_DEMO_METADATA_URL = os.environ.get('SPID_SAML_CHECK_DEMO_METADATA_URL', 'http://localhost:8080/demo/metadata.xml')
+SPID_DEMO_IDP_ACTIVE = os.environ.get('SPID_DEMO_IDP_ACTIVE', 'False') == 'True'
+SPID_DEMO_METADATA_URL = os.environ.get('SPID_DEMO_METADATA_URL', 'http://localhost:8080/demo/metadata.xml')
 
 # Avviso 29v3
 SPID_PREFIXES = dict(
