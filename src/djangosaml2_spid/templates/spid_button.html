@@ -14,6 +14,7 @@ Parameter:
 
 <div id="spid-idp-button-{{ size|spid_button_size }}-post" class="spid-idp-button spid-idp-button-tip spid-idp-button-relative">
   <ul id="spid-idp-list-medium-root-get" class="spid-idp-button-menu" aria-labelledby="spid-idp">
+
     {% if spid_saml_check_idp_active %}
     <li class="spid-idp-button-link" id="spid_saml_check" data-idp="spid_saml_check" data-entityid="{% spid_saml_check_url %}">
         <a href="#"><span class="spid-sr-only">SPID-saml-check</span><img src="" onerror="this.src=''; this.onerror=null;" alt="Spid saml check"></a>
@@ -29,6 +30,7 @@ Parameter:
         <a href="#"><span class="spid-sr-only">SPID-Validator</span><img src="" onerror="this.src=''; this.onerror=null;" alt="Spid Validator"></a>
     </li>
     {% endif %}
+
     <li class="spid-idp-button-link" id="spiditalia" data-idp="spiditalia" data-entityid="https://spid.register.it">
         <a href="#"><span class="spid-sr-only">SPIDItalia Register.it</span><img src="{% static 'spid/spid-idp-spiditalia.svg' %}" onerror="this.src='{% static 'spid/spid-idp-spiditalia.svg' %}'; this.onerror=null;" alt="SPIDItalia Register.it"></a>
     </li>

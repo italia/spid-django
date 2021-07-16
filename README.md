@@ -219,8 +219,8 @@ Warnings
 --------
 
 - debug server uses the same SAML2 certificates, please create your SAML2 certificates for production and also a real TLS one for httpd!
-- Read djangosaml2 documentation, set SESSION_COOKIE_SECURE in your project settings.py
-- The SPID Button template is only for test purpose, please don't use it in production, do your customization instead!
+- Read djangosaml2 documentation, remember to set SESSION_COOKIE_SECURE in your project settings.py
+- The SPID Button template is only for test purpose, please don't use it in production, do your customizations instead!
 - In a production environment please don't use "remote" as metadata storage, use "local" or "mdq" instead!
 - When using spid-saml-check via docker image, mind that the metadata download url would match to `https://172.17.0.1:8000/spid/metadata` and not to localhost!
 
