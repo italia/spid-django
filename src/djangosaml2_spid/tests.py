@@ -399,7 +399,7 @@ class TestSpid(TestCase):
     def test_authnreq_post(self):
         url = reverse("djangosaml2_spid:spid_login")
         client = Client()
-        res = client.get(f"{url}?idp=http://localhost:8080")
+        res = client.get(f"{url}?idp=https://localhost:8080")
         self.assertEqual(res.status_code, 200)
 
         html_form = res.content.decode()

@@ -85,8 +85,6 @@ SPID_CONTACTS = [
 # Configuration for pysaml2 as managed by djangosaml2. For SPID SP service the most
 # part is built dynamically from provided SPID_* settings and from SPID_* defaults.
 SAML_CONFIG = {
-
-    "entityid": 'ssdasdasd',
     # Required organization info, you can set multi-language information here.
     'organization': {
         'name': [('Example', 'it'), ('Example', 'en')],
