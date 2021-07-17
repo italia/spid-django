@@ -133,7 +133,7 @@ settings.SPID_SAML_CHECK_METADATA_URL = getattr(
     settings,
     "SPID_SAML_CHECK_METADATA_URL",
     os.environ.get(
-        "SPID_SAML_CHECK_METADATA_URL", "http://localhost:8080/metadata.xml"
+        "SPID_SAML_CHECK_METADATA_URL", "https://localhost:8080/metadata.xml"
     ),
 )
 
@@ -147,10 +147,10 @@ settings.SPID_DEMO_METADATA_URL = getattr(
     os.environ.get("SPID_DEMO_METADATA_URL", "https://demo.spid.gov.it/metadata.xml"),
 )
 
-settings.SPID_VALIDATOR_IDP_ACTIVE = getattr(settings, "SPID_VALIDATOR_ACTIVE", False)
+settings.SPID_VALIDATOR_IDP_ACTIVE = getattr(settings, "SPID_VALIDATOR_IDP_ACTIVE", False)
 
 settings.SPID_VALIDATOR_METADATA_URL = getattr(
-    settings, "SPID_VALIDATOR_METADATA_URL", "https://validator.spid.gov.it"
+    settings, "SPID_VALIDATOR_METADATA_URL", "https://validator.spid.gov.it/metadata.xml"
 )
 
 # Avviso 29v3
@@ -302,6 +302,7 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
                 "allow_unknown_attributes": True,
             },
         },
+        "disable_ssl_certificate_validation": settings.SAML_CONFIG.get("disable_ssl_certificate_validation"),
         "metadata": {
             "local": [settings.SPID_IDENTITY_PROVIDERS_METADATA_DIR],
             "remote": [],

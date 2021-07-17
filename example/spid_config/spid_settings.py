@@ -34,10 +34,13 @@ SPID_IDENTITY_PROVIDERS_URL = 'https://registry.spid.gov.it/assets/data/idp.json
 SPID_IDENTITY_PROVIDERS_METADATA_DIR = os.path.join(BASE_DIR, 'spid_config/metadata/')
 
 SPID_SAML_CHECK_IDP_ACTIVE = os.environ.get('SPID_SAML_CHECK_IDP_ACTIVE', 'False') == 'True'
-SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'http://localhost:8080/metadata.xml')
+SPID_SAML_CHECK_METADATA_URL = os.environ.get('SPID_SAML_CHECK_METADATA_URL', 'https://localhost:8080/metadata.xml')
 
 SPID_DEMO_IDP_ACTIVE = os.environ.get('SPID_DEMO_IDP_ACTIVE', 'False') == 'True'
-SPID_DEMO_METADATA_URL = os.environ.get('SPID_DEMO_METADATA_URL', 'http://localhost:8080/demo/metadata.xml')
+SPID_DEMO_METADATA_URL = os.environ.get('SPID_DEMO_METADATA_URL', 'https://localhost:8080/demo/metadata.xml')
+
+SPID_VALIDATOR_IDP_ACTIVE = os.environ.get('SPID_VALIDATOR_IDP_ACTIVE', 'False') == 'True'
+SPID_VALIDATOR_METADATA_URL = os.environ.get('SPID_VALIDATOR_METADATA_URL', "https://validator.spid.gov.it/metadata.xml")
 
 # Avviso 29v3
 SPID_PREFIXES = dict(
@@ -81,6 +84,8 @@ SPID_CONTACTS = [
 # Configuration for pysaml2 as managed by djangosaml2. For SPID SP service the most
 # part is built dynamically from provided SPID_* settings and from SPID_* defaults.
 SAML_CONFIG = {
+
+    "entityid": 'ssdasdasd',
     # Required organization info, you can set multi-language information here.
     'organization': {
         'name': [('Example', 'it'), ('Example', 'en')],
@@ -91,6 +96,8 @@ SAML_CONFIG = {
     # Other common options used by SPID configuration
     'debug': True,
     'xmlsec_binary': get_xmlsec_binary(['/opt/local/bin', '/usr/bin/xmlsec1']),
+
+    "disable_ssl_certificate_validation": True,
 
     # The other entries are dynamically generated from SPID_* provided settings
     # and defaults. You can still provide those entries here but they can useful
