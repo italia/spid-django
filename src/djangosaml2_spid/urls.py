@@ -15,7 +15,9 @@ urlpatterns = [
     ),
     path(f"{SPID_URLS_PREFIX}/login/", views.spid_login, name="spid_login"),
     path(f"{SPID_URLS_PREFIX}/logout/", views.spid_logout, name="spid_logout"),
-    path(settings.SPID_METADATA_URL_PATH, views.metadata_spid, name="spid_metadata"),
+    path(
+        settings.SPID_METADATA_URL_PATH,
+        views.MetadataSpidView.as_view(), name="spid_metadata"),
     path(
         settings.SPID_ACS_URL_PATH,
         views.AssertionConsumerServiceView.as_view(),

@@ -263,15 +263,18 @@ def spid_logout(request, config_loader_path=None, **kwargs):
     return HttpResponse(http_info["data"])
 
 
-def metadata_spid(request, config_loader_path=None, valid_for=None):
-    """Returns an XML with the SAML 2.0 metadata for this
-    SP as configured in the settings.py file.
-    """
-    conf = get_config(config_loader_path, request)
-    xmldoc = spid_sp_metadata(conf)
-    return HttpResponse(
-        content=str(xmldoc).encode("utf-8"), content_type="text/xml; charset=utf8"
-    )
+class MetadataSpidView(djangosaml2_views.View):
+    """Example view that echo the SAML attributes of an user"""
+
+    def get(self, request, *args, **kwargs):
+        """Returns an XML with the SAML 2.0 metadata for this
+        SP as configured in the settings.py file.
+        """
+        conf = get_config(getattr(settings,'SAML_CONFIG_LOADER'), request)
+        xmldoc = spid_sp_metadata(conf)
+        return HttpResponse(
+            content=str(xmldoc).encode("utf-8"), content_type="text/xml; charset=utf8"
+        )
 
 
 class EchoAttributesView(
