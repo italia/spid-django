@@ -36,7 +36,7 @@ elif not isinstance(settings.SAML_CONFIG, dict):
     raise ImproperlyConfigured("Formato improprio per la configurazione SAML2!")
 elif "organization" not in settings.SAML_CONFIG:
     raise ImproperlyConfigured(
-        "Mancano le informazioni sull'organizzazione " "nella configurazione SAML2!"
+        "Mancano le informazioni sull'organizzazione nella configurazione SAML2!"
     )
 
 #
