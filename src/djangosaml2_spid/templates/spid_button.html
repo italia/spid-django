@@ -15,17 +15,22 @@ Parameter:
 <div id="spid-idp-button-{{ size|spid_button_size }}-post" class="spid-idp-button spid-idp-button-tip spid-idp-button-relative">
   <ul id="spid-idp-list-medium-root-get" class="spid-idp-button-menu" aria-labelledby="spid-idp">
 
-    {% if spid_saml_check_idp_active %}
+    {% spid_saml_check_idp_active as spid_saml_check %}
+    {% if spid_saml_check %}
     <li class="spid-idp-button-link" id="spid_saml_check" data-idp="spid_saml_check" data-entityid="{% spid_saml_check_url %}">
         <a href="#"><span class="spid-sr-only">SPID-saml-check</span><img src="" onerror="this.src=''; this.onerror=null;" alt="Spid saml check"></a>
     </li>
     {% endif %}
-    {% if spid_demo_idp_active %}
+
+    {% spid_demo_idp_active as spid_demo_idp %}
+    {% if spid_demo_idp %}
     <li class="spid-idp-button-link" id="spid_demo" data-idp="spid_demo" data-entityid="{% spid_demo_url %}">
         <a href="#"><span class="spid-sr-only">SPID-saml-check Demo IdP</span><img src="" onerror="this.src=''; this.onerror=null;" alt="Spid saml check demo IdP"></a>
     </li>
     {% endif %}
-    {% if spid_validator_idp_active %}
+
+    {% spid_validator_idp_active as spid_validator %}
+    {% if spid_validator %}
     <li class="spid-idp-button-link" id="spid_validator" data-idp="spid_validator" data-entityid="{% spid_validator_url %}">
         <a href="#"><span class="spid-sr-only">SPID-Validator</span><img src="" onerror="this.src=''; this.onerror=null;" alt="Spid Validator"></a>
     </li>

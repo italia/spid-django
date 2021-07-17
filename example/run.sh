@@ -51,6 +51,6 @@ else
     --https 0.0.0.0:8000,./certificates/public.cert,./certificates/private.key \
     --module example.wsgi:application \
     --env example.settings \
-    --chdir .
-
+    --chdir . \
+#    --honour-stdin
 fi
