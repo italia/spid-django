@@ -82,6 +82,39 @@ SPID_CONTACTS = [
 ]
 
 
+CIE_CONTACTS = [
+    {
+        'contact_type': 'administrative',
+        'IPACode': 'that-IPA-code',
+        'VATNumber': 'IT12345678901',
+        'FiscalCode': 'XYZABCAAMGGJ000W',
+        'NACE2Code': '12.34.56',
+        'Municipality': 'H501',
+        'Province': 'CS',
+        'Country': 'IT',
+        'Company': 'same-to-OrganizationName-if-PA',
+        'telephone_number': '+398475634785',
+        'email_address': 'tech-info@example.org',
+        'Public': '',
+    },
+    {
+        'contact_type': 'technical',
+        'telephone_number': '+39 84756344785',
+        'email_address': 'info@example.org',
+        'IPACode': 'that-IPA-code',
+        'VATNumber': 'IT12345678901',
+        'FiscalCode': 'XYZABCAAMGGJ000W',
+        'NACE2Code': '12.34.56',
+        'Municipality': 'H501',
+        'Province': 'CS',
+        'Country': 'IT',
+        'Company': 'same-to-OrganizationName-if-PA',
+        'telephone_number': '+398475634785',
+        'email_address': 'tech-info@example.org',
+    },
+]
+
+
 # Configuration for pysaml2 as managed by djangosaml2. For SPID SP service the most
 # part is built dynamically from provided SPID_* settings and from SPID_* defaults.
 SAML_CONFIG = {

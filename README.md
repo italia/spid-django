@@ -1,4 +1,4 @@
-SPID Django
+SPID/CIE Django
 -----------
 
 ![CI build](https://github.com/italia/spid-django/workflows/spid-django/badge.svg)
@@ -6,14 +6,14 @@ SPID Django
 ![License](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue.svg)
 
 
-A SPID Service Provider based on [pysaml2](https://github.com/identitypython/pysaml2).
+A SPID/CIE Service Provider based on [pysaml2](https://github.com/identitypython/pysaml2).
 
 
 Introduction
 ------------
 
 This is a Django application that provides a SAML2 Service Provider
-for a Single Sign On with SPID, the Italian Digital Identity System.
+for a Single Sign On with SPID and CIE, the Italian Digital Identity System.
 
 This project comes with a demo on a Spid button template with both *spid-testenv2*
 and *spid-saml-check* IDP preconfigured. See running the Demo project paragaph for details.
@@ -24,6 +24,8 @@ within its CI pipeline, through [spid-sp-test](https://github.com/peppelinux/spi
 See github actions log for details.
 
 The technical documentation on SPID and SAML is available at [Docs Italia](https://docs.italia.it/italia/spid/spid-regole-tecniche)
+The technical documentation on CIE and SAML is available at [Docs Italia](https://docs.italia.it/italia/cie/cie-manuale-tecnico-docs)
+
 
 ![big picture](gallery/animated.gif)
 

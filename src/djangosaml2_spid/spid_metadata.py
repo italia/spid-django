@@ -4,7 +4,7 @@ from saml2.metadata import entity_descriptor, sign_entity_descriptor
 from saml2.sigver import security_context
 
 
-def spid_sp_metadata(conf):
+def italian_sp_metadata(conf, md_type:str="spid"):
     metadata = entity_descriptor(conf)
 
     # this will renumber acs starting from 0 and set index=0 as is_default
@@ -41,7 +41,10 @@ def spid_sp_metadata(conf):
     service_name.lang = "it"
     service_name.text = conf._sp_name
 
-    avviso_29_v3(metadata)
+    if md_type == 'spid':
+        spid_contacts_29_v3(metadata)
+    elif md_type == 'cie':
+        cie_contacts(metadata)
 
     # metadata signature
     secc = security_context(conf)
@@ -52,7 +55,7 @@ def spid_sp_metadata(conf):
     return xmldoc
 
 
-def avviso_29_v3(metadata):
+def spid_contacts_29_v3(metadata):
     """
     https://www.agid.gov.it/sites/default/files/repository_files/spid-avviso-n29v3-specifiche_sp_pubblici_e_privati_0.pdf
     """
@@ -88,8 +91,6 @@ def avviso_29_v3(metadata):
                     }
 
                 spid_extensions.children.append(ext)
-
-            spid_contact.extensions = spid_extensions
 
         elif contact["contact_type"] == "billing":
             contact_kwargs["company"] = contact["company"]
@@ -148,3 +149,50 @@ def avviso_29_v3(metadata):
 
         spid_contact.extensions = spid_extensions
         metadata.contact_person.append(spid_contact)
+
+
+def cie_contacts(metadata):
+    """
+    """
+
+    saml2.md.SamlBase.register_prefix(settings.CIE_PREFIXES)
+
+    contact_map = settings.CIE_CONTACTS
+    metadata.contact_person = []
+    for contact in contact_map:
+        cie_contact = saml2.md.ContactPerson()
+        cie_contact.contact_type = contact["contact_type"]
+        contact_kwargs = {
+            "email_address": [contact["email_address"]],
+            "telephone_number": [contact["telephone_number"]],
+        }
+        cie_extensions = saml2.ExtensionElement(
+            "Extensions", namespace="urn:oasis:names:tc:SAML:2.0:metadata"
+        )
+
+        if contact["contact_type"] == "administrative":
+            cie_contact.loadd(contact_kwargs)
+            contact_kwargs["contact_type"] = contact["contact_type"]
+            for k, v in contact.items():
+                if k in contact_kwargs:
+                    continue
+                ext = saml2.ExtensionElement(
+                    k, namespace=settings.CIE_PREFIXES["cie"], text=v
+                )
+                cie_extensions.children.append(ext)
+
+        elif contact["contact_type"] == "technical":
+            cie_contact.loadd(contact_kwargs)
+            contact_kwargs["contact_type"] = contact["contact_type"]
+            elements = {}
+            for k, v in contact.items():
+                if k in contact_kwargs:
+                    continue
+                ext = saml2.ExtensionElement(
+                    k, namespace=settings.CIE_PREFIXES["cie"], text=v
+                )
+                elements[k] = ext
+
+
+        cie_contact.extensions = cie_extensions
+        metadata.contact_person.append(cie_contact)

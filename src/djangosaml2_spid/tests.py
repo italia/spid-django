@@ -129,10 +129,6 @@ class TestSpidConfig(TestCase):
         saml_config = get_config()
         self.assertIsNone(saml_config.entityid)
 
-        request = self.factory.get("")
-        saml_config = get_config(request=request)
-        self.assertIsNone(saml_config.entityid)
-
         # SPConfig for a SPID request
         request = self.factory.get("/spid/metadata")
         saml_config = get_config(request=request)
