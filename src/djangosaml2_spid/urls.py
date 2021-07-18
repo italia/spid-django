@@ -19,6 +19,9 @@ urlpatterns = [
         settings.SPID_METADATA_URL_PATH,
         views.MetadataSpidView.as_view(), name="spid_metadata"),
     path(
+        settings.CIE_METADATA_URL_PATH,
+        views.MetadataCieView.as_view(), name="cie_metadata"),
+    path(
         settings.SPID_ACS_URL_PATH,
         views.AssertionConsumerServiceView.as_view(),
         name="saml2_acs",
