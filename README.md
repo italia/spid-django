@@ -15,8 +15,8 @@ Introduction
 This is a Django application that provides a SAML2 Service Provider
 for a Single Sign On with SPID and CIE, the Italian Digital Identity System.
 
-This project comes with a demo on a Spid button template with both *spid-testenv2*
-and *spid-saml-check* IDP preconfigured. See running the Demo project paragaph for details.
+This project comes with a demo on a Spid button template with *spid-saml-check* IDP preconfigured.
+See running the Demo project paragaph for details.
 
 Furthermore, this application integrates the checks of
 [Spid QA](https://www.spid.gov.it/assets/download/SPID_QAD.pdf)
@@ -47,8 +47,7 @@ Running the Demo project
 ------------------------
 
 The demo project is configured within `example/` subdirectory.
-This project uses **spid-saml-check** and **spid-testenv2** as
-additional IDPs configured in a demo SPID button.
+This project uses **spid-saml-check** as demo IDP.
 
 Prepare environment:
 ````
@@ -78,20 +77,19 @@ To run the demo project:
 
 or execute the run.sh script with these environment settings to enable tests IdPs:
 
- ````
- SPID_SAML_CHECK_IDP_ACTIVE=True SPID_DEMO_IDP_ACTIVE=True bash run.sh
- ````
+````
+SPID_SAML_CHECK_IDP_ACTIVE=True SPID_DEMO_IDP_ACTIVE=True bash run.sh
+````
 
-If you chose to use *spid-testenv2*, before starting it, you just have to save the
-current demo metadata in *spid-testenv2* configuration, this way:
+If you chose to use your own demo IdP you just have to save the
+current demo metadata in the demo IdP configuration, this way:
 
 ````
-# cd into spid-testenv2/ base dir ...
+# cd into demo IdP metadata folder ...
 wget https://localhost:8000/spid/metadata -O conf/sp_metadata.xml
 ````
 
-Finally, start spid-testenv2 and spid-saml-check (docker is suggested) and
-then open 'https://localhost:8000' in your browser.
+Finally, start pid-saml-check (docker is suggested) and open 'https://localhost:8000' in your browser.
 
 
 Demo project with Docker
@@ -104,7 +102,7 @@ To use Docker compose environment, add to /etc/hosts this line:
 
 then use `docker-compose --env-file docker-compose.env up` (the process takes some time) and when the services are up go to http://hostnet:8000/spid/login
 
-**warning**: if you want to change ports of any of the docker-compose services (as, spid-testenv2, spid-saml-check) and/or the FQDN of the docker-compose default network gateway (defaults to `hostnet`) you need to change all the files
+**warning**: if you want to change ports of any of the docker-compose services (as, spid-saml-check) and/or the FQDN of the docker-compose default network gateway (defaults to `hostnet`) you need to change all the files
 under `./example/configs/` to match the new configurations, changing only `./docker-compose.env` will not suffice.
 
 

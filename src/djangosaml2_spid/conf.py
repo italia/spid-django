@@ -331,7 +331,9 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
                 # Responses, i.e. SAML Responses for which it has not sent
                 # a respective SAML Authentication Request. Set to True to
                 # let ACS endpoint work.
-                "allow_unsolicited": False,
+                "allow_unsolicited": settings.SAML_CONFIG.get(
+                    "allow_unsolicited", False
+                ),
                 # Permits to have attributes not configured in attribute-mappings
                 # otherwise...without OID will be rejected
                 "allow_unknown_attributes": True,
