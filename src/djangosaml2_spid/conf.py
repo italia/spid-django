@@ -44,6 +44,7 @@ elif "organization" not in settings.SAML_CONFIG:
 
 settings.SPID_BASE_URL = getattr(settings, "SPID_BASE_URL", None)
 settings.SPID_URLS_PREFIX = getattr(settings, "SPID_URLS_PREFIX", "spid")
+settings.CIE_URLS_PREFIX = getattr(settings, "CIE_URLS_PREFIX", "cie")
 
 settings.SPID_ACS_URL_PATH = getattr(
     settings, "SPID_ACS_URL_PATH", f"{settings.SPID_URLS_PREFIX}/acs/"
@@ -56,6 +57,9 @@ settings.SPID_SLO_URL_PATH = getattr(
 )
 settings.SPID_METADATA_URL_PATH = getattr(
     settings, "SPID_METADATA_URL_PATH", f"{settings.SPID_URLS_PREFIX}/metadata/"
+)
+settings.CIE_METADATA_URL_PATH = getattr(
+    settings, "CIE_METADATA_URL_PATH", f"{settings.CIE_URLS_PREFIX}/metadata/"
 )
 
 settings.LOGIN_URL = getattr(settings, "LOGIN_URL", "/spid/login")
@@ -167,6 +171,14 @@ settings.SPID_PREFIXES = getattr(
     ),
 )
 
+settings.CIE_PREFIXES = getattr(
+    settings,
+    "CIE_PREFIXES",
+    dict(
+        cie="https://www.cartaidentita.interno.gov.it/saml-extensions"
+    ),
+)
+
 #
 # Defaults for other SAML settings
 
@@ -219,6 +231,18 @@ settings.SPID_REQUIRED_ATTRIBUTES = getattr(
     ],
 )
 
+settings.CIE_REQUIRED_ATTRIBUTES = getattr(
+    settings,
+    "CIE_REQUIRED_ATTRIBUTES",
+    [
+        "name",
+        "familyName",
+        "fiscalNumber",
+        "dateOfBirth",
+    ],
+)
+
+
 # Attributes that may be useful to have but not required
 settings.SPID_OPTIONAL_ATTRIBUTES = getattr(
     settings,
@@ -242,16 +266,21 @@ settings.SPID_OPTIONAL_ATTRIBUTES = getattr(
 
 def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
     conf = SPConfig()
-    if request is None or not request.path.lstrip("/").startswith(
-        settings.SPID_URLS_PREFIX
-    ):
+    if request is None:
         # Not a SPID request: load SAML_CONFIG unchanged
         conf.load(copy.deepcopy(settings.SAML_CONFIG))
         return conf
 
     # Build a SAML_CONFIG for SPID
     base_url = settings.SPID_BASE_URL or request.build_absolute_uri("/")
-    metadata_url = urljoin(base_url, reverse("djangosaml2_spid:spid_metadata"))
+    metadata_url = urljoin(base_url, settings.SPID_METADATA_URL_PATH)
+
+    if settings.SPID_METADATA_URL_PATH in request.get_full_path():
+        _REQUIRED_ATTRIBUTES = settings.SPID_REQUIRED_ATTRIBUTES
+        _OPTIONAL_ATTRIBUTES = settings.SPID_OPTIONAL_ATTRIBUTES
+    else:
+        _REQUIRED_ATTRIBUTES = settings.CIE_REQUIRED_ATTRIBUTES
+        _OPTIONAL_ATTRIBUTES = []
 
     saml_config = {
         "entityid": metadata_url,
@@ -284,8 +313,10 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
                 "force_authn": False,  # SPID
                 "name_id_format_allow_create": False,
                 # attributes that this project need to identify a user
-                "required_attributes": settings.SPID_REQUIRED_ATTRIBUTES,
-                "optional_attributes": settings.SPID_OPTIONAL_ATTRIBUTES,
+
+                "required_attributes": _REQUIRED_ATTRIBUTES,
+                "optional_attributes": _OPTIONAL_ATTRIBUTES,
+
                 "requested_attribute_name_format": saml2.saml.NAME_FORMAT_BASIC,
                 "name_format": saml2.saml.NAME_FORMAT_BASIC,
                 "signing_algorithm": settings.SPID_SIG_ALG,
