@@ -30,7 +30,7 @@ import saml2.time_util
 
 from .conf import settings
 from .spid_errors import SpidError
-from .spid_metadata import spid_sp_metadata
+from .spid_metadata import italian_sp_metadata
 from .spid_request import spid_sp_authn_request, SAML2_DEFAULT_BINDING
 from .spid_validator import Saml2ResponseValidator
 from .utils import repr_saml_request
@@ -263,15 +263,33 @@ def spid_logout(request, config_loader_path=None, **kwargs):
     return HttpResponse(http_info["data"])
 
 
-def metadata_spid(request, config_loader_path=None, valid_for=None):
-    """Returns an XML with the SAML 2.0 metadata for this
-    SP as configured in the settings.py file.
-    """
-    conf = get_config(config_loader_path, request)
-    xmldoc = spid_sp_metadata(conf)
-    return HttpResponse(
-        content=str(xmldoc).encode("utf-8"), content_type="text/xml; charset=utf8"
-    )
+class MetadataSpidView(djangosaml2_views.View):
+    """SPID dynamic Metadata endpoint"""
+
+    def dispatch(self, request, *args, **kwargs):
+        self.conf = get_config(getattr(settings, 'SAML_CONFIG_LOADER'), request)
+        return super().dispatch(request, *args, **kwargs)
+
+    def build_metadata(self):
+        metadata = italian_sp_metadata(self.conf, md_type='spid')
+        return metadata
+
+    def get(self, request, *args, **kwargs):
+        """Returns an XML with the SAML 2.0 metadata for this
+        SP as configured in the settings.py file.
+        """
+        xmldoc = self.build_metadata()
+        return HttpResponse(
+            content=str(xmldoc).encode("utf-8"),
+            content_type="text/xml; charset=utf8"
+        )
+
+
+class MetadataCieView(MetadataSpidView):
+
+    def build_metadata(self):
+        metadata = italian_sp_metadata(self.conf, md_type='cie')
+        return metadata
 
 
 class EchoAttributesView(

@@ -1,4 +1,4 @@
-SPID Django
+SPID/CIE Django
 -----------
 
 ![CI build](https://github.com/italia/spid-django/workflows/spid-django/badge.svg)
@@ -6,17 +6,17 @@ SPID Django
 ![License](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue.svg)
 
 
-A SPID Service Provider based on [pysaml2](https://github.com/identitypython/pysaml2).
+A SPID/CIE Service Provider based on [pysaml2](https://github.com/identitypython/pysaml2).
 
 
 Introduction
 ------------
 
 This is a Django application that provides a SAML2 Service Provider
-for a Single Sign On with SPID, the Italian Digital Identity System.
+for a Single Sign On with SPID and CIE, the Italian Digital Identity System.
 
-This project comes with a demo on a Spid button template with both *spid-testenv2*
-and *spid-saml-check* IDP preconfigured. See running the Demo project paragaph for details.
+This project comes with a demo on a Spid button template with *spid-saml-check* IDP preconfigured.
+See running the Demo project paragaph for details.
 
 Furthermore, this application integrates the checks of
 [Spid QA](https://www.spid.gov.it/assets/download/SPID_QAD.pdf)
@@ -24,6 +24,8 @@ within its CI pipeline, through [spid-sp-test](https://github.com/peppelinux/spi
 See github actions log for details.
 
 The technical documentation on SPID and SAML is available at [Docs Italia](https://docs.italia.it/italia/spid/spid-regole-tecniche)
+The technical documentation on CIE and SAML is available at [Docs Italia](https://docs.italia.it/italia/cie/cie-manuale-tecnico-docs)
+
 
 ![big picture](gallery/animated.gif)
 
@@ -45,15 +47,24 @@ Running the Demo project
 ------------------------
 
 The demo project is configured within `example/` subdirectory.
-This project uses **spid-saml-check** and **spid-testenv2** as
-additional IDPs configured in a demo SPID button.
+This project uses **spid-saml-check** as demo IDP.
 
 Prepare environment:
 ````
 cd example/
 virtualenv -ppython3 env
 source env/bin/activate
-pip install -r ../requirements-dev.txt
+
+pip install --no-deps djangosaml2-spid
+pip install djangosaml2-spid
+````
+
+⚠️ Why `pip install` have beed executed twice? spid-django needs a fork of PySAML2 that's not distribuited though pypi.
+This way to install it prevents the following error:
+
+````
+ERROR: Packages installed from PyPI cannot depend on packages which are not also hosted on PyPI.
+djangosaml2-spid depends on pysaml2@ git+https://github.com/peppelinux/pysaml2.git@pplnx-7.0.1#pysaml2
 ````
 
 Your example saml2 configuration is in `spid_config/spid_settings.py`.
@@ -66,20 +77,19 @@ To run the demo project:
 
 or execute the run.sh script with these environment settings to enable tests IdPs:
 
- ````
- SPID_SAML_CHECK_IDP_ACTIVE=True SPID_DEMO_IDP_ACTIVE=True bash run.sh
- ````
+````
+SPID_SAML_CHECK_IDP_ACTIVE=True SPID_DEMO_IDP_ACTIVE=True bash run.sh
+````
 
-If you chose to use *spid-testenv2*, before starting it, you just have to save the
-current demo metadata in *spid-testenv2* configuration, this way:
+If you chose to use your own demo IdP you just have to save the
+current demo metadata in the demo IdP configuration, this way:
 
 ````
-# cd into spid-testenv2/ base dir ...
+# cd into demo IdP metadata folder ...
 wget https://localhost:8000/spid/metadata -O conf/sp_metadata.xml
 ````
 
-Finally, start spid-testenv2 and spid-saml-check (docker is suggested) and
-then open 'https://localhost:8000' in your browser.
+Finally, start pid-saml-check (docker is suggested) and open 'https://localhost:8000' in your browser.
 
 
 Demo project with Docker
@@ -92,7 +102,7 @@ To use Docker compose environment, add to /etc/hosts this line:
 
 then use `docker-compose --env-file docker-compose.env up` (the process takes some time) and when the services are up go to http://hostnet:8000/spid/login
 
-**warning**: if you want to change ports of any of the docker-compose services (as, spid-testenv2, spid-saml-check) and/or the FQDN of the docker-compose default network gateway (defaults to `hostnet`) you need to change all the files
+**warning**: if you want to change ports of any of the docker-compose services (as, spid-saml-check) and/or the FQDN of the docker-compose default network gateway (defaults to `hostnet`) you need to change all the files
 under `./example/configs/` to match the new configurations, changing only `./docker-compose.env` will not suffice.
 
 
@@ -122,6 +132,29 @@ djangosaml2_spid uses a pySAML2 fork.
 * Register the SP metadata to your test Spid IDPs
 * Start the django server for tests `./manage.py runserver 0.0.0.0:8000`
 
+SAML2 SPID compliant certificates
+---------------------------------
+
+Here an example about how to do that.
+
+````
+mkdir certificates && cd "$_"
+
+spid-compliant-certificates generator \
+    --key-size 3072 \
+    --common-name "A.C.M.E" \
+    --days 365 \
+    --entity-id https://spid.acme.it \
+    --locality-name Roma \
+    --org-id "PA:IT-c_h501" \
+    --org-name "A Company Making Everything" \
+    --sector public \
+    --key-out private.key \
+    --crt-out public.cert
+
+cd ../
+````
+
 Minimal SPID settings
 ---------------------
 
@@ -135,6 +168,7 @@ An example of a minimal configuration for SPID is the following:
 
 ```python
 SAML_CONFIG = {
+    'entityid': 'https://your.spid.url/metadata',
     'organization': {
         'name': [('Example', 'it'), ('Example', 'en')],
         'display_name': [('Example', 'it'), ('Example', 'en')],
@@ -164,6 +198,9 @@ SPID_CONTACTS = [
     },
 ]
 ```
+
+⚠️ In the example project, in `spid_settings.py` we found `disable_ssl_certificate_validation` set to True. This is only for test/development purpose and its usage means that the "remote metadata" won't validate the https certificates. That's something not intended for production environment, remote metadata must be avoided and the tls validation must be adopted.
+
 
 Attribute Mapping
 -----------------
