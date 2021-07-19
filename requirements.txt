@@ -1,7 +1,7 @@
 django>=2.2.24,<4.0
 
 # hint before: pip install -U setuptools
-pysaml2 @ git+https://github.com/peppelinux/pysaml2.git@pplnx-7.0.1#pysaml2
+# pysaml2 @ git+https://github.com/peppelinux/pysaml2.git@pplnx-7.0.1#pysaml2
 cffi
 
 # django saml2 SP
