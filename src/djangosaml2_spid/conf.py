@@ -142,7 +142,7 @@ settings.SPID_SAML_CHECK_METADATA_URL = getattr(
 )
 
 settings.SPID_DEMO_IDP_ACTIVE = getattr(
-    settings, "SPID_DEMO_ACTIVE", os.environ.get("SPID_DEMO_ACTIVE", "False") == "True"
+    settings, "SPID_DEMO_IDP_ACTIVE", os.environ.get("SPID_DEMO_IDP_ACTIVE", "False") == "True"
 )
 
 settings.SPID_DEMO_METADATA_URL = getattr(
