@@ -55,17 +55,14 @@ cd example/
 virtualenv -ppython3 env
 source env/bin/activate
 
-pip install --no-deps djangosaml2-spid
 pip install djangosaml2-spid
 ````
 
-⚠️ Why `pip install` have beed executed twice? spid-django needs a fork of PySAML2 that's not distribuited though pypi.
-This way to install it prevents the following error:
+⚠️ djangosaml2-spid uses a *monkey-patch* version of the pysaml2 library that fixes 
+some limitations or small bugs that can affect SPID data. Patches are applied only 
+once after the app is ready to run. Take a look at module `djangosaml2_spid._saml2` 
+for patches code and references.
 
-````
-ERROR: Packages installed from PyPI cannot depend on packages which are not also hosted on PyPI.
-djangosaml2-spid depends on pysaml2@ git+https://github.com/peppelinux/pysaml2.git@pplnx-7.0.1#pysaml2
-````
 
 Your example saml2 configuration is in `spid_config/spid_settings.py`.
 See djangosaml2 and pysaml2 official docs for clarifications.
