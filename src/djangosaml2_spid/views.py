@@ -159,13 +159,15 @@ def spid_login(
         return HttpResponseRedirect(headers["Location"])
 
 
-@login_required
 def spid_logout(request, config_loader_path=None, **kwargs):
     """SAML Logout Request initiator
 
     This view initiates the SAML2 Logout request
     using the pysaml2 library to create the LogoutRequest.
     """
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(settings.LOGOUT_REDIRECT_URL)
+
     state = StateCache(request.saml_session)
     conf = get_config(config_loader_path, request)
     client = Saml2Client(
