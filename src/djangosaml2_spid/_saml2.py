@@ -182,12 +182,17 @@ def pysaml2_patch():
                 else:
                     raise RequestVersionTooHigh()
 
-            destination = self.response.destination
-            if self.asynchop and destination:
-                # Destination must be present
-                if destination not in self.return_addrs:
+            if self.asynchop:
+                if not (
+                     getattr(self.response, 'destination')
+                ):
                     logger.error(
-                        f"{destination} not in {self.return_addrs}"
+                        f"Invalid response destination in asynchop"
+                    )
+                    return None
+                elif self.response.destination not in self.return_addrs:
+                    logger.error(
+                        f"{self.response.destination} not in {self.return_addrs}"
                     )
                     return None
 
