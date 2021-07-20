@@ -58,6 +58,12 @@ source env/bin/activate
 pip install djangosaml2-spid
 ````
 
+⚠️ djangosaml2-spid uses a *monkey-patch* version of the pysaml2 library that fixes 
+some limitations or small bugs that can affect SPID data. Patches are applied only 
+once after the app is ready to run. Take a look at module `djangosaml2_spid._saml2` 
+for patches code and references.
+
+
 Your example saml2 configuration is in `spid_config/spid_settings.py`.
 See djangosaml2 and pysaml2 official docs for clarifications.
 

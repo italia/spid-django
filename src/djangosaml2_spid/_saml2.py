@@ -3,7 +3,7 @@
 #
 DISABLE_WEAK_XMLSEC_ALGORITHMS = True  # https://github.com/IdentityPython/pysaml2/pull/628
 ADD_XSD_DATE_TYPE = True  # https://github.com/IdentityPython/pysaml2/pull/602
-PATCH_RESPONSE_VERIFY = True  # https://github.com/peppelinux/pysaml2/commit/8bdbbdf41ce63a37d3ba02c8f48a3dba0217d463
+PATCH_RESPONSE_VERIFY = True  # https://github.com/IdentityPython/pysaml2/pull/812
 
 
 def pysaml2_patch():
@@ -167,7 +167,7 @@ def pysaml2_patch():
         AttributeValueBase.set_text = set_text
 
     if PATCH_RESPONSE_VERIFY:
-        logger = logging.getLogger(__name__)
+        logger = logging.getLogger(StatusResponse.__module__)
 
         def _verify(self):
             if self.request_id and self.in_response_to and \
@@ -175,19 +175,20 @@ def pysaml2_patch():
                 logger.error("Not the id I expected: %s != %s",
                              self.in_response_to, self.request_id)
                 return None
+
             if self.response.version != "2.0":
-                _ver = float(self.response.version)
-                if _ver < 2.0:
+                if float(self.response.version) < 2.0:
                     raise RequestVersionTooLow()
                 else:
                     raise RequestVersionTooHigh()
 
-            destination = self.response.destination
-            if self.asynchop and destination:
-                # Destination must be present
-                if destination not in self.return_addrs:
+            if self.asynchop:
+                if not getattr(self.response, 'destination'):
+                    logger.error("Invalid response destination in asynchop")
+                    return None
+                elif self.response.destination not in self.return_addrs:
                     logger.error(
-                        f"{destination} not in {self.return_addrs}"
+                        f"{self.response.destination} not in {self.return_addrs}"
                     )
                     return None
 
