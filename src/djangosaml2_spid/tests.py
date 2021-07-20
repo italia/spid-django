@@ -460,3 +460,40 @@ class TestSpid(TestCase):
             b"No active SAML identity found. Are you "
             b"sure you have logged in via SAML?",
         )
+
+
+class TestSaml2Patches(unittest.TestCase):
+
+    def test_default_namespaces(self):
+        oasis_default_nsmap = {
+            'saml': 'urn:oasis:names:tc:SAML:2.0:assertion',
+            'samlp': 'urn:oasis:names:tc:SAML:2.0:protocol',
+            'ds': 'http://www.w3.org/2000/09/xmldsig#',
+            'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+            'xs': 'http://www.w3.org/2001/XMLSchema',
+            'mdui': 'urn:oasis:names:tc:SAML:metadata:ui',
+            'md': 'urn:oasis:names:tc:SAML:2.0:metadata',
+            'xenc': 'http://www.w3.org/2001/04/xmlenc#',
+            'alg': 'urn:oasis:names:tc:SAML:metadata:algsupport',
+            'mdattr': 'urn:oasis:names:tc:SAML:metadata:attribute',
+            'idpdisc': 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol',
+        }
+
+        for prefix, uri in oasis_default_nsmap.items():
+            self.assertIn(uri, ElementTree._namespace_map)
+            self.assertEqual(prefix, ElementTree._namespace_map[uri])
+
+    def test_disable_weak_xmlsec_algorithms(self):
+        import saml2.metadata
+        from saml2.algsupport import algorithm_support_in_metadata
+
+        self.assertIsNot(saml2.metadata.algorithm_support_in_metadata, algorithm_support_in_metadata)
+        self.assertEqual(saml2.metadata.algorithm_support_in_metadata.__module__, 'djangosaml2_spid._saml2')
+
+    def test_add_xsd_date_type(self):
+        from saml2.saml import AttributeValueBase
+        self.assertEqual(AttributeValueBase.set_text.__module__, 'djangosaml2_spid._saml2')
+
+    def test_patch_response_verify(self):
+        from saml2.response import StatusResponse
+        self.assertEqual(StatusResponse._verify.__module__, 'djangosaml2_spid._saml2')
