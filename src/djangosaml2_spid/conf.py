@@ -217,7 +217,6 @@ settings.SAML_ATTRIBUTE_MAPPING = getattr(
     },
 )
 
-
 # Attributes that this project need to identify a user
 settings.SPID_REQUIRED_ATTRIBUTES = getattr(
     settings,

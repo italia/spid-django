@@ -1,10 +1,13 @@
+from xml.etree import ElementTree
+
 import saml2
+import saml2.md
 from django.conf import settings
 from saml2.metadata import entity_descriptor, sign_entity_descriptor
 from saml2.sigver import security_context
 
 
-def italian_sp_metadata(conf, md_type:str="spid"):
+def italian_sp_metadata(conf, md_type: str = "spid"):
     metadata = entity_descriptor(conf)
 
     # this will renumber acs starting from 0 and set index=0 as is_default
@@ -60,7 +63,8 @@ def spid_contacts_29_v3(metadata):
     https://www.agid.gov.it/sites/default/files/repository_files/spid-avviso-n29v3-specifiche_sp_pubblici_e_privati_0.pdf
     """
 
-    saml2.md.SamlBase.register_prefix(settings.SPID_PREFIXES)
+    for prefix, uri in settings.SPID_PREFIXES.items():
+        ElementTree.register_namespace(prefix, uri)
 
     contact_map = settings.SPID_CONTACTS
     metadata.contact_person = []
@@ -84,7 +88,8 @@ def spid_contacts_29_v3(metadata):
                 ext = saml2.ExtensionElement(
                     k, namespace=settings.SPID_PREFIXES["spid"], text=v
                 )
-                # Avviso SPID n. 19 v.4 per enti AGGREGATORI il tag ContactPerson deve avere l’attributo spid:entityType valorizzato come spid:aggregator
+                # Avviso SPID n. 19 v.4 per enti AGGREGATORI il tag ContactPerson deve
+                # avere l’attributo spid:entityType valorizzato come spid:aggregator
                 if k == "PublicServicesFullOperator":
                     spid_contact.extension_attributes = {
                         "spid:entityType": "spid:aggregator"
@@ -155,7 +160,8 @@ def cie_contacts(metadata):
     """
     """
 
-    saml2.md.SamlBase.register_prefix(settings.CIE_PREFIXES)
+    for prefix, uri in settings.CIE_PREFIXES.items():
+        ElementTree.register_namespace(prefix, uri)
 
     contact_map = settings.CIE_CONTACTS
     metadata.contact_person = []
@@ -192,7 +198,6 @@ def cie_contacts(metadata):
                     k, namespace=settings.CIE_PREFIXES["cie"], text=v
                 )
                 elements[k] = ext
-
 
         cie_contact.extensions = cie_extensions
         metadata.contact_person.append(cie_contact)
