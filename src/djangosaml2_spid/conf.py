@@ -217,6 +217,14 @@ settings.SAML_ATTRIBUTE_MAPPING = getattr(
     },
 )
 
+settings.SPID_ATTR_MAP_DIR = getattr(
+    settings,
+    "SPID_ATTR_MAP_DIR",
+    os.path.join(
+            djangosaml2_spid_config.path, "attribute_maps/"
+        )
+)
+
 # Attributes that this project need to identify a user
 settings.SPID_REQUIRED_ATTRIBUTES = getattr(
     settings,
@@ -282,10 +290,8 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
         _OPTIONAL_ATTRIBUTES = []
 
     saml_config = {
-        "entityid": metadata_url,
-        "attribute_map_dir": os.path.join(
-            djangosaml2_spid_config.path, "attribute_maps/"
-        ),
+        "entityid": getattr(settings, 'SAML2_ENTITY_ID', metadata_url),
+        "attribute_map_dir": settings.SPID_ATTR_MAP_DIR,
         "service": {
             "sp": {
                 "name": metadata_url,
