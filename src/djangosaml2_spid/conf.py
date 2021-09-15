@@ -332,6 +332,9 @@ def config_settings_loader(request: Optional[HttpRequest] = None) -> SPConfig:
                 # be signed. If set to True, the SP will not consume
                 # any SAML Responses that are not signed.
                 "want_assertions_signed": True,
+                "want_response_signed": settings.SAML_CONFIG.get(
+                    "want_response_signed", True
+                ),
                 # When set to true, the SP will consume unsolicited SAML
                 # Responses, i.e. SAML Responses for which it has not sent
                 # a respective SAML Authentication Request. Set to True to
