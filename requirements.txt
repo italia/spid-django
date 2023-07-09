@@ -1,4 +1,4 @@
-django>=2.2.24,<4.0
+django==4.2.3
 
 # hint before: pip install -U setuptools
 cffi
@@ -7,4 +7,8 @@ cffi
 djangosaml2>=1.0.0
 
 # For command update_idps.py
-requests
+requests~=2.31.0
+
+pysaml2~=7.4.2
+pytz~=2023.3
+setuptools==68.0.0
