@@ -64,7 +64,8 @@ class Command(BaseCommand):
                 indentation_level=1,
             )
 
-            with requests.get(idp_metadata_url, verify=True) as response:
+            #Add User-Agent header to avoid 403 Forbidden error when downloading metadata from poste.it
+            with requests.get(idp_metadata_url, verify=True, headers={'User-Agent': ''}) as response:
                 identity_provider["metadata"] = response.text
 
         self.print_success("All IdPs metadata downloaded successfully")
